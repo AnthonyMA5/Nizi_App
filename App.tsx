@@ -21,6 +21,7 @@ import Login from './src/screens/Login';
 import Sign_Up from './src/screens/Sign_Up';
 import Telephone_Vrf from './src/screens/Telephone_Vrf';
 import Email_Vrf from './src/screens/Email_Vrf';
+import Profile_Info from './src/screens/Profile_Info';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -165,7 +166,8 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="Messagges" component={Messagges} />
         <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Commerce" component={Comerce} />
-        <Stack.Screen name= "Profile" component={Profile} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Profile_Info" component={Profile_Info} />
       </Stack.Navigator>
     </NavigationContainer>
   );
