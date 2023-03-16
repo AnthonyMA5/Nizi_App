@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 interface Props {
   navigation: any;
@@ -86,6 +86,13 @@ const Profile_Info: React.FC<Props> = ({navigation}) => {
 
           </View>
 
+
+          <View style={styles.button_container}>
+            <Pressable style={styles.button}
+                       android_ripple={{ color: 'lightgray' }}>
+              <Text style={styles.text_button}>Actualizar información</Text>
+            </Pressable>
+          </View>
 
 
         </View>
@@ -202,7 +209,7 @@ const styles = StyleSheet.create({
 
     sectionStyle: {
         justifyContent: 'center',
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 10,
         borderColor: '#000000',
         marginTop: 10,
@@ -213,6 +220,26 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 15,
         marginLeft: 15,
+    },
+
+    button_container:{
+      flex: 1,
+      marginTop: 30,
+      marginBottom: 50,
+    },
+
+    button:{
+      backgroundColor:'#0500EB',
+      padding: 18,
+      marginTop: 20,
+      borderRadius: 12,
+    },
+
+    text_button:{
+      fontFamily: 'DMSans-Bold',
+      fontSize: 16,
+      color: '#FFFFFF',
+      textAlign: 'center',
     },
 
 });
