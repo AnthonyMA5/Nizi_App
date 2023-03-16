@@ -50,7 +50,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
 
           <Text style={styles.text_divider}>Datos personales</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Domicilio.png')} />
@@ -59,14 +59,14 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Domicilio</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Key.png')} />
@@ -75,14 +75,14 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Cambiar contraseña</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint')}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/huella.png')} />
@@ -91,7 +91,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Huella dactilar</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint')}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
