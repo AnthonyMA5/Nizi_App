@@ -34,8 +34,8 @@ const Recharge: React.FC<Props> = ({navigation}) => {
 
 
           <Text style={styles.text_info}>
-          ¿No cuentas con saldo suficiente? No te preocupes,
-          Nizi cuenta con puntos de recarga en establecimientos participantes al igual que recargas utilizando PayPal.
+            ¿No cuentas con saldo suficiente? No te preocupes,
+            Nizi cuenta con puntos de recarga en establecimientos participantes al igual que recargas utilizando PayPal.
           </Text>
 
           <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce')}>
