@@ -20,8 +20,8 @@ const Comerce: React.FC<Props> = ({navigation}) => {
        region={{
          latitude: 20.658037378059745,
          longitude: -103.36288148542783,
-         latitudeDelta: 0.015,
-         longitudeDelta: 0.0121,
+         latitudeDelta: 0.5,
+         longitudeDelta: 0.45,
        }}
       >
         <Marker

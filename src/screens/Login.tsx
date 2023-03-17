@@ -17,7 +17,7 @@ import { TouchableOpacity } from 'react-native'
 
 interface Props {
     navigation: any;
-  }
+}
 
 const Login: React.FC<Props> = ({navigation}) => {
 

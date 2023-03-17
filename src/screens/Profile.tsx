@@ -39,16 +39,26 @@ const Profile: React.FC<Props> = ({navigation}) => {
               <Text style={styles.text_fullname}>Anthony Martinez</Text>
               <Text style={styles.text_date}>Miembro desde 15/03/2023</Text>
             </View>
-
-            <View style={styles.icon_container}>
-              <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
-                <Image style={styles.icon} source={require('../img/Editar.png')} />
-              </TouchableOpacity>
-            </View>
           </View>
 
 
           <Text style={styles.text_divider}>Datos personales</Text>
+
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+            <View style={styles.button_container}>
+              <View style={styles.icon_button_container}>
+                <Image style={styles.icon_button} source={require('../img/Editar.png')} />
+              </View>
+              <View style={styles.text_button_container}>
+                <Text style={styles.text_button}>Información personal</Text>
+              </View>
+              <View style={styles.go_button_container}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+                  <Image style={styles.go_button} source={require('../img/next_simple.png')} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableOpacity>
 
           <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
             <View style={styles.button_container}>
@@ -262,8 +272,8 @@ const styles = StyleSheet.create({
   },
 
   icon_button:{
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
   },
 
   text_button_container:{
