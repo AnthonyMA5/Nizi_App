@@ -7,7 +7,7 @@ import {createDrawerNavigator, DrawerNavigationProp} from '@react-navigation/dra
 import {StyleSheet, Image} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationProp} from '@react-navigation/native';
-import CustomDrawer from './src/components/Custom_Drawer';
+import CustomDrawer from './src/components/CustomDrawer';
 import Home from './src/screens/Home';
 import Recharge from './src/screens/Recharge';
 import Moves from './src/screens/Moves';
@@ -18,13 +18,13 @@ import Comerce from './src/screens/Comerce';
 import Profile from './src/screens/Profile';
 import Splash from './src/screens/Splash';
 import Login from './src/screens/Login';
-import Sign_Up from './src/screens/Sign_Up';
-import Telephone_Vrf from './src/screens/Telephone_Vrf';
-import Email_Vrf from './src/screens/Email_Vrf';
-import Profile_Info from './src/screens/Profile_Info';
-import Profile_Address from './src/screens/Profile_Address';
-import Profile_Password from './src/screens/Profile_Password';
-import Profile_Fingerprint from './src/screens/Profile_Fingerprint';
+import Sign_Up from './src/screens/SignUp';
+import Telephone_Vrf from './src/screens/TelephoneVrf';
+import Email_Vrf from './src/screens/EmailVrf';
+import Profile_Info from './src/screens/ProfileInfo';
+import Profile_Address from './src/screens/ProfileAddress';
+import Profile_Password from './src/screens/ProfilePassword';
+import Profile_Fingerprint from './src/screens/ProfileFingerprint';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
