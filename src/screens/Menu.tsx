@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native'
+import React, { useState } from 'react'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { ScrollView } from 'react-native'
 import { Image } from 'react-native'
@@ -18,6 +17,12 @@ interface Props {
 
 const Menu: React.FC<Props> = ({navigation}) => {
 
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
+
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container}>
@@ -27,8 +32,8 @@ const Menu: React.FC<Props> = ({navigation}) => {
           <View style={styles.header_container}>
 
             <View style={styles.left_container}>
-              <TouchableOpacity>
-                <Image style={styles.back_icon} source={require('../img/back.png')} />
+              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
+                <Image style={styles.back_icon} source={require('../img/menu_barra.png')} />
               </TouchableOpacity>
             </View>
 
@@ -125,6 +130,132 @@ const Menu: React.FC<Props> = ({navigation}) => {
           </View>
 
 
+          <View style={styles.sectionContainer2}>
+              <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
+
+                  <Pressable style={[
+                    styles.categories_container,
+                    selectedCategory === 'Todos' &&
+                    styles.selected_category_container]}
+                    onPress={() => handleCategorySelect('Todos')}>
+
+                      <Text style={[styles.catg_text,
+                        selectedCategory === 'Todos' &&
+                        styles.selected_category_text]}>Todos</Text>
+
+                  </Pressable>
+
+                  <Pressable style={[
+                    styles.categories_container,
+                    selectedCategory === 'Ensaladas' &&
+                    styles.selected_category_container]}
+                    onPress={() => handleCategorySelect('Ensaladas')}>
+
+                    <View style={styles.catg_left}>
+                      <Text style={[styles.catg_text,
+                        selectedCategory === 'Ensaladas' &&
+                        styles.selected_category_text]}>Ensaladas</Text>
+                    </View>
+
+                    <View style={styles.catg_right}>
+                        <Image source={require('../img/ensalada_icon.png')} style={styles.catg_icon}/>
+                    </View>
+
+                  </Pressable>
+
+                  <Pressable style={[
+                    styles.categories_container,
+                    selectedCategory === 'Snacks' &&
+                    styles.selected_category_container]}
+                    onPress={() => handleCategorySelect('Snacks')}>
+
+                    <View style={styles.catg_left}>
+                      <Text style={[styles.catg_text,
+                        selectedCategory === 'Snacks' &&
+                        styles.selected_category_text]}>Snacks</Text>
+                    </View>
+
+                    <View style={styles.catg_right}>
+                        <Image source={require('../img/snack_icon.png')} style={styles.catg_icon}/>
+                    </View>
+
+                  </Pressable>
+
+                  <Pressable style={[
+                    styles.categories_container,
+                    selectedCategory === 'Bebidas' &&
+                    styles.selected_category_container]}
+                    onPress={() => handleCategorySelect('Bebidas')}>
+
+                    <View style={styles.catg_left}>
+                      <Text style={[styles.catg_text,
+                        selectedCategory === 'Bebidas' &&
+                        styles.selected_category_text]}>Bebidas</Text>
+                    </View>
+
+                    <View style={styles.catg_right}>
+                        <Image source={require('../img/bebidas_icon.png')} style={styles.catg_icon}/>
+                    </View>
+
+                  </Pressable>
+
+              </ScrollView>
+          </View>
+
+
+          <View style={styles.sectionContainer3}>
+
+            <View style={styles.product_main_container}>
+
+              <View style={styles.product_left}>
+                <Image source={require('../img/platillo1.png')} style={styles.product_image}/>
+              </View>
+
+              <View style={styles.product_right}>
+                <Text style={styles.name_product}>Ensalada griega</Text>
+                <Text style={styles.desc_product}>Un plato de la dieta mediterránea saludable con lechuga, queso panela.</Text>
+                <View style={styles.price_product_container}>
+                  <Text style={styles.price_product}>$ 90.00</Text>
+                </View>
+              </View>
+
+            </View>
+
+            <View style={styles.product_main_container}>
+
+              <View style={styles.product_left}>
+                <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
+              </View>
+
+              <View style={styles.product_right}>
+                <Text style={styles.name_product}>Papas fritas</Text>
+                <Text style={styles.desc_product}>Papas naturales fritas con chile en polvo.</Text>
+                <View style={styles.price_product_container}>
+                  <Text style={styles.price_product}>$ 25.00</Text>
+                </View>
+              </View>
+
+            </View>
+
+            <View style={styles.product_main_container}>
+
+              <View style={styles.product_left}>
+                <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
+              </View>
+
+              <View style={styles.product_right}>
+                <Text style={styles.name_product}>Café cappuccino</Text>
+                <Text style={styles.desc_product}>Café mezclado con leche y crema de leche.</Text>
+                <View style={styles.price_product_container}>
+                  <Text style={styles.price_product}>$ 32.00</Text>
+                </View>
+              </View>
+
+            </View>
+
+          </View>
+
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -151,6 +282,7 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     backgroundColor: '#FFFFFF',
+    marginBottom: 50,
   },
 
   header_container:{
@@ -236,6 +368,18 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
+  sectionContainer2:{
+    flex: 1,
+    marginTop: 35,
+    width: '100%',
+  },
+
+  sectionContainer3:{
+    flex: 1,
+    marginTop: 10,
+    width: '100%',
+  },
+
   cardView:{
     width: 300,
     height: 220,
@@ -292,6 +436,103 @@ const styles = StyleSheet.create({
     fontFamily: 'DMSans-Medium',
     fontSize: 14,
     color: '#FFF',
+  },
+
+  categories_container:{
+    flexDirection: 'row',
+    backgroundColor: '#EDEDED',
+    padding: 8,
+    borderRadius: 9,
+    marginEnd: 12,
+    alignItems: 'center',
+  },
+
+  selected_category_container:{
+    backgroundColor: '#282828',
+  },
+
+  catg_left:{
+    flex: 0.7,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginEnd: 5,
+  },
+
+  catg_text:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 15,
+    color: '#000',
+  },
+
+  selected_category_text:{
+    color: '#FFF',
+  },
+
+  catg_right:{
+    flex: 0.7,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  catg_icon:{
+    width: 25,
+    height: 25,
+  },
+
+  product_main_container:{
+    flexDirection: 'row',
+    marginTop: 30,
+  },
+
+  product_left:{
+    flex: 0.3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  product_image:{
+    width: 105,
+    height: 105,
+    resizeMode: 'contain',
+  },
+
+  product_right:{
+    flex: 0.7,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginStart: 25,
+  },
+
+  name_product:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#000',
+  },
+
+  desc_product:{
+    fontFamily: 'DMSans-Regular',
+    fontSize: 14,
+    textAlign: 'justify',
+    color: '#000',
+    marginTop: 10,
+  },
+
+  price_product_container:{
+    marginTop: 12,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#EEEEEE',
+  },
+
+  price_product:{
+    fontFamily: 'DMSans-Bold',
+    fontSize: 14,
+    textAlign: 'justify',
+    color: '#000',
+    marginLeft: 7,
+    marginRight: 7,
   },
 
 
