@@ -26,6 +26,7 @@ import Profile_Address from './src/screens/ProfileAddress';
 import Profile_Password from './src/screens/ProfilePassword';
 import Profile_Fingerprint from './src/screens/ProfileFingerprint';
 import ProductDetails from './src/screens/ProductDetails';
+import Cart from './src/screens/Cart';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -176,6 +177,7 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="Profile_Password" component={Profile_Password} />
         <Stack.Screen name="Profile_Fingerprint" component={Profile_Fingerprint} />
         <Stack.Screen name="ProductDetails" component={ProductDetails} />
+        <Stack.Screen name="Cart" component={Cart} />
       </Stack.Navigator>
     </NavigationContainer>
   );

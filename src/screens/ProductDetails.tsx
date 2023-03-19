@@ -285,18 +285,18 @@ const styles = StyleSheet.create({
         marginTop: 35,
     },
 
-    quantity_container:{
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
     quantity_main_container:{
         flex: 0.5,
         flexDirection: 'row',
         alignItems: 'center',
         marginEnd: 30,
+    },
+
+    quantity_container:{
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
     quantity_button:{

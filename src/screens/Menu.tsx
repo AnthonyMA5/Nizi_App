@@ -53,7 +53,7 @@ const Menu: React.FC<Props> = ({navigation}) => {
             </View>
 
             <View style={styles.right_container}>
-              <TouchableOpacity>
+              <TouchableOpacity onPressOut={()=>navigation.navigate('Cart')}>
                 <Image style={styles.cart_icon} source={require('../img/carrito.png')} />
               </TouchableOpacity>
             </View>
