@@ -133,7 +133,7 @@ const Menu: React.FC<Props> = ({navigation}) => {
           <View style={styles.sectionContainer2}>
               <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
 
-                  <Pressable style={[
+                  <TouchableOpacity style={[
                     styles.categories_container,
                     selectedCategory === 'Todos' &&
                     styles.selected_category_container]}
@@ -143,9 +143,9 @@ const Menu: React.FC<Props> = ({navigation}) => {
                         selectedCategory === 'Todos' &&
                         styles.selected_category_text]}>Todos</Text>
 
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable style={[
+                  <TouchableOpacity style={[
                     styles.categories_container,
                     selectedCategory === 'Ensaladas' &&
                     styles.selected_category_container]}
@@ -161,9 +161,9 @@ const Menu: React.FC<Props> = ({navigation}) => {
                         <Image source={require('../img/ensalada_icon.png')} style={styles.catg_icon}/>
                     </View>
 
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable style={[
+                  <TouchableOpacity style={[
                     styles.categories_container,
                     selectedCategory === 'Snacks' &&
                     styles.selected_category_container]}
@@ -179,9 +179,9 @@ const Menu: React.FC<Props> = ({navigation}) => {
                         <Image source={require('../img/snack_icon.png')} style={styles.catg_icon}/>
                     </View>
 
-                  </Pressable>
+                  </TouchableOpacity>
 
-                  <Pressable style={[
+                  <TouchableOpacity style={[
                     styles.categories_container,
                     selectedCategory === 'Bebidas' &&
                     styles.selected_category_container]}
@@ -197,7 +197,7 @@ const Menu: React.FC<Props> = ({navigation}) => {
                         <Image source={require('../img/bebidas_icon.png')} style={styles.catg_icon}/>
                     </View>
 
-                  </Pressable>
+                  </TouchableOpacity>
 
               </ScrollView>
           </View>
@@ -205,7 +205,9 @@ const Menu: React.FC<Props> = ({navigation}) => {
 
           <View style={styles.sectionContainer3}>
 
-            <View style={styles.product_main_container}>
+            <Pressable style={styles.product_main_container}
+              android_ripple={{ color: 'lightgray', borderless: false }}
+              onPressOut={() => navigation.navigate('ProductDetails')}>
 
               <View style={styles.product_left}>
                 <Image source={require('../img/platillo1.png')} style={styles.product_image}/>
@@ -219,9 +221,10 @@ const Menu: React.FC<Props> = ({navigation}) => {
                 </View>
               </View>
 
-            </View>
+            </Pressable>
 
-            <View style={styles.product_main_container}>
+            <Pressable style={styles.product_main_container}
+            android_ripple={{ color: 'lightgray', borderless: false }}>
 
               <View style={styles.product_left}>
                 <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
@@ -235,9 +238,10 @@ const Menu: React.FC<Props> = ({navigation}) => {
                 </View>
               </View>
 
-            </View>
+            </Pressable>
 
-            <View style={styles.product_main_container}>
+            <Pressable style={styles.product_main_container}
+            android_ripple={{ color: 'lightgray', borderless: false }}>
 
               <View style={styles.product_left}>
                 <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
@@ -251,7 +255,7 @@ const Menu: React.FC<Props> = ({navigation}) => {
                 </View>
               </View>
 
-            </View>
+            </Pressable>
 
           </View>
 
@@ -482,6 +486,7 @@ const styles = StyleSheet.create({
   product_main_container:{
     flexDirection: 'row',
     marginTop: 30,
+    padding: 5,
   },
 
   product_left:{
@@ -518,11 +523,11 @@ const styles = StyleSheet.create({
   },
 
   price_product_container:{
-    marginTop: 12,
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
+    marginTop: 12,
     backgroundColor: '#EEEEEE',
   },
 
@@ -533,6 +538,13 @@ const styles = StyleSheet.create({
     color: '#000',
     marginLeft: 7,
     marginRight: 7,
+  },
+
+  more_info_text:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 14,
+    alignSelf: 'auto',
+    color: '#0500FF',
   },
 
 
