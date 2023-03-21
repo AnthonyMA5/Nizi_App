@@ -182,7 +182,7 @@ const Ticket: React.FC<Props> = ({navigation}) => {
                         <View style={styles.buttons_container}>
 
                             <View style={styles.button_background}>
-                            <Pressable style={styles.button_content} android_ripple={{ color: 'lightgray' }}>
+                            <Pressable style={styles.button_content} android_ripple={{ color: 'lightgray' }} onPressOut={()=>navigation.navigate('Menu')}>
                                 <Image style={styles.iconButton} source={require('../img/Eliminar_tarjeta.png')}/>
                                 <Text style={styles.textButton}>Cerrar{'\n'}ticket</Text>
                             </Pressable>
