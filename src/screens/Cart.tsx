@@ -138,7 +138,7 @@ const Cart: React.FC<Props> = ({navigation}) => {
 
                     <View style={styles.button_container}>
                         <Pressable style={styles.button}
-                                android_ripple={{ color: 'lightgray' }}>
+                                android_ripple={{ color: 'lightgray' }} onPressOut={()=>navigation.navigate('Ticket')}>
                         <Text style={styles.text_button}>Pagar</Text>
                         </Pressable>
                     </View>

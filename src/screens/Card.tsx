@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
     buttons_container:{
       flexDirection: 'row',
       width: '100%',
-      marginTop: 80,
-      marginBottom: 80,
+      marginTop: 40,
+      marginBottom: 50,
     },
   
     button_background:{
