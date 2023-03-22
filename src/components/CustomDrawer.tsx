@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable semi */
-import { View, Text, ImageBackground, Image, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, ImageBackground, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
 
@@ -21,10 +21,10 @@ const CustomDrawer: React.FC<Props> = (props: Props) => {
       </DrawerContentScrollView>
       <View style={styles.bottom_container}>
         <TouchableOpacity>
-          <View style={styles.exit_container}>
+          <Pressable style={styles.exit_container}>
             <Image style={styles.exit_icon} source={require('../img/Door.png')} />
             <Text style={styles.exit_text}>Cerrar sesión</Text>
-          </View>
+          </Pressable>
         </TouchableOpacity>
       </View>
     </View>
