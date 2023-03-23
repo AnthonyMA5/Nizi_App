@@ -8,6 +8,7 @@ import {StyleSheet, Image} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationProp} from '@react-navigation/native';
 import CustomDrawer from './src/components/CustomDrawer';
+import AdminCustomDrawer from './src/components/AdminCustomDrawer';
 import Home from './src/screens/Home';
 import Recharge from './src/screens/Recharge';
 import Moves from './src/screens/Moves';
@@ -28,6 +29,7 @@ import Profile_Fingerprint from './src/screens/ProfileFingerprint';
 import ProductDetails from './src/screens/ProductDetails';
 import Cart from './src/screens/Cart';
 import Ticket from './src/screens/Ticket';
+import AdminHome from './src/screens/AdminHome';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -155,6 +157,89 @@ const App: React.FC<Props> = ({navigation}) => {
     );
   };
 
+
+  const AdminAppStack = () => {
+    return (
+      <Drawer.Navigator
+        initialRouteName="Inicio"
+        drawerContent={props => <AdminCustomDrawer {...props} />}
+        screenOptions={{
+          headerShown: false,
+          drawerType: 'slide',
+          drawerActiveBackgroundColor: '#F0F4FE',
+          drawerActiveTintColor: '#000000',
+          drawerInactiveBackgroundColor: '#FFFFFF',
+          drawerInactiveTintColor: '#2F2F2F',
+          drawerLabelStyle: {
+            marginLeft: -20,
+            fontFamily: 'DMSans-Medium',
+            fontSize: 16,
+          },
+        }}>
+        <Drawer.Screen
+          name="Inicio"
+          component={AdminHome}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/Inicio.png')}
+                style={styles.icon}
+              />
+            ),
+          }}
+        />{/*
+        <Drawer.Screen
+          name="Ganancias"
+          component={Recharge}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/admin/ganancias_icon.png')}
+                style={styles.card}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Pedidos"
+          component={Moves}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/admin/pedidos_icon.png')}
+                style={styles.icon}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Solicitudes"
+          component={Card}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/admin/soli_icon.png')}
+                style={styles.card}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Menú Digital"
+          component={Menu}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/admin/menu_icon.png')}
+                style={styles.icon}
+              />
+            ),
+          }}
+        />*/}
+      </Drawer.Navigator>
+    );
+  };
+
   const Stack = createNativeStackNavigator();
 
   return (
@@ -180,6 +265,11 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="ProductDetails" component={ProductDetails} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Ticket" component={Ticket} />
+
+        {/*Este apartado es para las vistas de administrador*/}
+
+        <Stack.Screen name="Home_Admin" component={AdminAppStack} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

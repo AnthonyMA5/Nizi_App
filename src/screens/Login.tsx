@@ -29,7 +29,7 @@ const Login: React.FC<Props> = ({navigation}) => {
         <View style={styles.container}>
 
           <View style={styles.img_container}>
-            <Image style={styles.logo} source={require('../img/White_logo.jpg')} />
+            <Image style={styles.logo} source={require('../img/White_logo.jpg')}/>
           </View>
 
           <Text style={styles.title}>Inicio de Sesión</Text>
@@ -63,7 +63,7 @@ const Login: React.FC<Props> = ({navigation}) => {
             </View>
 
             <View style={{flex: 0.5, alignItems: 'flex-end'}}>
-              <TouchableOpacity>
+              <TouchableOpacity onPressOut={()=>navigation.navigate("Home_Admin")}>
                 <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
               </TouchableOpacity>
             </View>
