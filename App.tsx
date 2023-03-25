@@ -30,6 +30,10 @@ import ProductDetails from './src/screens/ProductDetails';
 import Cart from './src/screens/Cart';
 import Ticket from './src/screens/Ticket';
 import AdminHome from './src/screens/AdminHome';
+import AdminRevenue from './src/screens/AdminRevenue';
+import AdminOrders from './src/screens/AdminOrders';
+import AdminRequests from './src/screens/AdminRequests';
+import AdminMenu from './src/screens/AdminMenu';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -187,14 +191,14 @@ const App: React.FC<Props> = ({navigation}) => {
               />
             ),
           }}
-        />{/*
+        />
         <Drawer.Screen
           name="Ganancias"
-          component={Recharge}
+          component={AdminRevenue}
           options={{
             drawerIcon: ({color}) => (
               <Image
-                source={require('./src/img/admin/ganancias_icon.png')}
+                source={require('./src/img/ganancias_icon.png')}
                 style={styles.card}
               />
             ),
@@ -202,11 +206,11 @@ const App: React.FC<Props> = ({navigation}) => {
         />
         <Drawer.Screen
           name="Pedidos"
-          component={Moves}
+          component={AdminOrders}
           options={{
             drawerIcon: ({color}) => (
               <Image
-                source={require('./src/img/admin/pedidos_icon.png')}
+                source={require('./src/img/pedidos_icon.png')}
                 style={styles.icon}
               />
             ),
@@ -214,11 +218,11 @@ const App: React.FC<Props> = ({navigation}) => {
         />
         <Drawer.Screen
           name="Solicitudes"
-          component={Card}
+          component={AdminRequests}
           options={{
             drawerIcon: ({color}) => (
               <Image
-                source={require('./src/img/admin/soli_icon.png')}
+                source={require('./src/img/soli_icon.png')}
                 style={styles.card}
               />
             ),
@@ -226,16 +230,16 @@ const App: React.FC<Props> = ({navigation}) => {
         />
         <Drawer.Screen
           name="Menú Digital"
-          component={Menu}
+          component={AdminMenu}
           options={{
             drawerIcon: ({color}) => (
               <Image
-                source={require('./src/img/admin/menu_icon.png')}
+                source={require('./src/img/menu_icon.png')}
                 style={styles.icon}
               />
             ),
           }}
-        />*/}
+        />
       </Drawer.Navigator>
     );
   };

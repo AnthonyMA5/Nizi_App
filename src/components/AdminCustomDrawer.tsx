@@ -12,7 +12,7 @@ const CustomDrawer: React.FC<Props> = (props: Props) => {
     <View style={styles.main_container}>
       <DrawerContentScrollView contentContainerStyle={styles.main_background} {...props}>
         <ImageBackground style={styles.background} source={require('../img/navbackground.png')}>
-          <Image style={styles.picture} source={require('../img/D&D.jpg')}/>
+          <Image style={styles.picture} source={require('../img/coffee_win.jpg')}/>
           <Text style={styles.name}>Coffee Win</Text>
         </ImageBackground>
         <View style={styles.second_container}>

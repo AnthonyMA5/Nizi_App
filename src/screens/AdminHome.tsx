@@ -435,6 +435,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: 16,
         color: '#E58009',
+        marginBottom: 5,
     },
 
     divisor:{
