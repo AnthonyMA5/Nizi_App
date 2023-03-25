@@ -9,7 +9,6 @@ import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-na
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
-import Graph from '../components/Graph'
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>
@@ -97,16 +96,104 @@ const AdminHome: React.FC<Props> = ({navigation}) => {
 
                     </View>
 
-
                     <View style={styles.sectionContainer}>
-
                         <Text style={styles.textTitleSection}>Ganancias</Text>
-                        <View style={styles.chart_container}>
+                        <View style={styles.second_container}>
                             <Text style={styles.chart_title}>Ganancias de hoy</Text>
                             <Text style={styles.chart_cant}>$ 2000.00</Text>
-                            <Graph />
                         </View>
+                    </View>
 
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.textTitleSection}>Pedidos</Text>
+                        <View style={styles.second_container}>
+                            <View style={styles.subtitle_container}>
+                                <View style={styles.left}>
+                                    <Text style={styles.subtitle1}>Más recientes</Text>
+                                </View>
+                                <View style={styles.right}>
+                                    <TouchableOpacity>
+                                        <Text style={styles.subtitle2}>Ver más</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <View style={styles.third_container}>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.subtitle1}>Pedido #05</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.orange_subtitle}>En espera</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.light_subtitle}>9:00 am</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.divisor} />
+                                <Text style={styles.subtitle1}>Cliente</Text>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={styles.sectionContainer}>
+                        <Text style={styles.textTitleSection}>Solicitudes</Text>
+                        <View style={styles.second_container}>
+                            <View style={styles.subtitle_container}>
+                                <View style={styles.left}>
+                                    <Text style={styles.subtitle1}>Más recientes</Text>
+                                </View>
+                                <View style={styles.right}>
+                                    <TouchableOpacity>
+                                        <Text style={styles.subtitle2}>Ver más</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <View style={styles.third_container}>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.subtitle1}>Solicitud #05</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.orange_subtitle}>Sin respuesta</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.light_subtitle}>9:00 am</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.divisor} />
+                                <Text style={styles.subtitle1}>Solicitante</Text>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
                     </View>
 
                 </View>
@@ -136,6 +223,7 @@ const styles = StyleSheet.create({
         marginLeft: 35,
         marginRight: 35,
         backgroundColor: '#FFFFFF',
+        marginBottom: 50,
     },
 
     head:{
@@ -283,26 +371,88 @@ const styles = StyleSheet.create({
         marginTop: 3,
     },
 
-    chart_container:{
+    second_container:{
         width: '100%',
         marginTop: 20,
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 10,
         borderColor: '#CCCCCC',
         padding: 15,
     },
 
-    chart_title:{
+    third_container:{
+        flex: 1,
+        width: '100%',
+        backgroundColor: '#F0FAFE',
+        padding: 15,
+        borderRadius: 10,
+    },
+
+    subtitle_container:{
+        flex: 1,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    left:{
+        flex: 0.5,
+        alignItems: 'flex-start',
+    },
+
+    right:{
+        flex: 0.5,
+        alignItems: 'flex-end',
+    },
+
+    subtitle1:{
         fontFamily: 'DMSans-Medium',
         fontSize: 16,
-        color: '#262626',
+        color: '#000000',
+        marginBottom: 5,
+    },
+
+    subtitle2:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#002DCC',
+        marginBottom: 12,
+    },
+
+    light_subtitle:{
+        fontFamily: 'DMSans-Regular',
+        fontSize: 14,
+        color: '#939393',
+    },
+
+    light_subtitle2:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 14,
+        color: '#000',
+    },
+
+    orange_subtitle:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#E58009',
+    },
+
+    divisor:{
+        width: '100%',
+        height: 15,
+    },
+
+    chart_title:{
+        fontFamily: 'DMSans-Bold',
+        fontSize: 16,
+        color: '#000000',
     },
 
     chart_cant:{
-        fontFamily: 'DMSans-Medium',
+        fontFamily: 'DMSans-Bold',
         fontSize: 16,
-        marginTop: 7,
         color: '#3FBFA0',
+        marginTop: 5,
     },
 
 })
