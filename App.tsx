@@ -286,7 +286,10 @@ const App: React.FC<Props> = ({navigation}) => {
         {/*Este apartado es para las vistas de administrador*/}
 
         <Stack.Screen name="Home_Admin" component={AdminAppStack} />
-        <Stack.Screen name="Revenue_Admin" component={AdminRevenue} />
+        <Stack.Screen name="Revenues_Admin" component={AdminRevenue} />
+        <Stack.Screen name="Orders_Admin" component={AdminOrders} />
+        <Stack.Screen name="Requests_Admin" component={AdminRequests} />
+        <Stack.Screen name="Menu_Admin" component={AdminMenu} />
 
       </Stack.Navigator>
     </NavigationContainer>
