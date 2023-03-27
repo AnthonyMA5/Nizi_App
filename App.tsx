@@ -34,6 +34,7 @@ import AdminRevenue from './src/screens/AdminRevenue';
 import AdminOrders from './src/screens/AdminOrders';
 import AdminRequests from './src/screens/AdminRequests';
 import AdminMenu from './src/screens/AdminMenu';
+import Orders from './src/screens/Orders';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -105,6 +106,18 @@ const App: React.FC<Props> = ({navigation}) => {
               <Image
                 source={require('./src/img/Tarjeta.png')}
                 style={styles.card}
+              />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Pedidos"
+          component={Orders}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/pedidos_icon.png')}
+                style={styles.icon}
               />
             ),
           }}

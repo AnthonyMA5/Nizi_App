@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
 
   text_info:{
-    fontFamily: 'DMSans-Medium',
+    fontFamily: 'DMSans-Regular',
     fontSize: 16,
     color: '#000000',
     textAlign: 'justify',
