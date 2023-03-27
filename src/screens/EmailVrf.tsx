@@ -149,6 +149,11 @@ const styles = StyleSheet.create({
 
   time_count: {
     fontFamily: 'DMSans-Medium',
+    marginTop: 35,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#939393',
   },
   
 });
