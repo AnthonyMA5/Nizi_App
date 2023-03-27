@@ -14,7 +14,7 @@ interface Props {
 const Recharge: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
 
@@ -104,9 +104,7 @@ const styles = StyleSheet.create({
   },
 
   menu_container:{
-      flex: 0.1,
       alignItems: 'flex-start',
-      flexDirection: 'row',
   },
 
   iconMenu:{
@@ -144,7 +142,6 @@ const styles = StyleSheet.create({
   },
 
   icon_button_container:{
-    flex: 0.1,
     alignItems: 'flex-start',
     flexDirection: 'row',
     marginStart: 10,
@@ -159,7 +156,7 @@ const styles = StyleSheet.create({
   },
 
   text_button_container:{
-    flex: 0.8,
+    flex: 0.9,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },

@@ -20,7 +20,7 @@ interface Props {
 const Telephone_Vrf: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Text style={styles.step}>Paso 2 de 2</Text>
           <Text style={styles.title}>Verifica tu número telefónico</Text>
@@ -70,22 +70,20 @@ const styles = StyleSheet.create({
 
   main_container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
 
   scroll_container: {
     flex: 1,
     width: '100%',
-    marginTop: '20%',
+    marginTop: 50,
   },
 
   container: {
     flex: 1,
-    justifyContent: 'center',
     marginLeft: 35,
     marginRight: 35,
+    marginBottom: 50,
     backgroundColor: '#FFFFFF',
   },
 

@@ -10,7 +10,7 @@ interface Props {
 const AdminMenu: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
           <View style={styles.head}>
@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
   },
 
   menu_container:{
-      flex: 0.1,
       alignItems: 'flex-start',
       flexDirection: 'row',
   },

@@ -16,7 +16,7 @@ const Card: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
           {/*Este apartado funciona como la parte superior de la pantalla de mi tarjeta*/}
@@ -129,9 +129,7 @@ const styles = StyleSheet.create({
     },
   
     menu_container:{
-        flex: 0.1,
         alignItems: 'flex-start',
-        flexDirection: 'row',
     },
   
     iconMenu:{
@@ -163,8 +161,8 @@ const styles = StyleSheet.create({
     },
   
     cardView:{
-      width: '100%',
-      height: 170,
+      width: 320,
+      height: 165,
       marginTop: 40,
       borderRadius: 12,
     },

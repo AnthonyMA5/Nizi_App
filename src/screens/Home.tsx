@@ -18,7 +18,7 @@ const Home: React.FC<Props> = ({navigation}) => {
   return (
 
     <SafeAreaView style={styles.main_container}>
-            <ScrollView style={styles.scroll_container}>
+            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
 
                     {/*Este apartado funciona como la parte superior de la pantalla de inicio*/}
@@ -248,9 +248,7 @@ const styles = StyleSheet.create({
     },
 
     profilePhoto_container:{
-        flex: 0.2, 
-        alignItems: 'flex-start', 
-        flexDirection: 'row',
+        alignItems: 'flex-start',
     },
 
     profilePhoto:{
@@ -260,7 +258,8 @@ const styles = StyleSheet.create({
     },
 
     welcomeText_container:{
-        flex: 0.6,
+        flex: 0.9,
+        alignItems: 'flex-start',
         marginLeft: 12,
     },
 
@@ -292,8 +291,8 @@ const styles = StyleSheet.create({
     },
 
     notifications_maincontainer:{
-        flex: 0.2, 
-        alignItems: 'flex-start',
+        flex: 0.1, 
+        alignItems: 'flex-end',
     },
 
     notifications_container:{
@@ -467,7 +466,6 @@ const styles = StyleSheet.create({
     },
 
     iconMainMovement_container:{
-        flex: 0.2, 
         alignItems: 'flex-start',
         marginRight: 10,
     },
@@ -477,7 +475,7 @@ const styles = StyleSheet.create({
         height: 45,
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
-        marginLeft: 20,
+        marginLeft: 15,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
@@ -489,7 +487,7 @@ const styles = StyleSheet.create({
     },
 
     informationMovement_container:{
-        flex: 0.5,
+        flex: 0.6,
     },
 
     movementTypeText:{
@@ -506,9 +504,9 @@ const styles = StyleSheet.create({
     },
 
     detailMovement_container:{
-        flex: 0.3,
+        flex: 0.4,
         alignItems: 'flex-end',
-        marginRight: 20,
+        marginRight: 15,
     },
 
     AddmountText:{

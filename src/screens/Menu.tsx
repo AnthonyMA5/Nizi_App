@@ -25,7 +25,7 @@ const Menu: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
 

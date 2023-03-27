@@ -13,7 +13,7 @@ interface Props {
 const Profile: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
 
@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       marginLeft: 35,
+      marginBottom: 50,
       marginRight: 35,
       backgroundColor: '#FFFFFF',
   },
@@ -175,9 +176,7 @@ const styles = StyleSheet.create({
   },
 
   menu_container:{
-    flex: 0.1,
     alignItems: 'flex-start',
-    flexDirection: 'row',
   },
 
   iconMenu:{
@@ -202,9 +201,7 @@ const styles = StyleSheet.create({
   },
 
   photo_container:{
-    flex: 0.3,
     alignItems: 'flex-start',
-    flexDirection: 'row',
   },
 
   photo_profile:{
@@ -214,10 +211,10 @@ const styles = StyleSheet.create({
   },
 
   full_name_container:{
-    flex: 0.6,
+    flex: 0.9,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    marginLeft: 5,
+    marginLeft: 15,
   },
 
   text_fullname:{
@@ -263,7 +260,6 @@ const styles = StyleSheet.create({
   },
 
   icon_button_container:{
-    flex: 0.2,
     alignItems: 'flex-start',
     flexDirection: 'row',
     marginStart: 12,
@@ -277,8 +273,9 @@ const styles = StyleSheet.create({
   },
 
   text_button_container:{
-    flex: 0.6,
+    flex: 0.8,
     alignItems: 'flex-start',
+    marginLeft: 17,
     justifyContent: 'center',
   },
 

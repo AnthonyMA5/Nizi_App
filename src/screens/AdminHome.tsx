@@ -19,7 +19,7 @@ const AdminHome: React.FC<Props> = ({navigation}) => {
   return (
 
     <SafeAreaView style={styles.main_container}>
-            <ScrollView style={styles.scroll_container}>
+            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
 
                     {/*Este apartado funciona como la parte superior de la pantalla de inicio*/}
@@ -232,9 +232,7 @@ const styles = StyleSheet.create({
     },
 
     profilePhoto_container:{
-        flex: 0.2, 
-        alignItems: 'flex-start', 
-        flexDirection: 'row',
+        alignItems: 'flex-start',
     },
 
     profilePhoto:{
@@ -244,7 +242,8 @@ const styles = StyleSheet.create({
     },
 
     welcomeText_container:{
-        flex: 0.6,
+        flex: 0.9,
+        alignItems: 'flex-start',
         marginLeft: 12,
     },
 
@@ -276,8 +275,8 @@ const styles = StyleSheet.create({
     },
 
     menu_maincontainer:{
-        flex: 0.2, 
-        alignItems: 'flex-start',
+        flex: 0.1, 
+        alignItems: 'flex-end',
     },
 
     menu_container:{

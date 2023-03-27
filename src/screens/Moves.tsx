@@ -13,7 +13,7 @@ interface Props {
 const Moves: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
           {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
@@ -128,9 +128,7 @@ const styles = StyleSheet.create({
   },
 
   menu_container:{
-      flex: 0.1,
       alignItems: 'flex-start',
-      flexDirection: 'row',
   },
 
   iconMenu:{
@@ -161,7 +159,6 @@ const styles = StyleSheet.create({
   },
 
   iconMainMovement_container:{
-      flex: 0.2,
       alignItems: 'flex-start',
       marginRight: 10,
   },
@@ -171,7 +168,7 @@ const styles = StyleSheet.create({
       height: 45,
       flexDirection: 'row',
       backgroundColor: '#FFFFFF',
-      marginLeft: 20,
+      marginLeft: 15,
       borderRadius: 8,
       justifyContent: 'center',
       alignItems: 'center',
@@ -183,7 +180,8 @@ const styles = StyleSheet.create({
   },
 
   informationMovement_container:{
-      flex: 0.5,
+      flex: 0.6,
+      alignItems: 'flex-start',
   },
 
   movementTypeText:{
@@ -200,9 +198,9 @@ const styles = StyleSheet.create({
   },
 
   detailMovement_container:{
-      flex: 0.3,
+      flex: 0.4,
       alignItems: 'flex-end',
-      marginRight: 20,
+      marginRight: 15,
   },
 
   AddmountText:{

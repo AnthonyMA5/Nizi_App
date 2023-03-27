@@ -13,7 +13,7 @@ interface Props {
 const Messagges: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
         {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     backgroundColor: '#FFFFFF',
+    marginBottom: 50,
   },
 
   head:{
@@ -109,9 +110,7 @@ const styles = StyleSheet.create({
   },
 
   menu_container:{
-      flex: 0.1,
       alignItems: 'flex-start',
-      flexDirection: 'row',
   },
 
   iconMenu:{
@@ -139,10 +138,10 @@ const styles = StyleSheet.create({
   },
 
   left:{
-    flex: 0.2,
+    flex: 0.1,
     alignItems: 'center',
-    flexDirection: 'row',
     justifyContent: 'center',
+    margin: 20,
   },
 
   icon_msg:{
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
   },
 
   right:{
-    flex: 0.8,
+    flex: 0.9,
     justifyContent: 'center',
     marginLeft: 5,
     marginRight: 10,
@@ -170,6 +169,7 @@ const styles = StyleSheet.create({
     color: '#404040',
     marginTop: 5,
     textAlign: 'justify',
+    marginRight: 10,
   },
 
   hour_msg:{

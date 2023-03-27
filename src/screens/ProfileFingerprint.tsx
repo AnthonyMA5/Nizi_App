@@ -19,7 +19,7 @@ const Profile_Fingerprint: React.FC<Props> = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
 
@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginLeft: 35,
         marginRight: 35,
+        marginBottom: 50,
         backgroundColor: '#FFFFFF',
     },
 
@@ -111,7 +112,6 @@ const styles = StyleSheet.create({
     },
 
     menu_container:{
-        flex: 0.1,
         alignItems: 'flex-start',
         flexDirection: 'row',
     },
