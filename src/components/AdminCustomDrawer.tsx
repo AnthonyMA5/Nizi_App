@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable semi */
-import { View, Text, ImageBackground, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
 
@@ -11,10 +11,17 @@ const CustomDrawer: React.FC<Props> = (props: Props) => {
   return (
     <View style={styles.main_container}>
       <DrawerContentScrollView contentContainerStyle={styles.main_background} {...props}>
-        <ImageBackground style={styles.background} source={require('../img/navbackground.png')}>
-          <Image style={styles.picture} source={require('../img/coffee_win.jpg')}/>
-          <Text style={styles.name}>Coffee Win</Text>
-        </ImageBackground>
+      <View style={styles.background}>
+          <View style={styles.left}>
+            <Image style={styles.picture} source={require('../img/coffee_win.jpg')}/>
+          </View>
+          <View style={styles.right}>
+            <Text style={styles.name}>Coffee Win</Text>
+            <TouchableOpacity>
+              <Text style={styles.link}>Ver perfil</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.second_container}>
           <DrawerItemList {...props}/>
         </View>
@@ -38,24 +45,49 @@ const styles = StyleSheet.create({
   },
 
   main_background: {
-    backgroundColor: '#0162fe',
+    backgroundColor: '#FFF',
   },
 
   background: {
-    padding: 20,
+    padding: 12,
+    flex: 1,
+    marginRight: 10,
+    marginLeft: 10,
+    marginTop: 10,
+    borderRadius: 12,
+    flexDirection: 'row',
+    backgroundColor: '#F1F1F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  left:{
+    flex: 0.25,
+  },
+
+  right:{
+    flex: 0.75,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
 
   picture: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     borderRadius: 40,
-    marginBottom: 10,
   },
 
   name: {
     fontFamily: 'DMSans-Medium',
-    fontSize: 18,
-    color: '#FFFFFF',
+    fontSize: 15,
+    color: '#000',
+  },
+
+  link:{
+    fontFamily: 'DMSans-Bold',
+    fontSize: 12,
+    color: '#6A6A6A',
+    marginTop: 5,
   },
 
   second_container: {
