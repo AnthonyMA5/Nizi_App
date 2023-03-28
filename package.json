@@ -49,6 +49,7 @@
     "@types/jest": "^29.2.1",
     "@types/react": "^18.0.28",
     "@types/react-native": "^0.71.3",
+    "@types/react-native-popup-dialog": "^0.16.4",
     "@types/react-native-svg-charts": "^5.0.12",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",

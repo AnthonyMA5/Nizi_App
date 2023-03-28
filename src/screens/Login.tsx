@@ -6,13 +6,14 @@
 /* eslint-disable semi */
 
 import React, { useState } from 'react'
-import { Image, TextInput } from 'react-native'
+import { Alert, Image, TextInput } from 'react-native'
 import { ScrollView, StyleSheet, Text } from 'react-native'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native'
+
 
 interface Props {
     navigation: any;
@@ -21,6 +22,27 @@ interface Props {
 const Login: React.FC<Props> = ({navigation}) => {
 
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
+
+  const [username, setUsername] = useState('')
+	const [pass, setPass] = useState('')
+
+  const handleLogin = () => {
+
+    if ([username, pass].includes('')){
+
+			Alert.alert(
+				'Error', 
+				'Todos los campos son obrigatorios', 
+				[{text: 'OK'}]
+			)
+			return
+
+		} else {
+      navigation.navigate('Home')
+    }
+
+  }
+
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -39,14 +61,18 @@ const Login: React.FC<Props> = ({navigation}) => {
           <View style={styles.field}>
             <Text style={styles.label}>Nombre de Usuario</Text>
             <View style={styles.sectionStyle}>
-              <TextInput style={styles.input} placeholder= 'Ingresa tu nombre de usuario' placeholderTextColor={'#878787'}/>
+              <TextInput style={styles.input} placeholder= 'Ingresa tu nombre de usuario' placeholderTextColor={'#878787'}
+                value={username}
+                onChangeText={setUsername}/>
             </View>
           </View>
 
           <View style={styles.field}>
             <Text style={styles.label}>Contraseña</Text>
             <View style={styles.sectionStyle}>
-              <TextInput style={styles.input} placeholder= 'Ingresa tu contraseña' placeholderTextColor={'#878787'}/>
+              <TextInput style={styles.input} placeholder= 'Ingresa tu contraseña' placeholderTextColor={'#878787'}
+                value={pass}
+                onChangeText={setPass}/>
             </View>
           </View>
 
@@ -69,7 +95,7 @@ const Login: React.FC<Props> = ({navigation}) => {
                         
           </View>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate("Home")}>
+          <TouchableOpacity onPress={handleLogin}>
             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#09EE65', '#00E0FF']} style={styles.btnIngresar}>
               <Text style={styles.buttonText}> Ingresar </Text>
             </LinearGradient>
@@ -218,6 +244,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'DMSans-Bold',
     color: '#0500FF',
+  },
+
+  message: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  button: {
+    padding: 10,
   },
 
 })
