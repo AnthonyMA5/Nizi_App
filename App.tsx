@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
-import {NavigationContainer, DarkTheme} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator, DrawerNavigationProp} from '@react-navigation/drawer';
 import {StyleSheet, Image} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';

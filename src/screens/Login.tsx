@@ -6,14 +6,14 @@
 /* eslint-disable semi */
 
 import React, { useState } from 'react'
-import { Alert, Image, TextInput } from 'react-native'
+import { Image, TextInput } from 'react-native'
 import { ScrollView, StyleSheet, Text } from 'react-native'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient';
 import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native'
-
+import CustomModal from '../components/CustomModal'
 
 interface Props {
     navigation: any;
@@ -26,23 +26,51 @@ const Login: React.FC<Props> = ({navigation}) => {
   const [username, setUsername] = useState('')
 	const [pass, setPass] = useState('')
 
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const handleInputs = () => {
+    setFunctionData({
+      title: 'Ups!',
+      info: 'Algunos campos se encuentran vacíos, por favor completalos.',
+      color: '#D4004D',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true)
+    setIsModalVisible(true);
+  };
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Listo',
+      info: 'Datos correctos, pásate estas wapa.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
   const handleLogin = () => {
-
     if ([username, pass].includes('')){
-
-			Alert.alert(
-				'Error', 
-				'Todos los campos son obrigatorios', 
-				[{text: 'OK'}]
-			)
-			return
-
+			handleInputs()
 		} else {
-      navigation.navigate('Home')
+      handleData()
     }
-
-  }
-
+  };
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -96,6 +124,16 @@ const Login: React.FC<Props> = ({navigation}) => {
           </View>
 
           <TouchableOpacity onPress={handleLogin}>
+          <CustomModal 
+            title={functionData.title}
+            info={functionData.info}
+            color={functionData.color}
+            icon={functionData.icon}
+            isVisible={isModalVisible}
+            onClose={handleCloseModal}
+            btn={functionData.btn}
+            loop={inLoop}
+          />
             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#09EE65', '#00E0FF']} style={styles.btnIngresar}>
               <Text style={styles.buttonText}> Ingresar </Text>
             </LinearGradient>
