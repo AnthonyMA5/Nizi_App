@@ -15,6 +15,7 @@ import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import CheckBox from '@react-native-community/checkbox';
 import TermsConditionsModal from "../components/TermsConditionsModal";
+import CustomModal from "../components/CustomModal";
 
 interface Props {
     navigation: any;
@@ -55,6 +56,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
     const [contrasena, setContrasena] = useState('');
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisible2, setIsModalVisible2] = useState(false);
     const [inLoop, setInLoop] = useState(false);
 
     const [functionData, setFunctionData] = useState({
@@ -77,8 +79,51 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setIsModalVisible(true);
     };
 
+    const handleData = () => {
+        setFunctionData({
+          title: 'Listo',
+          info: 'Datos correctos.',
+          color: '#00D4A1',
+          icon: require('../animations/success_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+        insert_User()
+    };
+
+    const handleTermsConditions = () => {
+        setFunctionData({
+          title: 'Falta un paso más',
+          info: 'Para continuar es necesario que aceptes los términos y condiciones.',
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
+    const handleSignUp = () => {
+        if ([nombre, app, apm, telefono, correo, username, contrasena].includes('')){
+                handleInputs()
+            } else if (toggleCheckBox === false) {
+                handleTermsConditions()
+            } else {
+                handleData()
+            }
+    };
+
     const handleCloseModal = () => {
         setIsModalVisible(false);
+    };
+
+    const handleOpenModal2 = () => {
+        setIsModalVisible2(true);
+    };
+
+    const handleCloseModal2 = () => {
+        setIsModalVisible2(false);
     };
 
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
@@ -170,15 +215,10 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                                     onValueChange={(newValue: boolean | ((prevState: boolean) => boolean)) => setToggleCheckBox(newValue)}
                                     tintColors = {{ true: '#0500FF' , false: '#000000' }}/>
                                 <Text style={styles.textTerms}>Acepto los</Text>
-                                <TouchableOpacity onPress={handleInputs}>
-                                    <TermsConditionsModal 
-                                        title={functionData.title}
-                                        info={functionData.info}
-                                        color={functionData.color}
-                                        isVisible={isModalVisible}
-                                        onClose={handleCloseModal}
-                                        btn={functionData.btn}
-                                        loop={inLoop}/>
+                                <TouchableOpacity onPress={handleOpenModal2}>
+                                    <TermsConditionsModal
+                                        isVisible={isModalVisible2}
+                                        onClose={handleCloseModal2}/>
                                     <Text style={styles.textBold}>Términos y Condiciones</Text>
                                 </TouchableOpacity>
                             </View>
@@ -186,7 +226,16 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                         </View>
 
 
-                        <TouchableOpacity onPress={insert_User}>
+                        <TouchableOpacity onPress={handleSignUp}>
+                            <CustomModal 
+                                title={functionData.title}
+                                info={functionData.info}
+                                color={functionData.color}
+                                icon={functionData.icon}
+                                isVisible={isModalVisible}
+                                onEvent={handleCloseModal}
+                                btn={functionData.btn}
+                                loop={inLoop}/>
                             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#7D08F2', '#00C2FF']} style={styles.btnCrearCuenta}>
                                 <Text style={styles.buttonText}> Crear cuenta </Text>
                             </LinearGradient>

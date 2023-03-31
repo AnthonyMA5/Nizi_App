@@ -6,12 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 
 interface CustomModalProps {
-  title: string;
-  info: string;
-  color: string;
-  btn: string;
   isVisible: boolean;
-  loop: boolean;
   onClose: () => void;
 }
 
