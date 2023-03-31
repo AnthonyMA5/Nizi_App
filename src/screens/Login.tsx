@@ -14,11 +14,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native'
 import CustomModal from '../components/CustomModal'
+import RecoverPassModal from '../components/RecoverPassModal'
 
 interface Props {
     navigation: any;
 }
-
+ 
 const Login: React.FC<Props> = ({navigation}) => {
 
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
@@ -33,14 +34,17 @@ const Login: React.FC<Props> = ({navigation}) => {
     icon: null,
     btn: '',
   });
+
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible2, setIsModalVisible2] = useState(false);
+  const [inPassword, setInPassword] = useState(false);
   const [inLoop, setInLoop] = useState(false);
 
   const handleInputs = () => {
     setFunctionData({
       title: 'Ups!',
       info: 'Algunos campos se encuentran vacíos, por favor completalos.',
-      color: '#D4004D',
+      color: '#80D5FF',
       icon: require('../animations/warning_icon.json'),
       btn: 'Entendido',
     });
@@ -51,7 +55,7 @@ const Login: React.FC<Props> = ({navigation}) => {
   const handleData = () => {
     setFunctionData({
       title: 'Listo',
-      info: 'Datos correctos, pásate estas wapa.',
+      info: 'Datos correctos.',
       color: '#00D4A1',
       icon: require('../animations/success_icon.json'),
       btn: 'Entendido',
@@ -60,9 +64,26 @@ const Login: React.FC<Props> = ({navigation}) => {
     setIsModalVisible(true);
   };
 
+  const handlePassword = () => {
+    setFunctionData({
+      title: '¿Olvidaste tu contraseña?',
+      info: 'No te preocupes, ingresa el correo electrónico asociado a tu cuenta y recibiras una contraseña temporal para acceder a ella.',
+      color: '#2291FF',
+      icon: require('../animations/forget_pass.json'),
+      btn: 'Restaurar contraseña',
+    });
+    setInPassword(false)
+    setIsModalVisible2(true);
+  };
+
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
+
+  const handleCloseModal2 = () => {
+    setIsModalVisible2(false);
+  };
+
 
   const handleLogin = () => {
     if ([username, pass].includes('')){
@@ -116,7 +137,16 @@ const Login: React.FC<Props> = ({navigation}) => {
             </View>
 
             <View style={{flex: 0.5, alignItems: 'flex-end'}}>
-              <TouchableOpacity onPressOut={()=>navigation.navigate("Home_Admin")}>
+              <TouchableOpacity onPress={handlePassword}>
+                <RecoverPassModal 
+                  title={functionData.title}
+                  info={functionData.info}
+                  color={functionData.color}
+                  icon={functionData.icon}
+                  isVisible={isModalVisible2}
+                  onClose={handleCloseModal2}
+                  btn={functionData.btn}
+                  loop={inPassword}/>
                 <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
               </TouchableOpacity>
             </View>
@@ -132,8 +162,7 @@ const Login: React.FC<Props> = ({navigation}) => {
             isVisible={isModalVisible}
             onClose={handleCloseModal}
             btn={functionData.btn}
-            loop={inLoop}
-          />
+            loop={inLoop}/>
             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#09EE65', '#00E0FF']} style={styles.btnIngresar}>
               <Text style={styles.buttonText}> Ingresar </Text>
             </LinearGradient>

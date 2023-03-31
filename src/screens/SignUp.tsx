@@ -21,6 +21,38 @@ interface Props {
 
 const Sign_Up: React.FC<Props> = ({navigation}) => {
 
+    const insert_User = () => {
+
+        const documentLogin = JSON.stringify({
+          nombre: nombre,
+          app: app,
+          apm: apm,
+          telefono: telefono,
+          correo: correo,
+          username: username,
+          contrasena: contrasena,
+        });
+    
+        fetch('http://192.168.0.3:3000/send-data_php',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: documentLogin,
+        })
+        .then(data => console.log(data, 'success'))
+        .catch(error => console.log(error, 'error'));
+    
+    };
+
+    const [nombre, setNombre] = useState('');
+    const [app, setApp] = useState('');
+    const [apm, setApm] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [username, setUsername] = useState('');
+    const [contrasena, setContrasena] = useState('');
+
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
 
     return(
@@ -46,49 +78,58 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                         <View style={{marginTop: 30}}>
                             <Text style={styles.label}>Nombre(s)</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Ingresa tu(s) nombre(s)' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Ingresa tu(s) nombre(s)' 
+                                placeholderTextColor={'#878787'} value={nombre} onChangeText={setNombre}/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Apellido paterno</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Ingresa tu apellido paterno' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Ingresa tu apellido paterno' 
+                                placeholderTextColor={'#878787'} value={app} onChangeText={setApp}/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Apellido materno</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Ingresa tu apellido materno' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Ingresa tu apellido materno' 
+                                placeholderTextColor={'#878787'} value={apm} onChangeText={setApm}/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Número telefónico</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Ingresa tu número telefónico' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Ingresa tu número telefónico' 
+                                placeholderTextColor={'#878787'} value={telefono} onChangeText={setTelefono}
+                                keyboardType='number-pad'/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Correo electrónico</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'tucorreo@ejemplo.com' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'tucorreo@ejemplo.com' 
+                                placeholderTextColor={'#878787'} value={correo} onChangeText={setCorreo}
+                                keyboardType='email-address'/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Nombre de usuario</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Crea tu nombre de usuario' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Crea tu nombre de usuario' 
+                                placeholderTextColor={'#878787'} value={username} onChangeText={setUsername}/>
                             </View>
                         </View>
 
                         <View style={{marginTop: 20}}>
                             <Text style={styles.label}>Contraseña</Text>
                             <View style={styles.sectionStyle}>
-                                <TextInput style={styles.input} placeholder= 'Crea tu contraseña' placeholderTextColor={'#878787'}/>
+                                <TextInput style={styles.input} placeholder= 'Crea tu contraseña' 
+                                placeholderTextColor={'#878787'} value={contrasena} onChangeText={setContrasena}/>
                             </View>
                         </View> 
 
@@ -107,7 +148,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                         </View>
 
 
-                        <TouchableOpacity onPressOut={() => navigation.navigate("EmailV")}>
+                        <TouchableOpacity onPress={insert_User}>
                             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#7D08F2', '#00C2FF']} style={styles.btnCrearCuenta}>
                                 <Text style={styles.buttonText}> Crear cuenta </Text>
                             </LinearGradient>
@@ -191,6 +232,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: 16,
         marginLeft: 15,
+        color: '#000',
     },
 
     terms_Container: {

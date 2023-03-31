@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // CustomModal.tsx
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import LottieView from 'lottie-react-native';
 
@@ -16,7 +16,7 @@ interface CustomModalProps {
   onClose: () => void;
 }
 
-const CustomModal = (props: CustomModalProps) => {
+const RecoverPassModal = (props: CustomModalProps) => {
 
     return (
     <Modal backdropOpacity={0.5} style={styles.main_container} isVisible={props.isVisible}
@@ -25,11 +25,20 @@ const CustomModal = (props: CustomModalProps) => {
         backdropTransitionInTiming={250}
         backdropTransitionOutTiming={600}>
         <View style={styles.container}>
+          <TouchableOpacity onPressOut={props.onClose}>
+            <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+          </TouchableOpacity>
+
+          <Text style={styles.title_text}>{props.title}</Text>
+          <Text style={styles.info_text}>{props.info}</Text>
+
           <LottieView source={props.icon} style={styles.icon}
           autoPlay
           loop={props.loop}/>
-          <Text style={styles.title_text}>{props.title}</Text>
-          <Text style={styles.info_text}>{props.info}</Text>
+
+          <View style={styles.sectionStyle}>
+            <TextInput style={styles.input} placeholder= "ejemplo@tucorreo.com" placeholderTextColor={'#878787'}/>
+          </View>
 
           <Pressable style={[styles.button, {backgroundColor: props.color}]} onPressOut={props.onClose}>
             <Text style={styles.button_text}>{props.btn}</Text>
@@ -49,22 +58,28 @@ const styles = StyleSheet.create({
     container:{
         width: '100%',
         padding: 15,
-        justifyContent: 'center',
-        alignItems:'center',
         backgroundColor: '#FFF',
         borderRadius: 12,
     },
 
+    exit_icon:{
+        width: 20,
+        height: 20,
+        marginTop: 5,
+        marginBottom: 15,
+        alignSelf: 'flex-end',
+    },
+
     icon:{
-        width: 75,
-        height:75,
-        marginBottom: 10,
+        width: 180,
+        height: 180,
+        alignSelf: 'center',
     },
 
     title_text:{
-        fontFamily: 'DMSans-Medium',
+        fontFamily: 'DMSans-Bold',
         color:'#000',
-        fontSize: 20,
+        fontSize: 19,
         marginBottom: 15,
         textAlign: 'center',
     },
@@ -73,11 +88,13 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Regular',
         color:'#6A6A6A',
         fontSize: 16,
+        marginTop: 10,
+        marginBottom: 10,
         textAlign: 'center',
     },
 
     button:{
-        padding: 10,
+        padding: 15,
         width:'100%',
         borderRadius: 10,
         marginTop: 30,
@@ -91,6 +108,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    sectionStyle: {
+        borderWidth: 0.4,
+        borderRadius: 10,
+        borderColor: '#6A6A6A',
+        marginTop: 15,
+    },
+
+    input: {
+        fontFamily: 'DMSans-Medium',
+        fontSize: 15,
+        marginLeft: 5,
+        color: '#000000',
+        marginStart: 10,
+    },
+
 });
 
-export default CustomModal;
+export default RecoverPassModal;
