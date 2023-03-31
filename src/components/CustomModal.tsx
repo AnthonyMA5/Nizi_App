@@ -13,7 +13,7 @@ interface CustomModalProps {
   btn: string;
   isVisible: boolean;
   loop: boolean;
-  onClose: () => void;
+  onEvent: () => void;
 }
 
 const CustomModal = (props: CustomModalProps) => {
@@ -31,7 +31,7 @@ const CustomModal = (props: CustomModalProps) => {
           <Text style={styles.title_text}>{props.title}</Text>
           <Text style={styles.info_text}>{props.info}</Text>
 
-          <Pressable style={[styles.button, {backgroundColor: props.color}]} onPressOut={props.onClose}>
+          <Pressable style={[styles.button, {backgroundColor: props.color}]} onPressOut={props.onEvent} android_ripple={{ color: 'lightgray' }}>
             <Text style={styles.button_text}>{props.btn}</Text>
           </Pressable>
         </View>

@@ -14,6 +14,7 @@ import { Image, View } from "react-native";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import CheckBox from '@react-native-community/checkbox';
+import TermsConditionsModal from "../components/TermsConditionsModal";
 
 interface Props {
     navigation: any;
@@ -52,6 +53,33 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
     const [correo, setCorreo] = useState('');
     const [username, setUsername] = useState('');
     const [contrasena, setContrasena] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [inLoop, setInLoop] = useState(false);
+
+    const [functionData, setFunctionData] = useState({
+        title: '',
+        info: '',
+        color: '',
+        icon: null,
+        btn: '',
+      });
+
+    const handleInputs = () => {
+        setFunctionData({
+          title: 'Ups!',
+          info: 'Algunos campos se encuentran vacíos, por favor completalos.',
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(true)
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
 
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
 
@@ -142,7 +170,17 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                                     onValueChange={(newValue: boolean | ((prevState: boolean) => boolean)) => setToggleCheckBox(newValue)}
                                     tintColors = {{ true: '#0500FF' , false: '#000000' }}/>
                                 <Text style={styles.textTerms}>Acepto los</Text>
-                                <Text style={styles.textBold}>Términos y Condiciones</Text>
+                                <TouchableOpacity onPress={handleInputs}>
+                                    <TermsConditionsModal 
+                                        title={functionData.title}
+                                        info={functionData.info}
+                                        color={functionData.color}
+                                        isVisible={isModalVisible}
+                                        onClose={handleCloseModal}
+                                        btn={functionData.btn}
+                                        loop={inLoop}/>
+                                    <Text style={styles.textBold}>Términos y Condiciones</Text>
+                                </TouchableOpacity>
                             </View>
                             
                         </View>

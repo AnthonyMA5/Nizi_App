@@ -13,7 +13,7 @@ interface CustomModalProps {
   btn: string;
   isVisible: boolean;
   loop: boolean;
-  onClose: () => void;
+  onEvent: () => void;
 }
 
 const RecoverPassModal = (props: CustomModalProps) => {
@@ -25,7 +25,7 @@ const RecoverPassModal = (props: CustomModalProps) => {
         backdropTransitionInTiming={250}
         backdropTransitionOutTiming={600}>
         <View style={styles.container}>
-          <TouchableOpacity onPressOut={props.onClose}>
+          <TouchableOpacity onPressOut={props.onEvent}>
             <Image source={require('../img/x.png')} style={styles.exit_icon}/>
           </TouchableOpacity>
 
@@ -40,7 +40,7 @@ const RecoverPassModal = (props: CustomModalProps) => {
             <TextInput style={styles.input} placeholder= "ejemplo@tucorreo.com" placeholderTextColor={'#878787'}/>
           </View>
 
-          <Pressable style={[styles.button, {backgroundColor: props.color}]} onPressOut={props.onClose}>
+          <Pressable style={[styles.button, {backgroundColor: props.color}]} onPressOut={props.onEvent} android_ripple={{ color: 'lightgray' }}>
             <Text style={styles.button_text}>{props.btn}</Text>
           </Pressable>
         </View>

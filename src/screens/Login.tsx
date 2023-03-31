@@ -76,9 +76,18 @@ const Login: React.FC<Props> = ({navigation}) => {
     setIsModalVisible2(true);
   };
 
+  const loged = () => {
+    navigation.navigate('Home')
+  }
+
   const handleCloseModal = () => {
-    setIsModalVisible(false);
+    if (functionData.title === 'Listo') {
+      loged();
+    } else if (functionData.title === 'Ups!') {
+      setIsModalVisible(false);
+    }
   };
+  
 
   const handleCloseModal2 = () => {
     setIsModalVisible2(false);
@@ -144,7 +153,7 @@ const Login: React.FC<Props> = ({navigation}) => {
                   color={functionData.color}
                   icon={functionData.icon}
                   isVisible={isModalVisible2}
-                  onClose={handleCloseModal2}
+                  onEvent={handleCloseModal2}
                   btn={functionData.btn}
                   loop={inPassword}/>
                 <Text style={styles.textForgot}>Olvidé mi contraseña</Text>
@@ -160,7 +169,7 @@ const Login: React.FC<Props> = ({navigation}) => {
             color={functionData.color}
             icon={functionData.icon}
             isVisible={isModalVisible}
-            onClose={handleCloseModal}
+            onEvent={handleCloseModal}
             btn={functionData.btn}
             loop={inLoop}/>
             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#09EE65', '#00E0FF']} style={styles.btnIngresar}>
