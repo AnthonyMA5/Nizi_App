@@ -1,4 +1,6 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-sequences */
 /* eslint-disable quotes */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable react-native/no-inline-styles */
@@ -19,6 +21,8 @@ import RecoverPassModal from '../components/RecoverPassModal'
 interface Props {
     navigation: any;
 }
+
+var userID 
  
 const Login: React.FC<Props> = ({navigation}) => {
 
@@ -54,11 +58,11 @@ const Login: React.FC<Props> = ({navigation}) => {
 
   const handleData = () => {
     setFunctionData({
-      title: 'Listo',
-      info: 'Datos correctos.',
+      title: 'Ijole',
+      info: 'Checate la info loko pq está mal.',
       color: '#00D4A1',
-      icon: require('../animations/success_icon.json'),
-      btn: 'Entendido',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Abno',
     });
     setInLoop(false)
     setIsModalVisible(true);
@@ -76,14 +80,8 @@ const Login: React.FC<Props> = ({navigation}) => {
     setIsModalVisible2(true);
   };
 
-  const loged = () => {
-    navigation.navigate('Home')
-  }
-
   const handleCloseModal = () => {
-    if (functionData.title === 'Listo') {
-      loged();
-    } else if (functionData.title === 'Ups!') {
+    if (functionData.title === 'Ups!') {
       setIsModalVisible(false);
     }
   };
@@ -97,9 +95,28 @@ const Login: React.FC<Props> = ({navigation}) => {
   const handleLogin = () => {
     if ([username, pass].includes('')){
 			handleInputs()
-		} else {
-      handleData()
+		} else  {
+      validacion()
     }
+  };
+
+  const validacion = () => {
+
+    const documentLog = JSON.stringify({
+      username: username,
+      contrasena: pass,
+    });
+    console.log(documentLog)
+    fetch('http://192.168.0.3:3000/validacion',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((data) => {console.log(data), userID = data, userID ? navigation.navigate('Home', {userID:userID}) : null})
+    .catch((error) => {console.log(error)})
+
   };
 
   return (
