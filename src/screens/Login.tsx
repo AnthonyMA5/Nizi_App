@@ -106,7 +106,6 @@ const Login: React.FC<Props> = ({navigation}) => {
       username: username,
       contrasena: pass,
     });
-    console.log(documentLog)
     fetch('http://192.168.0.3:3000/validacion',{
       method: 'POST',
       headers: {
@@ -114,7 +113,9 @@ const Login: React.FC<Props> = ({navigation}) => {
       },
       body: documentLog,
     })
-    .then((data) => {console.log(data), userID = data, userID ? navigation.navigate('Home', {userID:userID}) : null})
+    .then((data) => {
+      console.log(data), userID = data, userID ? navigation.navigate('Home') : null
+    })
     .catch((error) => {console.log(error)})
 
   };

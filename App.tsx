@@ -35,6 +35,7 @@ import AdminOrders from './src/screens/AdminOrders';
 import AdminRequests from './src/screens/AdminRequests';
 import AdminMenu from './src/screens/AdminMenu';
 import Orders from './src/screens/Orders';
+import CustomerSupport from './src/screens/CustomerSupport';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -170,6 +171,18 @@ const App: React.FC<Props> = ({navigation}) => {
             ),
           }}
         />
+        <Drawer.Screen
+          name="Atención al Cliente"
+          component={CustomerSupport}
+          options={{
+            drawerIcon: ({color}) => (
+              <Image
+                source={require('./src/img/support_icon.png')}
+                style={styles.icon}
+              />
+            ),
+          }}
+        />
       </Drawer.Navigator>
     );
   };
@@ -265,8 +278,8 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="Splash" component={Splash} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={Sign_Up} />
-        <Stack.Screen name="EmailV" component={Email_Vrf} />
-        <Stack.Screen name="TelephoneV" component={Telephone_Vrf} />
+        <Stack.Screen name="EmailV" component={Email_Vrf}/>
+        <Stack.Screen name="TelephoneV" component={Telephone_Vrf}/>
         <Stack.Screen name="Home" component={AppStack} />
         <Stack.Screen name="Recharge" component={Recharge} />
         <Stack.Screen name="Movement" component={Moves} />

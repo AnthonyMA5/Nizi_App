@@ -96,9 +96,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
+  bottom1_container: {
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+  },
+
   bottom_container: {
     backgroundColor: '#FFFFFF',
-    padding: 20,
+    padding: 15,
     borderTopWidth: 1,
     borderTopColor: '#CCD',
   },
@@ -109,8 +114,8 @@ const styles = StyleSheet.create({
   },
 
   exit_icon: {
-    height: 30,
-    width: 30,
+    height: 32,
+    width: 32,
   },
 
   exit_text: {
@@ -118,6 +123,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'DMSans-Bold',
     marginLeft: 5,
+  },
+
+  support_text: {
+    color: '#343434',
+    fontSize: 16,
+    fontFamily: 'DMSans-Medium',
+    marginLeft: 8,
   },
 
 })

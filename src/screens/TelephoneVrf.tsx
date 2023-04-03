@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -12,16 +13,38 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import * as Progress from 'react-native-progress';
+import {Dimensions} from 'react-native';
 
 interface Props {
   navigation: any;
 }
 
 const Telephone_Vrf: React.FC<Props> = ({navigation}) => {
+
+  const screenWidth = Dimensions.get('window').width;
+  const barWidth = screenWidth * 0.5;
+  const [progress, setProgress] = useState(0.5);
+
+  setTimeout(() => {
+    setProgress(1);
+  }, 400);
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
+          <Progress.Bar
+            style={{alignSelf: 'center'}}
+            width={barWidth}
+            height={10}
+            borderRadius={10}
+            progress={progress}
+            color="#00E0F8"
+            unfilledColor="#F2F2F2"
+            borderColor="transparent"
+            indeterminateAnimationDuration={5000}
+          />
           <Text style={styles.step}>Paso 2 de 2</Text>
           <Text style={styles.title}>Verifica tu número telefónico</Text>
           <Text style={styles.subtitle}>
@@ -93,6 +116,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
     textAlign: 'center',
+    marginTop: 22,
   },
 
   title: {

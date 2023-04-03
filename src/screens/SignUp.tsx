@@ -226,7 +226,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                         </View>
 
 
-                        <TouchableOpacity onPress={handleSignUp}>
+                        <TouchableOpacity onPress={() => navigation.navigate("EmailV")}>
                             <CustomModal 
                                 title={functionData.title}
                                 info={functionData.info}
