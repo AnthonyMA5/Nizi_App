@@ -35,7 +35,7 @@ const Email_Vrf: React.FC<Props> = ({navigation}) => {
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <Progress.Bar
-          style={{alignSelf: 'center'}}
+            style={{alignSelf: 'center'}}
             width={barWidth}
             height={10}
             borderRadius={10}

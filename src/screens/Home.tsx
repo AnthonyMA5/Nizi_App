@@ -49,7 +49,7 @@ const Home: React.FC<Props> = ({navigation}) => {
                     </View>
 
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
-                    <View style={{alignContent: 'center', flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                    <Pressable style={{alignContent: 'center', flex:1, justifyContent: 'center', alignItems: 'center'}} onPressIn={() => navigation.navigate('Card_Request')}>
                         <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
                             <View style={styles.marginCardContainer}>
                                 <View style={styles.headCard}>
@@ -64,7 +64,7 @@ const Home: React.FC<Props> = ({navigation}) => {
                                 <Text style={styles.numberTextCard}>**** **** **** **89</Text>
                             </View>
                         </LinearGradient>
-                    </View>
+                    </Pressable>
                     {/*Este apartado funciona como la sección de Servicios*/}
 
                     <View style={styles.sectionContainer}>
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: 22,
         color: '#FFFFFF',
-        marginTop: 40,
+        marginTop: 38,
     },
 
     numberTextCard:{

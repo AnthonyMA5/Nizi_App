@@ -36,6 +36,7 @@ import AdminRequests from './src/screens/AdminRequests';
 import AdminMenu from './src/screens/AdminMenu';
 import Orders from './src/screens/Orders';
 import CustomerSupport from './src/screens/CustomerSupport';
+import CardRequest from './src/screens/CardRequest';
 
 interface Props {
   navigation: DrawerNavigationProp<any, any>;
@@ -295,6 +296,7 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="ProductDetails" component={ProductDetails} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Ticket" component={Ticket} />
+        <Stack.Screen name="Card_Request" component={CardRequest} />
 
         {/*Este apartado es para las vistas de administrador*/}
 

@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-sequences */
 /* eslint-disable quotes */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable react-native/no-inline-styles */
@@ -8,7 +7,7 @@
 /* eslint-disable semi */
 
 import React, { useState } from 'react'
-import { Image, TextInput } from 'react-native'
+import { Alert, Image, TextInput } from 'react-native'
 import { ScrollView, StyleSheet, Text } from 'react-native'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native'
@@ -21,8 +20,6 @@ import RecoverPassModal from '../components/RecoverPassModal'
 interface Props {
     navigation: any;
 }
-
-var userID 
  
 const Login: React.FC<Props> = ({navigation}) => {
 
@@ -30,6 +27,7 @@ const Login: React.FC<Props> = ({navigation}) => {
 
   const [username, setUsername] = useState('')
 	const [pass, setPass] = useState('')
+  const [userID, setUserID] = useState('')
 
   const [functionData, setFunctionData] = useState({
     title: '',
@@ -58,11 +56,11 @@ const Login: React.FC<Props> = ({navigation}) => {
 
   const handleData = () => {
     setFunctionData({
-      title: 'Ijole',
-      info: 'Checate la info loko pq está mal.',
-      color: '#00D4A1',
+      title: 'Nombre de usuario y/o contraseña incorrectos',
+      info: 'Tus datos son incorrectos, por favor verificalos e intentalo de nuevo.',
+      color: '#C71D1D',
       icon: require('../animations/error_icon.json'),
-      btn: 'Abno',
+      btn: 'OK',
     });
     setInLoop(false)
     setIsModalVisible(true);
@@ -81,9 +79,7 @@ const Login: React.FC<Props> = ({navigation}) => {
   };
 
   const handleCloseModal = () => {
-    if (functionData.title === 'Ups!') {
-      setIsModalVisible(false);
-    }
+    setIsModalVisible(false);
   };
   
 
@@ -101,7 +97,6 @@ const Login: React.FC<Props> = ({navigation}) => {
   };
 
   const validacion = () => {
-
     const documentLog = JSON.stringify({
       username: username,
       contrasena: pass,
@@ -113,12 +108,27 @@ const Login: React.FC<Props> = ({navigation}) => {
       },
       body: documentLog,
     })
-    .then((data) => {
-      console.log(data), userID = data, userID ? navigation.navigate('Home') : null
+    .then((response) => {
+      response.text().then((text) => {
+        if (text && text.length > 0) {
+          const data = JSON.parse(text);
+          if (data) {
+            console.log(data._id);
+            setUserID(data._id);
+            navigation.navigate('Home');
+          }
+        } else {
+          handleData()
+        }
+      }).catch((error) => {
+        console.log(error);
+        Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
+      });
     })
-    .catch((error) => {console.log(error)})
-
+    .catch((error) => {console.log(error)});
   };
+  
+  
 
   return (
     <SafeAreaView style={styles.main_container}>
