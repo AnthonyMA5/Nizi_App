@@ -4,17 +4,41 @@
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { RouteProp } from '@react-navigation/native'
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>
-}
+    navigation: any;
+    route: RouteProp<any, any>;
+  }
 
-const AdminHome: React.FC<Props> = ({navigation}) => {
+const AdminHome: React.FC<Props> = ({navigation, route}) => {
+
+    const { userInfo } = route.params;
+    const { nombre } = userInfo;
+
+    const [greeting, setGreeting] = useState('');
+    const [greetingIcon, setGreetingIcon] = useState(0);
+
+    useEffect(() => {
+        const date = new Date();
+        const hour = date.getHours();
+
+        if (hour >= 19 || hour < 6) {
+        setGreeting('Buenas noches');
+        setGreetingIcon(1)
+        } else if (hour >= 6 && hour < 12) {
+        setGreeting('Buenos días');
+        setGreetingIcon(2)
+        } else {
+        setGreeting('Buenas tardes');
+        setGreetingIcon(3)
+        }
+    }, []);
 
   return (
 
@@ -32,10 +56,10 @@ const AdminHome: React.FC<Props> = ({navigation}) => {
                         </View>
 
                         <View style={styles.welcomeText_container}>
-                            <Text style={styles.welcomeText1}>Coffee Win</Text>
+                            <Text style={styles.welcomeText1}>{nombre}</Text>
                             <View style={styles.welcomeText2_container}>
-                                <Image style={styles.welcomeIcon} source={require('../img/Cara_sonrisa.png')}/>
-                                <Text style={styles.welcomeText2}>Buenos días</Text>
+                                <Text style={styles.welcomeText2}>{greeting}</Text>
+                                <Image style={styles.welcomeIcon} source={greetingIcon === 1 ? require('../img/moon_icon.png') : greetingIcon === 2 ? require('../img/sun_icon.png') : require('../img/Cara_sonrisa.png')}/>
                             </View>
                         </View>
 
@@ -271,7 +295,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: 16,
         color: '#484848',
-        marginLeft: 5,
+        marginRight: 5,
     },
 
     menu_maincontainer:{

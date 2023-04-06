@@ -8,7 +8,7 @@
 /* eslint-disable jsx-quotes */
 
 import React, {useState} from "react";
-import { TextInput } from "react-native";
+import { Alert, TextInput } from "react-native";
 import { Text, TouchableOpacity } from "react-native";
 import { Image, View } from "react-native";
 import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
@@ -22,30 +22,6 @@ interface Props {
 }
 
 const Sign_Up: React.FC<Props> = ({navigation}) => {
-
-    const insert_User = () => {
-
-        const documentLogin = JSON.stringify({
-          nombre: nombre,
-          app: app,
-          apm: apm,
-          telefono: telefono,
-          correo: correo,
-          username: username,
-          contrasena: contrasena,
-        });
-    
-        fetch('http://192.168.0.3:3000/send-data_php',{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: documentLogin,
-        })
-        .then(data => console.log(data, 'success'))
-        .catch(error => console.log(error, 'error'));
-    
-    };
 
     const [nombre, setNombre] = useState('');
     const [app, setApp] = useState('');
@@ -81,15 +57,14 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
 
     const handleData = () => {
         setFunctionData({
-          title: 'Listo',
-          info: 'Datos correctos.',
+          title: 'Tu cuenta ha sido creada',
+          info: '¡Felicidades ya formas parte de Nizi!',
           color: '#00D4A1',
           icon: require('../animations/success_icon.json'),
           btn: 'Entendido',
         });
         setInLoop(false)
         setIsModalVisible(true);
-        insert_User()
     };
 
     const handleTermsConditions = () => {
@@ -104,13 +79,49 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setIsModalVisible(true);
     };
 
+    const handleTelephoneError = () => {
+        setFunctionData({
+          title: 'Número telefónico no disponible',
+          info: 'El número telefónico que ingresaste ya se encuentra vinculado a otra cuenta.',
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
+    const handleEmailError = () => {
+        setFunctionData({
+          title: 'Correo electrónico no disponible',
+          info: 'El correo electrónico que ingresaste ya se encuentra vinculado a otra cuenta.',
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
+    const handleUsernameError = () => {
+        setFunctionData({
+          title: 'Nombre de usuario no disponible',
+          info: 'El nombre de usuario que ingresaste no se encuentra disponible, por favor crea uno diferente.',
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
     const handleSignUp = () => {
         if ([nombre, app, apm, telefono, correo, username, contrasena].includes('')){
                 handleInputs()
             } else if (toggleCheckBox === false) {
                 handleTermsConditions()
             } else {
-                handleData()
+                crearUsuario()
             }
     };
 
@@ -127,6 +138,54 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
     };
 
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
+
+    const crearUsuario = () => {
+        const documentLog = JSON.stringify({
+          nombre: nombre,
+          apellido_paterno: app,
+          apellido_materno: apm,
+          telefono: telefono,
+          email: correo,
+          username: username,
+          password: contrasena,
+        });
+        console.log('Datos enviados al servidor:', documentLog);
+        fetch('http://192.168.0.3:3000/crear_usuario', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: documentLog,
+        })
+        .then((response) => {
+          if (response.status === 400) {
+            response.json().then((data) => {
+              if (data.errores) {
+                if (data.errores.email) {
+                  handleEmailError();
+                }
+                if (data.errores.telefono) {
+                  handleTelephoneError();
+                }
+                if (data.errores.username) {
+                  handleUsernameError();
+                }
+              } else {
+                Alert.alert('Error', 'No se pudo crear la cuenta de usuario');
+              }
+            });
+          } else if (response.status === 201) {
+            handleData();
+          } else {
+            Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
+        });
+      };
+      
 
     return(
             <SafeAreaView style={styles.main_container}>
@@ -226,7 +285,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                         </View>
 
 
-                        <TouchableOpacity onPress={() => navigation.navigate("EmailV")}>
+                        <TouchableOpacity onPress={handleSignUp}>
                             <CustomModal 
                                 title={functionData.title}
                                 info={functionData.info}

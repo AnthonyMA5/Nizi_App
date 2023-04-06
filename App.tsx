@@ -281,7 +281,7 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="SignUp" component={Sign_Up} />
         <Stack.Screen name="EmailV" component={Email_Vrf}/>
         <Stack.Screen name="TelephoneV" component={Telephone_Vrf}/>
-        <Stack.Screen name="Home" component={AppStack} />
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Recharge" component={Recharge} />
         <Stack.Screen name="Movement" component={Moves} />
         <Stack.Screen name="Card" component={Card} />
@@ -300,7 +300,7 @@ const App: React.FC<Props> = ({navigation}) => {
 
         {/*Este apartado es para las vistas de administrador*/}
 
-        <Stack.Screen name="Home_Admin" component={AdminAppStack} />
+        <Stack.Screen name="Home_Admin" component={AdminHome} />
         <Stack.Screen name="Revenues_Admin" component={AdminRevenue} />
         <Stack.Screen name="Orders_Admin" component={AdminOrders} />
         <Stack.Screen name="Requests_Admin" component={AdminRequests} />

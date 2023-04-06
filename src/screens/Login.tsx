@@ -26,8 +26,8 @@ const Login: React.FC<Props> = ({navigation}) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
 
   const [username, setUsername] = useState('')
-	const [pass, setPass] = useState('')
-  const [userID, setUserID] = useState('')
+	const [password, setPassword] = useState('')
+  const [userInfo, setUserInfo] = useState('')
 
   const [functionData, setFunctionData] = useState({
     title: '',
@@ -89,19 +89,19 @@ const Login: React.FC<Props> = ({navigation}) => {
 
 
   const handleLogin = () => {
-    if ([username, pass].includes('')){
+    if ([username, password].includes('')){
 			handleInputs()
 		} else  {
-      validacion()
+      login()
     }
   };
 
-  const validacion = () => {
+  const login = () => {
     const documentLog = JSON.stringify({
       username: username,
-      contrasena: pass,
+      password: password,
     });
-    fetch('http://192.168.0.3:3000/validacion',{
+    fetch('http://192.168.0.3:3000/login',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,9 +113,13 @@ const Login: React.FC<Props> = ({navigation}) => {
         if (text && text.length > 0) {
           const data = JSON.parse(text);
           if (data) {
-            console.log(data._id);
-            setUserID(data._id);
-            navigation.navigate('Home');
+            console.log(data);
+            setUserInfo(data);
+            if (data.admin && data.admin === true) { // Verificar si admin es verdadero
+              navigation.navigate('Home_Admin', { userInfo: data });
+            } else {
+              navigation.navigate('Home', { userInfo: data });
+            }
           }
         } else {
           handleData()
@@ -157,8 +161,8 @@ const Login: React.FC<Props> = ({navigation}) => {
             <Text style={styles.label}>Contraseña</Text>
             <View style={styles.sectionStyle}>
               <TextInput style={styles.input} placeholder= 'Ingresa tu contraseña' placeholderTextColor={'#878787'}
-                value={pass}
-                onChangeText={setPass}/>
+                value={password}
+                onChangeText={setPassword}/>
             </View>
           </View>
 
