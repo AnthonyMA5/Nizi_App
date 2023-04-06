@@ -16,6 +16,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { TouchableOpacity } from 'react-native'
 import CustomModal from '../components/CustomModal'
 import RecoverPassModal from '../components/RecoverPassModal'
+import LoadingModal from '../components/LoadingModal'
 
 interface Props {
     navigation: any;
@@ -41,6 +42,7 @@ const Login: React.FC<Props> = ({navigation}) => {
   const [isModalVisible2, setIsModalVisible2] = useState(false);
   const [inPassword, setInPassword] = useState(false);
   const [inLoop, setInLoop] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputs = () => {
     setFunctionData({
@@ -97,6 +99,7 @@ const Login: React.FC<Props> = ({navigation}) => {
   };
 
   const login = () => {
+    setIsLoading(true); // establece isLoading a true antes de la petición al servidor
     const documentLog = JSON.stringify({
       username: username,
       password: password,
@@ -116,20 +119,27 @@ const Login: React.FC<Props> = ({navigation}) => {
             console.log(data);
             setUserInfo(data);
             if (data.admin && data.admin === true) { // Verificar si admin es verdadero
+              setIsLoading(false);
               navigation.navigate('Home_Admin', { userInfo: data });
             } else {
+              setIsLoading(false);
               navigation.navigate('Home', { userInfo: data });
             }
           }
         } else {
+          setIsLoading(false); 
           handleData()
         }
       }).catch((error) => {
+        setIsLoading(false); 
         console.log(error);
         Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
       });
     })
-    .catch((error) => {console.log(error)});
+    .catch((error) => {
+      setIsLoading(false);
+      console.log(error)
+    });
   };
   
   
@@ -138,6 +148,8 @@ const Login: React.FC<Props> = ({navigation}) => {
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={{flex: 1, width:'100%'}} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center'}} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
+
+          <LoadingModal isVisible={isLoading} />
 
           <View style={styles.img_container}>
             <Image style={styles.logo} source={require('../img/White_logo.jpg')}/>
