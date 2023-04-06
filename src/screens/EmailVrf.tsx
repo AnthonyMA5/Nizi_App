@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -11,24 +11,82 @@ import {
   TouchableOpacity,
   View,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Progress from 'react-native-progress';
 import {Dimensions} from 'react-native';
+import { RouteProp } from '@react-navigation/native';
 
 interface Props {
   navigation: any;
+  route: RouteProp<any, any>;
 }
 
-const Email_Vrf: React.FC<Props> = ({navigation}) => {
+const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
+
+  const { userInfo } = route.params;
   
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
   const [progress, setProgress] = useState(0);
 
+  const [code, setCode] = useState<string[]>([]);
+  const codeInput1Ref = useRef<TextInput>(null);
+  const codeInput2Ref = useRef<TextInput>(null);
+  const codeInput3Ref = useRef<TextInput>(null);
+  const codeInput4Ref = useRef<TextInput>(null);
+
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutos en segundos
+
   setTimeout(() => {
     setProgress(0.5);
   }, 350);
+
+  const handleCodeChange = (text: string, index: number) => {
+    const newCode = [...code];
+    newCode[index] = text;
+    setCode(newCode);
+
+    switch (index) {
+      case 0:
+        codeInput2Ref.current?.focus();
+        break;
+      case 1:
+        codeInput3Ref.current?.focus();
+        break;
+      case 2:
+        codeInput4Ref.current?.focus();
+        break;
+      case 3:
+        Keyboard.dismiss();
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+
+    // Limpiar el temporizador después de salir del componente
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [timeLeft]);
+
+  const resetTimer = () => {
+    setTimeLeft(180);
+    // Agrega cualquier otra lógica que desees ejecutar al reiniciar el temporizador
+  };
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  const timeString = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -53,24 +111,40 @@ const Email_Vrf: React.FC<Props> = ({navigation}) => {
           </Text>
           <View style={styles.code_container}>
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[0]}
+              onChangeText={(text) => handleCodeChange(text, 0)}
               style={styles.input}
+              ref={codeInput1Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[1]}
+              onChangeText={(text) => handleCodeChange(text, 1)}
               style={styles.input}
+              ref={codeInput2Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[2]}
+              onChangeText={(text) => handleCodeChange(text, 2)}
               style={styles.input}
+              ref={codeInput3Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[3]}
+              onChangeText={(text) => handleCodeChange(text, 3)}
               style={styles.input}
+              ref={codeInput4Ref}
             />
           </View>
           <TouchableOpacity
@@ -83,7 +157,13 @@ const Email_Vrf: React.FC<Props> = ({navigation}) => {
               <Text style={styles.btnContinuarText}> Continuar </Text>
             </LinearGradient>
           </TouchableOpacity>
-          <Text style={styles.time_count}>Generar nuevo codigo en 02:59</Text>
+
+          <TouchableOpacity onPress={resetTimer} disabled={timeLeft > 0}>
+            <Text style={timeLeft <= 0 ? styles.time_expired : styles.time_count}>
+              {timeLeft <= 0 ? 'Generar código' : `Generar nuevo código en ${timeString}`}
+            </Text>
+          </TouchableOpacity>
+          
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -176,6 +256,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#939393',
+  },
+
+  time_expired: {
+    fontFamily: 'DMSans-Medium',
+    marginTop: 35,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0500EB',
   },
   
 });

@@ -127,6 +127,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
 
     const handleCloseModal = () => {
         setIsModalVisible(false);
+        navigation.navigate("EmailV")
     };
 
     const handleOpenModal2 = () => {
@@ -137,9 +138,20 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setIsModalVisible2(false);
     };
 
+    function generarCodigo(): string {
+        let codigo: string = "";
+        for (let i = 0; i < 4; i++) {
+          codigo += Math.floor(Math.random() * 10).toString();
+        }
+        return codigo;
+    }
+
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
 
+    const codigoGenerado = generarCodigo();
+
     const crearUsuario = () => {
+        
         const documentLog = JSON.stringify({
           nombre: nombre,
           apellido_paterno: app,
@@ -148,7 +160,10 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
           email: correo,
           username: username,
           password: contrasena,
+          estadoEmail: false,
+          numeroEmail: codigoGenerado,
         });
+
         console.log('Datos enviados al servidor:', documentLog);
         fetch('http://192.168.0.3:3000/crear_usuario', {
           method: 'POST',
@@ -184,8 +199,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
           console.log(error);
           Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
         });
-      };
-      
+    };
 
     return(
             <SafeAreaView style={styles.main_container}>

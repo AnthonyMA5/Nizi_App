@@ -99,7 +99,6 @@ const Login: React.FC<Props> = ({navigation}) => {
   };
 
   const login = () => {
-    setIsLoading(true); // establece isLoading a true antes de la petición al servidor
     const documentLog = JSON.stringify({
       username: username,
       password: password,
@@ -119,25 +118,20 @@ const Login: React.FC<Props> = ({navigation}) => {
             console.log(data);
             setUserInfo(data);
             if (data.admin && data.admin === true) { // Verificar si admin es verdadero
-              setIsLoading(false);
               navigation.navigate('Home_Admin', { userInfo: data });
             } else {
-              setIsLoading(false);
               navigation.navigate('Home', { userInfo: data });
             }
           }
         } else {
-          setIsLoading(false); 
           handleData()
         }
       }).catch((error) => {
-        setIsLoading(false); 
         console.log(error);
         Alert.alert('Error', 'Ocurrió un error en la comunicación con el servidor');
       });
     })
     .catch((error) => {
-      setIsLoading(false);
       console.log(error)
     });
   };
