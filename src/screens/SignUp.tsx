@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable semi */
 /* eslint-disable keyword-spacing */
 /* eslint-disable quotes */
@@ -21,6 +22,8 @@ interface Props {
     navigation: any;
 }
 
+let emailCode: string, telephoneCode: string;
+
 const Sign_Up: React.FC<Props> = ({navigation}) => {
 
     const [nombre, setNombre] = useState('');
@@ -35,17 +38,32 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
     const [isModalVisible2, setIsModalVisible2] = useState(false);
     const [inLoop, setInLoop] = useState(false);
 
+    const [toggleCheckBox, setToggleCheckBox] = useState(false);
+
+    function validarCorreo(correo: string): boolean {
+        const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/; // Expresión regular para validar el correo
+        return regex.test(correo); // Devuelve true si el correo es válido, false en caso contrario
+    }
+
+    function generarCodigo(): string {
+        let codigo: string = "";
+        for (let i = 0; i < 4; i++) {
+          codigo += Math.floor(Math.random() * 10).toString();
+        }
+        return codigo;
+    }
+
     const [functionData, setFunctionData] = useState({
         title: '',
         info: '',
         color: '',
         icon: null,
         btn: '',
-      });
+    });
 
     const handleInputs = () => {
         setFunctionData({
-          title: 'Ups!',
+          title: '¡Ups!',
           info: 'Algunos campos se encuentran vacíos, por favor completalos.',
           color: '#80D5FF',
           icon: require('../animations/warning_icon.json'),
@@ -90,6 +108,30 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setInLoop(false)
         setIsModalVisible(true);
     };
+    
+    const handleInvalidPhone = () => {
+        setFunctionData({
+          title: '¡Ups!',
+          info: 'El número telefónico debe \ncontener 12 dígitos.\n\nCódigo de tu pais a 2 dígitos \nseguido de tu número a 10 dígitos.',
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(true)
+        setIsModalVisible(true);
+    };
+
+    const handleInvalidPass = () => {
+        setFunctionData({
+          title: '¡Ups!',
+          info: 'La contraseña debe tener 8 carácteres como mínimo.',
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(true)
+        setIsModalVisible(true);
+    };
 
     const handleEmailError = () => {
         setFunctionData({
@@ -103,13 +145,37 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setIsModalVisible(true);
     };
 
+    const handleWarningEmail = () => {
+        setFunctionData({
+          title: '¡Ups!',
+          info: 'La dirección de correo electrónico no debe contener espacios.',
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(true)
+        setIsModalVisible(true);
+    };
+
+    const handleInvalidEmail = () => {
+        setFunctionData({
+          title: 'Correo electrónico no válido',
+          info: 'Por favor ingresa una dirección de correo electrónico válida',
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
     const handleUsernameError = () => {
         setFunctionData({
           title: 'Nombre de usuario no disponible',
           info: 'El nombre de usuario que ingresaste no se encuentra disponible, por favor crea uno diferente.',
           color: '#C71D1D',
           icon: require('../animations/error_icon.json'),
-          btn: 'OK',
+          btn: 'Entendido',
         });
         setInLoop(false)
         setIsModalVisible(true);
@@ -120,14 +186,47 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                 handleInputs()
             } else if (toggleCheckBox === false) {
                 handleTermsConditions()
+            } else if (telefono.length < 12 || telefono.length > 12) {
+                handleInvalidPhone()
+            } else if (contrasena.length < 8) {
+                handleInvalidPass()
+            } else if (!correo.trim()) {
+                handleWarningEmail()
+            } else if (!validarCorreo(correo)) {
+                handleInvalidEmail()
             } else {
                 crearUsuario()
             }
     };
 
+    const handleCloseModalAndNavigate = (documentLog: string) => {
+        setIsModalVisible(false);
+        navigation.navigate('EmailV', { userInfo: documentLog });
+    };
+      
     const handleCloseModal = () => {
         setIsModalVisible(false);
-        navigation.navigate("EmailV")
+    };
+      
+    const handleModalClose = () => {
+        if (functionData.title === "Tu cuenta ha sido creada") {
+            const documentLog = JSON.stringify({
+                nombre: nombre,
+                apellido_paterno: app,
+                apellido_materno: apm,
+                telefono: telefono,
+                email: correo,
+                username: username,
+                password: contrasena,
+                estadoEmail: false,
+                numeroEmail: emailCode,
+                estadoTelefono: false,
+                numeroTelefono: telephoneCode,
+            });
+            handleCloseModalAndNavigate(documentLog);
+        } else {
+          handleCloseModal();
+        }
     };
 
     const handleOpenModal2 = () => {
@@ -138,20 +237,11 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
         setIsModalVisible2(false);
     };
 
-    function generarCodigo(): string {
-        let codigo: string = "";
-        for (let i = 0; i < 4; i++) {
-          codigo += Math.floor(Math.random() * 10).toString();
-        }
-        return codigo;
-    }
-
-    const [toggleCheckBox, setToggleCheckBox] = useState(false);
-
-    const codigoGenerado = generarCodigo();
-
     const crearUsuario = () => {
         
+        emailCode = generarCodigo();
+        telephoneCode = generarCodigo();
+
         const documentLog = JSON.stringify({
           nombre: nombre,
           apellido_paterno: app,
@@ -161,9 +251,10 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
           username: username,
           password: contrasena,
           estadoEmail: false,
-          numeroEmail: codigoGenerado,
+          numeroEmail: emailCode,
+          estadoTelefono: false,
+          numeroTelefono: telephoneCode,
         });
-
         console.log('Datos enviados al servidor:', documentLog);
         fetch('http://192.168.0.3:3000/crear_usuario', {
           method: 'POST',
@@ -306,7 +397,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                                 color={functionData.color}
                                 icon={functionData.icon}
                                 isVisible={isModalVisible}
-                                onEvent={handleCloseModal}
+                                onEvent={handleModalClose}
                                 btn={functionData.btn}
                                 loop={inLoop}/>
                             <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#7D08F2', '#00C2FF']} style={styles.btnCrearCuenta}>

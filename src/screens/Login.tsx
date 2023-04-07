@@ -46,7 +46,7 @@ const Login: React.FC<Props> = ({navigation}) => {
 
   const handleInputs = () => {
     setFunctionData({
-      title: 'Ups!',
+      title: '¡Ups!',
       info: 'Algunos campos se encuentran vacíos, por favor completalos.',
       color: '#80D5FF',
       icon: require('../animations/warning_icon.json'),
@@ -84,11 +84,9 @@ const Login: React.FC<Props> = ({navigation}) => {
     setIsModalVisible(false);
   };
   
-
   const handleCloseModal2 = () => {
     setIsModalVisible2(false);
   };
-
 
   const handleLogin = () => {
     if ([username, password].includes('')){

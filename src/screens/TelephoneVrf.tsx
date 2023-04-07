@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -15,20 +17,249 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import * as Progress from 'react-native-progress';
 import {Dimensions} from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
   navigation: any;
+  route: RouteProp<any, any>;
 }
 
-const Telephone_Vrf: React.FC<Props> = ({navigation}) => {
+const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
+
+  const routeParams = route.params;
+  const userInfo = routeParams ? routeParams.userInfo : null;
+  const userInfoObj = userInfo ? JSON.parse(userInfo) : null;
 
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
   const [progress, setProgress] = useState(0.5);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const [code, setCode] = useState<string[]>([]);
+  const codeString = code.join('');
+  const codeInput1Ref = useRef<TextInput>(null);
+  const codeInput2Ref = useRef<TextInput>(null);
+  const codeInput3Ref = useRef<TextInput>(null);
+  const codeInput4Ref = useRef<TextInput>(null);
+
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutos en segundos
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  const timeString = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+  const newTelephoneCode = generarCodigo();
+
   setTimeout(() => {
     setProgress(1);
   }, 400);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+
+    // Limpiar el temporizador después de salir del componente
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [timeLeft]);
+
+  const resetTimer = () => {
+    setTimeLeft(180);
+    generarNuevoCode(); //Llamada a la función
+    // Agrega cualquier otra lógica que desees ejecutar al reiniciar el temporizador
+  };
+
+  function generarCodigo(): string {
+    let codigo: string = '';
+    for (let i = 0; i < 4; i++) {
+      codigo += Math.floor(Math.random() * 10).toString();
+    }
+    return codigo;
+  }
+
+  const handleCodeChange = (value: string, index: number) => {
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+
+    switch (index) {
+      case 0:
+        codeInput2Ref.current?.focus();
+        break;
+      case 1:
+        codeInput3Ref.current?.focus();
+        break;
+      case 2:
+        codeInput4Ref.current?.focus();
+        break;
+      case 3:
+        Keyboard.dismiss();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleNewCode = () => {
+    setFunctionData({
+      title: 'Nuevo código de verificación generado',
+      info: 'Hemos enviado tu nuevo código de verificación vía SMS',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleError = () => {
+    setFunctionData({
+      title: '¡Lo sentimos!',
+      info: 'No fue posible generar un nuevo código de verificación.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleServerError = () => {
+    setFunctionData({
+      title: 'Error',
+      info: 'Ocurrió un error en la comunicación con el servidor',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleInputs = () => {
+    setFunctionData({
+      title: '¡Ups!',
+      info: 'Debes colocar todos los dígitos de tu código de verificación.',
+      color: '#80D5FF',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true);
+    setIsModalVisible(true);
+  };
+
+  const handleVerification = () => {
+    if (codeString.length < 4) {
+      handleInputs();
+    } else {
+      verificarCode();
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSuccessVerifyCode = () => {
+    setFunctionData({
+      title: 'Tu número telefónico ha sido verificado',
+      info: '¡Felicidades, ahora puedes hacer uso total de Nizi!',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleErrorVerifyCode = () => {
+    setFunctionData({
+      title: 'Código incorrecto',
+      info: 'El código que ingresaste es incorrecto, por favor verificalo o genera un nuevo código.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const generarNuevoCode = () => {
+
+    const documentLog = JSON.stringify({
+      telefono: userInfoObj.telefono,
+      numeroTelefono: newTelephoneCode,
+    });
+
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/nuevo_codigo_telefono', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 201) {
+        handleNewCode();
+      } else {
+        handleError();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+
+  };
+
+  const verificarCode = () => {
+
+    const documentLog = JSON.stringify({
+      telefono: userInfoObj.telefono,
+      estadoTelefono: true,
+      numeroTelefono: codeString,
+    });
+
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/verificar_codigo_telefono', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+
+    .then((response) => {
+      response.text().then((text) => {
+        if (text && text.length > 0) {
+          const data = JSON.parse(text);
+            handleSuccessVerifyCode();
+        } else {
+          handleErrorVerifyCode();
+        }
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+
+  };
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -48,41 +279,72 @@ const Telephone_Vrf: React.FC<Props> = ({navigation}) => {
           <Text style={styles.step}>Paso 2 de 2</Text>
           <Text style={styles.title}>Verifica tu número telefónico</Text>
           <Text style={styles.subtitle}>
-            Hemos enviado un código vía SMS a tu número telefónico para
-            verificar que te pertenece
+          {userInfoObj.nombre} hemos enviado un código vía SMS a tu número telefónico para
+            verificar que te pertenece, si no lo has recibido espera unos minutos o genera uno nuevo.
           </Text>
           <View style={styles.code_container}>
-            <TextInput
+          <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[0]}
+              onChangeText={(text) => handleCodeChange(text, 0)}
               style={styles.input}
+              ref={codeInput1Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[1]}
+              onChangeText={(text) => handleCodeChange(text, 1)}
               style={styles.input}
+              ref={codeInput2Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[2]}
+              onChangeText={(text) => handleCodeChange(text, 2)}
               style={styles.input}
+              ref={codeInput3Ref}
             />
             <TextInput
+              maxLength={1}
               keyboardType="number-pad"
               placeholder=""
+              value={code[3]}
+              onChangeText={(text) => handleCodeChange(text, 3)}
               style={styles.input}
+              ref={codeInput4Ref}
             />
           </View>
-          <TouchableOpacity onPressOut={() => navigation.navigate('Home')}>
+          <TouchableOpacity onPress={handleVerification}>
+            <CustomModal 
+              title={functionData.title}
+              info={functionData.info}
+              color={functionData.color}
+              icon={functionData.icon}
+              isVisible={isModalVisible}
+              onEvent={handleCloseModal}
+              btn={functionData.btn}
+              loop={inLoop}/>
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
               colors={['#3733EF', '#3733EF']}
               style={styles.btnContinuar}>
-              <Text style={styles.btnContinuarText}> Finalizar </Text>
+              <Text style={styles.btnContinuarText}> Continuar </Text>
             </LinearGradient>
           </TouchableOpacity>
-          <Text style={styles.time_count}>Generar nuevo codigo en 02:59</Text>
+
+          <TouchableOpacity onPress={resetTimer} disabled={timeLeft > 0}>
+            <Text style={timeLeft <= 0 ? styles.time_expired : styles.time_count}>
+              {timeLeft <= 0 ? 'Generar código' : `Generar nuevo código en ${timeString}`}
+            </Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -177,6 +439,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#939393',
   },
+
+  time_expired: {
+    fontFamily: 'DMSans-Medium',
+    marginTop: 35,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0500EB',
+  },
+
 });
 
 export default Telephone_Vrf;
