@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 
@@ -30,6 +29,8 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
   const routeParams = route.params;
   const userInfo = routeParams ? routeParams.userInfo : null;
   const userInfoObj = userInfo ? JSON.parse(userInfo) : null;
+
+  const [userData, setUserData] = useState(null);
 
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
@@ -174,6 +175,24 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
     setIsModalVisible(false);
   };
 
+  const handleModalCloseAndNavigate = (responseData: any) => {
+    if (responseData.admin && responseData.admin === true) { // Verificar si admin es verdadero
+      setIsModalVisible(false);
+      navigation.navigate('Home_Admin', { userInfo: responseData });
+    } else {
+      setIsModalVisible(false);
+      navigation.navigate('Home', { userInfo: responseData });
+    }
+  };
+
+  const handleModalClose = () => {
+    if (functionData.title === 'Tu número telefónico ha sido verificado') {
+      handleModalCloseAndNavigate(userData);
+    } else {
+      handleCloseModal();
+    }
+  };
+
   const handleSuccessVerifyCode = () => {
     setFunctionData({
       title: 'Tu número telefónico ha sido verificado',
@@ -248,7 +267,11 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
       response.text().then((text) => {
         if (text && text.length > 0) {
           const data = JSON.parse(text);
+          if (data) {
+            console.log(data);
+            setUserData(data);
             handleSuccessVerifyCode();
+          }
         } else {
           handleErrorVerifyCode();
         }
@@ -327,7 +350,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
               color={functionData.color}
               icon={functionData.icon}
               isVisible={isModalVisible}
-              onEvent={handleCloseModal}
+              onEvent={handleModalClose}
               btn={functionData.btn}
               loop={inLoop}/>
             <LinearGradient

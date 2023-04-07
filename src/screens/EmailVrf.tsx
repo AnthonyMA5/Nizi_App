@@ -222,7 +222,7 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
     } else {
       handleCloseModal();
     }
-};
+  };
 
   const generarNuevoCode = () => {
 
