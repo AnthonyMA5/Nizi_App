@@ -21,8 +21,8 @@ const Recharge: React.FC<Props> = ({navigation}) => {
           <View style={styles.head}>
 
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPress={()=>navigation.navigate('Home')}>
+                <Image style={styles.iconMenu} source={require('../img/back.png')}/>
               </TouchableOpacity>
             </View>
 

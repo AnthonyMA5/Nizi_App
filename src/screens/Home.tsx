@@ -7,10 +7,10 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
-import { RouteProp } from '@react-navigation/native'
+import { NavigationProp, RouteProp } from '@react-navigation/native'
 
 interface Props {
-  navigation: any;
+  navigation: NavigationProp<any, any>;
   route: RouteProp<any, any>;
 }
 
@@ -64,83 +64,112 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                         <View style={styles.notifications_maincontainer}>
                             <View style={styles.notifications_container}>
-                                <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                                    <Image style={styles.notifications_icon} source={require('../img/menu_barra.png')}/>
-                                </TouchableOpacity>
+                                <Pressable onPressOut={()=>navigation.navigate('Login')}>
+                                    <Image style={styles.notifications_icon} source={require('../img/Door.png')}/>
+                                </Pressable>
                             </View>
                         </View>
 
                     </View>
 
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
-                    <Pressable style={{alignContent: 'center', flex:1, justifyContent: 'center', alignItems: 'center'}} onPressIn={() => navigation.navigate('Card_Request')}>
-                        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
-                            <View style={styles.marginCardContainer}>
-                                <View style={styles.headCard}>
-                                    <View style={styles.containerTextCard}>
-                                        <Text style={styles.titleCard}>Nizi Card</Text>
-                                    </View>
-                                    <View style={styles.containerIconCard}>
-                                        <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
-                                    </View>
-                                </View>
-                                <Text style={styles.moneyTextCard}>$500.00</Text>
-                                <Text style={styles.numberTextCard}>**** **** **** **89</Text>
-                            </View>
-                        </LinearGradient>
-                    </Pressable>
+                    <View style={styles.sectionContainer}>
+                        {userInfo.tarjeta.length === 0 ? (
+                            // Aquí puede agregar cualquier otra lógica o elementos de interfaz de usuario si es necesario
+                            null
+                        ) : (
+                                <Pressable style={{alignContent: 'center', flex:1, justifyContent: 'center', alignItems: 'center'}} onPressIn={() => navigation.navigate('Card_Request')}>
+                                    <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
+                                        <View style={styles.marginCardContainer}>
+                                            <View style={styles.headCard}>
+                                                <View style={styles.containerTextCard}>
+                                                    <Text style={styles.titleCard}>Nizi Card</Text>
+                                                </View>
+                                                <View style={styles.containerIconCard}>
+                                                    <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
+                                                </View>
+                                            </View>
+                                            <Text style={styles.moneyTextCard}>$500.00</Text>
+                                            <Text style={styles.numberTextCard}>**** **** **** **89</Text>
+                                        </View>
+                                    </LinearGradient>
+                                </Pressable>
+                            )
+                        }
+                    </View>
                     {/*Este apartado funciona como la sección de Servicios*/}
 
                     <View style={styles.sectionContainer}>
+
                         <Text style={styles.textTitleSection}>Servicios</Text>
-
                         <View style={styles.services_mainContainer}>
+
+                            <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
                             
-                            <Pressable style={styles.service1} onPress={()=>navigation.navigate('Recharge')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
-                                    <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable onPressIn={()=>navigation.navigate('Recharge')}>
+                                    <View style={styles.servicesContainerGreen}>
+                                        <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
+                                        <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
+                                    </View>
+                                </Pressable>
 
-                            <Pressable style={styles.service2} onPress={()=>navigation.navigate('Movement')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Movimientos.png')}/>
-                                    <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable>
+                                    <View style={styles.servicesContainerPink}>
+                                        <Image style={styles.iconServices} source={require('../img/Movimientos.png')}/>
+                                        <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
+                                    </View>
+                                </Pressable>
 
-                            <Pressable style={styles.service3} onPress={()=>navigation.navigate('Card')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
-                                    <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable>
+                                    <View style={styles.servicesContainerSkyBlue}>
+                                        <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
+                                        <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
+                                    </View>
+                                </Pressable>
 
-                        </View>
+                                <Pressable>
+                                    <View style={styles.servicesContainerBlue}>
+                                        <Image style={styles.iconServices} source={require('../img/pedidos_icon.png')}/>
+                                        <Text style={styles.textNameService}>Mis{'\n'}pedidos</Text>
+                                    </View>
+                                </Pressable>
 
-                        <View style={styles.services_mainContainer}>
-                            
-                            <Pressable style={styles.service1} onPress={()=>navigation.navigate('Messagges')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Notificaciones.png')}/>
-                                    <Text style={styles.textNameService}>Mensajes</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable>
+                                    <View style={styles.servicesContainerPurple}>
+                                        <Image style={styles.iconServices} source={require('../img/support_icon.png')}/>
+                                        <Text style={styles.textNameService}>Atención{'\n'}al cliente</Text>
+                                    </View>
+                                </Pressable>
 
-                            <Pressable style={styles.service2} onPress={()=>navigation.navigate('Menu')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Menú.png')}/>
-                                    <Text style={styles.textNameService}>Menú</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable>
+                                    <View style={styles.servicesContainerYellow}>
+                                        <Image style={styles.iconServices} source={require('../img/Notificaciones.png')}/>
+                                        <Text style={styles.textNameService}>Mis{'\n'}mensajes</Text>
+                                    </View>
+                                </Pressable>
 
-                            <Pressable style={styles.service3} onPress={()=>navigation.navigate('Commerce')}>
-                                <View style={styles.servicesContainerGlobal}>
-                                    <Image style={styles.iconServices} source={require('../img/Comercios.png')}/>
-                                    <Text style={styles.textNameService}>Comercios</Text>
-                                </View>
-                            </Pressable>
+                                <Pressable>
+                                    <View style={styles.servicesContainerProfile}>
+                                        <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
+                                        <Text style={styles.textNameService}>Menú{'\n'}digital</Text>
+                                    </View>
+                                </Pressable>
+
+                                <Pressable>
+                                    <View style={styles.servicesContainerOrange}>
+                                        <Image style={styles.iconServices} source={require('../img/Perfil.png')}/>
+                                        <Text style={styles.textNameService}>Mi{'\n'}perfil</Text>
+                                    </View>
+                                </Pressable>
+
+                                <Pressable>
+                                    <View style={styles.servicesContainerRed}>
+                                        <Image style={styles.iconServices} source={require('../img/Comercios.png')}/>
+                                        <Text style={styles.textNameService}>Comercios{'\n'}disponibles</Text>
+                                    </View>
+                                </Pressable>
+
+                            </ScrollView>
 
                         </View>
 
@@ -323,7 +352,7 @@ const styles = StyleSheet.create({
         width: 55,
         height: 55,
         borderRadius: 8,
-        backgroundColor: '#ECFCFF',
+        backgroundColor: '#FFECEC',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -406,40 +435,113 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
 
-    service1:{
-        flex: 0.33, 
-        alignItems: 'flex-start', 
-        flexDirection: 'row',
+    iconServices:{
+        width: 55, 
+        height: 55,
+    },
+
+    servicesContainerProfile:{
+        width: 125,
+        height: 170,
+        padding: 10,
+        borderRadius: 10,
         marginRight: 20,
-    },
-
-    service2:{
-        flex: 0.33,
-        marginRight: 20,
-    },
-
-    service3:{
-        flex: 0.33, 
-        alignItems: 'flex-end',
-    },
-
-    servicesContainerGlobal:{
-        width: '100%',
-        height: 120,
-        backgroundColor: '#F2F2F2',
+        backgroundColor: '#FFF9EB',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
     },
 
-    iconServices:{
-        width: 38, 
-        height: 38,
+    servicesContainerPurple:{
+        width: 125,
+        height: 170,
+        padding: 10,
+        borderRadius: 10,
+        marginRight: 20,
+        backgroundColor: '#EBEFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    servicesContainerRed:{
+        width: 125,
+        height: 170,
+        padding: 10,
+        borderRadius: 10,
+        marginRight: 20,
+        backgroundColor: '#FFEBEB',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    servicesContainerPink:{
+        width: 125,
+        height: 170,
+        padding: 10,
+        borderRadius: 10,
+        marginRight: 20,
+        backgroundColor: '#F8FFEB',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    servicesContainerSkyBlue:{
+        width: 125,
+        height: 170,
+        padding: 10,
+        borderRadius: 10,
+        marginRight: 20,
+        backgroundColor: '#EBFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    servicesContainerYellow:{
+        width: 125,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#FFFEEB',
+        borderRadius: 10,
+        marginRight: 20,
+    },
+
+    servicesContainerGreen:{
+        width: 125,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#E9F9E4',
+        borderRadius: 10,
+        marginRight: 20,
+    },
+
+    servicesContainerBlue:{
+        width: 125,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#E2F5FB',
+        borderRadius: 10,
+        marginRight: 20,
+    },
+
+    servicesContainerOrange:{
+        width: 125,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#FFF6EB',
+        borderRadius: 10,
+        marginRight: 20,
     },
 
     textNameService:{
         fontFamily: 'DMSans-Medium',
-        fontSize: 14,
+        fontSize: 15,
         color: '#000000',
         textAlign: 'center',
         marginTop: 5,
