@@ -73,12 +73,16 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     </View>
 
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
-                    <View style={styles.sectionContainer}>
+                    <View style={styles.main_container_card_view}>
                         {userInfo.tarjeta.length === 0 ? (
-                            // Aquí puede agregar cualquier otra lógica o elementos de interfaz de usuario si es necesario
-                            null
-                        ) : (
-                                <Pressable style={{alignContent: 'center', flex:1, justifyContent: 'center', alignItems: 'center'}} onPressIn={() => navigation.navigate('Card_Request')}>
+                                <Pressable onPressIn={() => navigation.navigate('Card_Request', { userInfo: userInfo })}>
+                                    <View style={styles.borderRequest}>
+                                        <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
+                                        <Text style={styles.textNameService}>Solicitar tarjeta</Text>
+                                    </View>
+                                </Pressable>
+                            ) : (
+                                <Pressable>
                                     <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
                                         <View style={styles.marginCardContainer}>
                                             <View style={styles.headCard}>
@@ -360,6 +364,32 @@ const styles = StyleSheet.create({
     notifications_icon:{
         width: 32,
         height: 32,
+    },
+
+    main_container_card_view:{
+        alignContent: 'center',
+        flex:1,
+        justifyContent: 'center', 
+        alignItems: 'center',
+    },
+
+    iconRequest:{
+        height: 35,
+        width: 35,
+        marginBottom: 5,
+    },
+
+    borderRequest:{
+        width: 320,
+        height: 165,
+        marginTop: 40,
+        borderRadius: 12,
+        backgroundColor: '#FFF',
+        borderWidth: 2,
+        borderColor: '#5237FF',
+        borderStyle: 'dotted',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
     marginCardContainer:{
