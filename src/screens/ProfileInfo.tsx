@@ -1,21 +1,203 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import { format } from 'date-fns';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
-  navigation: any;
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Profile_Info: React.FC<Props> = ({navigation}) => {
+const Profile_Info: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+  const [userInfo, setUserInfo] = useState<any>();
+
+  const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
+  const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
+
+  const [nombre, setNombre] = useState(userInfo ? userInfo.nombre : '');
+  const [app, setApp] = useState(userInfo ? userInfo.apellido_paterno : '');
+  const [apm, setApm] = useState(userInfo ? userInfo.apellido_materno : '');
+  const [telefono, setTelefono] = useState(userInfo ? userInfo.telefono : '');
+  const [email, setEmail] = useState(userInfo ? userInfo.email : '');
+  const [username, setUsername] = useState(userInfo ? userInfo.nombre : '');
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const editable = false;
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_data',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setUserInfo(data);
+              setNombre(data.nombre);
+              setApp(data.apellido_paterno);
+              setApm(data.apellido_materno);
+              setUsername(data.username);
+              setTelefono(data.telefono);
+              setEmail(data.email);
+            } else {
+                handleData();
+            }
+        }});
+      })
+      .catch((error) => {
+        handleData();
+        console.log(error);
+      });
+  }, [userID._id]);
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleInputs = () => {
+    setFunctionData({
+      title: '¡Ups!',
+      info: 'Algunos campos se encuentran vacíos, por favor completalos.',
+      color: '#80D5FF',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true);
+    setIsModalVisible(true);
+  };
+
+  const handleUsernameError = () => {
+    setFunctionData({
+      title: 'Nombre de usuario no disponible',
+      info: 'El nombre de usuario que ingresaste no se encuentra disponible, por favor ingresa uno diferente.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleServerError = () => {
+    setFunctionData({
+      title: 'Error al comunicarse con el servidor',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleError = () => {
+    setFunctionData({
+      title: 'No pudimos actualizar tu información',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Información actualizada',
+      info: 'La proxima vez que ingreses a tu cuenta verás los cambios reflejados.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+  if (functionData.title === 'Información actualizada') {
+    navigation.navigate('Profile', {userID:userID});
+    setIsModalVisible(false);
+  } else {
+    setIsModalVisible(false);
+  }
+  };
+
+  const handleUpdateInfo = () => {
+    if ([nombre, app, apm, telefono, username, email].includes('')){
+            handleInputs();
+        } else {
+            actualizarDatos();
+        }
+  };
+
+  const actualizarDatos = () => {
+
+    const documentLog = JSON.stringify({
+      _id: userID,
+      nombre: nombre,
+      apellido_paterno: app,
+      apellido_materno: apm,
+      username: username,
+    });
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/update_personal_info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 400) {
+        response.json().then((data) => {
+          if (data.errores) {
+            if (data.errores.username) {
+              handleUsernameError();
+            }
+          } else {
+            handleError();
+          }
+        });
+      } else if (response.status === 201) {
+        handleData();
+      } else {
+        handleServerError();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
-
           <View style={styles.head}>
               <View style={styles.menu_container}>
-                <TouchableOpacity onPressOut={() => navigation.navigate('Profile')}>
+                <TouchableOpacity onPressOut={() => navigation.navigate('Profile', {userID: userID})}>
                   <Image style={styles.iconMenu} source={require('../img/back.png')}/>
                 </TouchableOpacity>
               </View>
@@ -35,8 +217,10 @@ const Profile_Info: React.FC<Props> = ({navigation}) => {
 
 
           <View style={styles.name_container}>
-            <Text style={styles.text_name}>Anthony Martinez Arellano</Text>
-            <Text style={styles.text_date}>Miembro desde 15/03/2023</Text>
+            <Text style={styles.text_name}>
+              {userInfo ? userInfo.nombre : ''} {userInfo ? userInfo.apellido_paterno : ''} {userInfo ? userInfo.apellido_materno : ''}
+            </Text>
+            <Text style={styles.text_date}>Miembro desde {fechaFormateada}</Text>
           </View>
 
 
@@ -45,42 +229,42 @@ const Profile_Info: React.FC<Props> = ({navigation}) => {
             <View style={styles.information_container}>
               <Text style={styles.label}>Nombres(s)</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Anthony"/>
+                <TextInput style={styles.input} value={nombre} onChangeText={setNombre}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Apellido Paterno</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Martinez"/>
+                <TextInput style={styles.input} value={app} onChangeText={setApp}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Apellido Materno</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Arellano"/>
-              </View>
-            </View>
-
-            <View style={styles.information_container}>
-              <Text style={styles.label}>Número Telefónico</Text>
-              <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="2741439734"/>
-              </View>
-            </View>
-
-            <View style={styles.information_container}>
-              <Text style={styles.label}>Correo Electrónico</Text>
-              <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Anthony_Ar2003@outlook.com"/>
+                <TextInput style={styles.input} value={apm} onChangeText={setApm}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Nombre de Usuario</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Anthony_1000"/>
+                <TextInput style={styles.input} value={username} onChangeText={setUsername}/>
+              </View>
+            </View>
+
+            <View style={styles.information_container}>
+              <Text style={styles.label}>Número Telefónico</Text>
+              <View style={[styles.sectionStyle, !editable && styles.sectionDisabledStyle]}>
+                <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} editable={editable}/>
+              </View>
+            </View>
+
+            <View style={styles.information_container}>
+              <Text style={styles.label}>Correo Electrónico</Text>
+              <View style={[styles.sectionStyle, !editable && styles.sectionDisabledStyle]}>
+                <TextInput style={styles.input} value={email} onChangeText={setEmail} editable={editable}/>
               </View>
             </View>
 
@@ -88,8 +272,17 @@ const Profile_Info: React.FC<Props> = ({navigation}) => {
 
 
           <View style={styles.button_container}>
-            <Pressable style={styles.button}
+            <Pressable style={styles.button} onPress={handleUpdateInfo}
                        android_ripple={{ color: 'lightgray' }}>
+                        <CustomModal
+                                title={functionData.title}
+                                info={functionData.info}
+                                color={functionData.color}
+                                icon={functionData.icon}
+                                isVisible={isModalVisible}
+                                onEvent={handleModalClose}
+                                btn={functionData.btn}
+                                loop={inLoop}/>
               <Text style={styles.text_button}>Actualizar información</Text>
             </Pressable>
           </View>
@@ -212,6 +405,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: '#000000',
         marginTop: 10,
+    },
+
+    sectionDisabledStyle: {
+      justifyContent: 'center',
+      borderWidth: 0.2,
+      borderRadius: 5,
+      borderColor: '#000000',
+      backgroundColor: '#EFEFEF',
+      marginTop: 10,
     },
 
     input: {

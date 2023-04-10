@@ -116,9 +116,9 @@ const Login: React.FC<Props> = ({navigation}) => {
             console.log(data);
             setUserInfo(data);
             if (data.admin && data.admin === true) { // Verificar si admin es verdadero
-              navigation.navigate('Home_Admin', { userInfo: data });
+              navigation.navigate('Home_Admin', { userID: data });
             } else {
-              navigation.navigate('Home', { userInfo: data });
+              navigation.navigate('Home', { userID: data });
             }
           }
         } else {

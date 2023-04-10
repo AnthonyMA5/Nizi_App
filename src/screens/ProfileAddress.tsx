@@ -1,12 +1,178 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import { format } from 'date-fns';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
-  navigation: any;
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Profile_Address: React.FC<Props> = ({navigation}) => {
+const Profile_Address: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+  const [userInfo, setUserInfo] = useState<any>();
+
+  const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
+  const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
+
+  const [calle, setCalle] = useState(userInfo ? userInfo.calle : '');
+  const [numeroExterior, setNumeroExterior] = useState(userInfo ? userInfo.numeroExterior : '');
+  const [numeroInterior, setNumeroInterior] = useState(userInfo ? userInfo.numeroInterior : '');
+  const [colonia, setColonia] = useState(userInfo ? userInfo.colonia : '');
+  const [municipio, setMunicipio] = useState(userInfo ? userInfo.municipio : '');
+  const [codigoPostal, setCodigoPostal] = useState(userInfo ? userInfo.codigoPostal : '');
+  const [estado, setEstado] = useState(userInfo ? userInfo.estado : '');
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_data',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setUserInfo(data);
+              setCalle(data.direccion[0].calle);
+              setNumeroExterior(data.direccion[0].numeroExterior);
+              setNumeroInterior(data.direccion[0].numeroInterior);
+              setColonia(data.direccion[0].colonia);
+              setMunicipio(data.direccion[0].municipio);
+              setCodigoPostal(data.direccion[0].codigoPostal.toString());
+              setEstado(data.direccion[0].estado);
+            } else {
+                handleData();
+            }
+        }});
+      })
+      .catch((error) => {
+        handleData();
+        console.log(error);
+      });
+  }, [userID._id]);
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleInputs = () => {
+    setFunctionData({
+      title: '¡Ups!',
+      info: 'Algunos campos se encuentran vacíos, por favor completalos.',
+      color: '#80D5FF',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true);
+    setIsModalVisible(true);
+  };
+
+  const handleServerError = () => {
+    setFunctionData({
+      title: 'Error al comunicarse con el servidor',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleError = () => {
+    setFunctionData({
+      title: 'No pudimos actualizar tu información',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Información actualizada',
+      info: 'La proxima vez que ingreses a tu cuenta verás los cambios reflejados.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+  if (functionData.title === 'Información actualizada') {
+    navigation.navigate('Profile', {userID:userID});
+    setIsModalVisible(false);
+  } else {
+    setIsModalVisible(false);
+  }
+  };
+
+  const handleUpdateInfo = () => {
+    if ([calle, numeroExterior, colonia, municipio, codigoPostal, estado].includes('')){
+            handleInputs();
+        } else {
+            actualizarDatos();
+        }
+  };
+
+  const actualizarDatos = () => {
+
+    const documentLog = JSON.stringify({
+      _id: userID,
+      calle: calle,
+      numeroExterior: numeroExterior,
+      numeroInterior: numeroInterior,
+      colonia: colonia,
+      municipio: municipio,
+      codigoPostal: codigoPostal,
+      estado: estado,
+    });
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/update_address_info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 400) {
+            handleError();
+      } else if (response.status === 201) {
+        handleData();
+      } else if (response.status === 500) {
+        handleServerError();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
@@ -15,7 +181,7 @@ const Profile_Address: React.FC<Props> = ({navigation}) => {
 
           <View style={styles.head}>
               <View style={styles.menu_container}>
-                <TouchableOpacity onPressOut={() => navigation.navigate('Profile')}>
+                <TouchableOpacity onPressOut={() => navigation.navigate('Profile', {userID:userID})}>
                   <Image style={styles.iconMenu} source={require('../img/back.png')}/>
                 </TouchableOpacity>
               </View>
@@ -32,8 +198,10 @@ const Profile_Address: React.FC<Props> = ({navigation}) => {
 
 
           <View style={styles.name_container}>
-            <Text style={styles.text_name}>Anthony Martinez Arellano</Text>
-            <Text style={styles.text_date}>Miembro desde 15/03/2023</Text>
+            <Text style={styles.text_name}>
+              {userInfo ? userInfo.nombre : ''} {userInfo ? userInfo.apellido_paterno : ''} {userInfo ? userInfo.apellido_materno : ''}
+            </Text>
+            <Text style={styles.text_date}>Miembro desde {fechaFormateada}</Text>
           </View>
 
 
@@ -42,49 +210,49 @@ const Profile_Address: React.FC<Props> = ({navigation}) => {
             <View style={styles.information_container}>
               <Text style={styles.label}>Calle</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Azucena"/>
+                <TextInput style={styles.input} value={calle} onChangeText={setCalle}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Número Exterior</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="26"/>
+                <TextInput style={styles.input} value={numeroExterior} onChangeText={setNumeroExterior}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Número Interior (opcional)</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value=""/>
+                <TextInput style={styles.input} value={numeroInterior} onChangeText={setNumeroInterior}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Colonia o Fraccionamiento</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Nuevo San Miguel"/>
+                <TextInput style={styles.input} value={colonia} onChangeText={setColonia}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Ciudad o Municipio</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Tlajomulco de Zúñiga"/>
+                <TextInput style={styles.input} value={municipio} onChangeText={setMunicipio}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Código Postal</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="45660"/>
+                <TextInput style={styles.input} value={codigoPostal} onChangeText={setCodigoPostal}/>
               </View>
             </View>
 
             <View style={styles.information_container}>
               <Text style={styles.label}>Estado</Text>
               <View style={styles.sectionStyle}>
-                <TextInput style={styles.input} value="Jalisco"/>
+                <TextInput style={styles.input} value={estado} onChangeText={setEstado}/>
               </View>
             </View>
 
@@ -92,8 +260,17 @@ const Profile_Address: React.FC<Props> = ({navigation}) => {
 
 
           <View style={styles.button_container}>
-            <Pressable style={styles.button}
+            <Pressable style={styles.button} onPress={handleUpdateInfo}
                        android_ripple={{ color: 'lightgray' }}>
+                        <CustomModal
+                                title={functionData.title}
+                                info={functionData.info}
+                                color={functionData.color}
+                                icon={functionData.icon}
+                                isVisible={isModalVisible}
+                                onEvent={handleModalClose}
+                                btn={functionData.btn}
+                                loop={inLoop}/>
               <Text style={styles.text_button}>Actualizar domicilio</Text>
             </Pressable>
           </View>

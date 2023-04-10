@@ -4,10 +4,11 @@
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
+import CustomModal from '../components/CustomModal'
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -16,11 +17,38 @@ interface Props {
 
 const Home: React.FC<Props> = ({navigation, route}) => {
 
-    const { userInfo } = route.params;
-    const { nombre } = userInfo;
+    const { userID } = route.params;
+    const [userInfo, setUserInfo] = useState<any>()
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [inLoop, setInLoop] = useState(false);
+
+    const [functionData, setFunctionData] = useState({
+        title: '',
+        info: '',
+        color: '',
+        icon: null,
+        btn: '',
+    });
+
+    const handleData = () => {
+        setFunctionData({
+          title: 'Ocurrió un error al obtener tu información',
+          info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+          color: '#C71D1D',
+          icon: require('../animations/sorry_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
 
     useEffect(() => {
         const date = new Date();
@@ -37,6 +65,35 @@ const Home: React.FC<Props> = ({navigation, route}) => {
         setGreetingIcon(3)
         }
     }, []);
+
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            _id : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_data',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setUserInfo(data);
+                } else {
+                    handleData()
+                }
+            }})
+          })
+          .catch((error) => {
+            handleData()
+            console.log(error)
+          })
+    }, [userID._id])
   
     
   return (
@@ -45,17 +102,27 @@ const Home: React.FC<Props> = ({navigation, route}) => {
             <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
 
+                    <CustomModal 
+                    title={functionData.title}
+                    info={functionData.info}
+                    color={functionData.color}
+                    icon={functionData.icon}
+                    isVisible={isModalVisible}
+                    onEvent={handleCloseModal}
+                    btn={functionData.btn}
+                    loop={inLoop}/>
+
                     {/*Este apartado funciona como la parte superior de la pantalla de inicio*/}
                     <View style={styles.head}>
                         
                         <View style={styles.profilePhoto_container}>
-                            <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
+                            <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userID: userID})}>
                                 <Image style={styles.profilePhoto} source={require('../img/D&D.jpg')}/>
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.welcomeText_container}>
-                            <Text style={styles.welcomeText1}>Hola {nombre}</Text>
+                            <Text style={styles.welcomeText1}>Hola {userInfo ? userInfo.nombre : ''}</Text>
                             <View style={styles.welcomeText2_container}>
                                 <Text style={styles.welcomeText2}>{greeting}</Text>
                                 <Image style={styles.welcomeIcon} source={greetingIcon === 1 ? require('../img/moon_icon.png') : greetingIcon === 2 ? require('../img/sun_icon.png') : require('../img/Cara_sonrisa.png')}/>
@@ -74,7 +141,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
                     <View style={styles.main_container_card_view}>
-                        {userInfo.tarjeta.length === 0 ? (
+                        {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
                                 <Pressable onPressIn={() => navigation.navigate('Card_Request', { userInfo: userInfo })}>
                                     <View style={styles.borderRequest}>
                                         <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
@@ -159,12 +226,12 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </Pressable>
 
-                                <Pressable>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userID: userID})}>
                                     <View style={styles.servicesContainerOrange}>
                                         <Image style={styles.iconServices} source={require('../img/Perfil.png')}/>
                                         <Text style={styles.textNameService}>Mi{'\n'}perfil</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
                                 <Pressable>
                                     <View style={styles.servicesContainerRed}>
@@ -268,7 +335,6 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                         
                     </View>
-
                 </View>
             </ScrollView>
         </SafeAreaView>

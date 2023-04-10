@@ -2,25 +2,101 @@
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { NavigationProp, RouteProp } from '@react-navigation/native';
+import { format } from 'date-fns';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
-    navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Profile: React.FC<Props> = ({navigation}) => {
+const Profile: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+  const [userInfo, setUserInfo] = useState<any>()
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
+  const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Ocurrió un error al obtener tu información',
+      info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'OK',
+    });
+    setInLoop(false)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+      setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_data',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setUserInfo(data);
+            } else {
+                handleData()
+            }
+        }})
+      })
+      .catch((error) => {
+        handleData()
+        console.log(error)
+      })
+  }, [userID._id])
+
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
+            <CustomModal
+                    title={functionData.title}
+                    info={functionData.info}
+                    color={functionData.color}
+                    icon={functionData.icon}
+                    isVisible={isModalVisible}
+                    onEvent={handleCloseModal}
+                    btn={functionData.btn}
+                    loop={inLoop}/>
+
 
           <View style={styles.head}>
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID:userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -36,15 +112,17 @@ const Profile: React.FC<Props> = ({navigation}) => {
             </View>
 
             <View style={styles.full_name_container}>
-              <Text style={styles.text_fullname}>Anthony Martinez</Text>
-              <Text style={styles.text_date}>Miembro desde 15/03/2023</Text>
+              <Text style={styles.text_fullname}>
+                {userInfo ? userInfo.nombre : ''} {userInfo ? userInfo.apellido_paterno : ''} {userInfo ? userInfo.apellido_materno : ''}
+              </Text>
+              <Text style={styles.text_date}>Miembro desde {fechaFormateada}</Text>
             </View>
           </View>
 
 
           <Text style={styles.text_divider}>Datos personales</Text>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info', {userID:userID})}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Editar.png')} />
@@ -53,14 +131,14 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Información personal</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info', {userID:userID})}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address', {userID:userID})}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Domicilio.png')} />
@@ -69,14 +147,14 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Domicilio</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address', {userID:userID})}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password', {userID:userID})}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Key.png')} />
@@ -85,14 +163,14 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Cambiar contraseña</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password', {userID:userID})}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint')}>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint', {userID:userID})}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/huella.png')} />
@@ -101,7 +179,7 @@ const Profile: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Huella dactilar</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint')}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Fingerprint', {userID:userID})}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>

@@ -1,15 +1,19 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ToggleSwitch from 'toggle-switch-react-native';
 
 interface Props {
-  navigation: any;
-}
+    navigation: NavigationProp<any, any>;
+    route: RouteProp<any, any>;
+  }
 
-const Profile_Fingerprint: React.FC<Props> = ({navigation}) => {
+const Profile_Fingerprint: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
 
   const [toggleValue, setToggleValue] = useState(false);
 
@@ -25,7 +29,7 @@ const Profile_Fingerprint: React.FC<Props> = ({navigation}) => {
 
           <View style={styles.head}>
               <View style={styles.menu_container}>
-                <TouchableOpacity onPressOut={() => navigation.navigate('Profile')}>
+                <TouchableOpacity onPressOut={() => navigation.navigate('Profile', {userID : userID})}>
                   <Image style={styles.iconMenu} source={require('../img/back.png')}/>
                 </TouchableOpacity>
               </View>
