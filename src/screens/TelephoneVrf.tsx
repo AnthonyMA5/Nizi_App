@@ -178,10 +178,10 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
   const handleModalCloseAndNavigate = (responseData: any) => {
     if (responseData.admin && responseData.admin === true) { // Verificar si admin es verdadero
       setIsModalVisible(false);
-      navigation.navigate('Home_Admin', { userInfo: responseData });
+      navigation.navigate('Home_Admin', { userID: responseData });
     } else {
       setIsModalVisible(false);
-      navigation.navigate('Home', { userInfo: responseData });
+      navigation.navigate('Home', { userID: responseData });
     }
   };
 

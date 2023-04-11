@@ -93,7 +93,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
             handleData()
             console.log(error)
           })
-    }, [userID._id])
+    }, [])
   
     
   return (

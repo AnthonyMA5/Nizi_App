@@ -16,7 +16,6 @@ import {
 import CircularProgress from 'react-native-circular-progress-indicator';
 import CustomModal from '../components/CustomModal';
 import { NavigationProp, RouteProp } from '@react-navigation/native';
-import ModalDecision from '../components/ModalDecision';
 
 
 interface Props {
@@ -557,7 +556,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
     const handleCloseModal = () => {
         if (functionData.title === 'Tu solicitud ha sido enviada') {
             setIsModalVisible(false);
-            navigation.navigate('Home', {userInfo: userInfo});
+            navigation.navigate('Home', {userInfo: userInfo._id});
         } else {
             setIsModalVisible(false);
         }
@@ -610,7 +609,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
 
                     <View style={styles.head}>
                         <View style={styles.menu_container}>
-                            <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userInfo: userInfo})}>
+                            <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID: userInfo._id})}>
                                 <Image style={styles.iconMenu} source={require('../img/x.png')}/>
                             </TouchableOpacity>
                         </View>
