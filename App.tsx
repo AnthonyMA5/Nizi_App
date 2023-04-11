@@ -65,6 +65,7 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Ticket" component={Ticket} />
         <Stack.Screen name="Card_Request" component={CardRequest} />
+        <Stack.Screen name="Support" component={CustomerSupport} />
 
         {/*Este apartado es para las vistas de administrador*/}
 

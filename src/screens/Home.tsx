@@ -176,55 +176,115 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                         <View style={styles.services_mainContainer}>
 
                             <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
-                            
-                                <Pressable onPressIn={()=>navigation.navigate('Recharge')}>
-                                    <View style={styles.servicesContainerGreen}>
-                                        <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
-                                        <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
-                                    </View>
-                                </Pressable>
 
-                                <Pressable>
-                                    <View style={styles.servicesContainerPink}>
-                                        <Image style={styles.iconServices} source={require('../img/Movimientos.png')}/>
-                                        <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
-                                    </View>
-                                </Pressable>
+                                <View>
+                                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        disabled={true}>
+                                            <View style={styles.servicesContainerGray}>
+                                                <Image style={styles.iconServicesDisabled} source={require('../img/Dinero.png')}/>
+                                                <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity onPressIn={()=>navigation.navigate('Recharge')}>
+                                            <View style={styles.servicesContainerGreen}>
+                                                <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
+                                                <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
 
-                                <Pressable>
-                                    <View style={styles.servicesContainerSkyBlue}>
-                                        <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
-                                        <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
-                                    </View>
-                                </Pressable>
+                                <View>
+                                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        disabled={true}>
+                                            <View style={styles.servicesContainerGray}>
+                                                <Image style={styles.iconServicesDisabled} source={require('../img/Movimientos.png')}/>
+                                                <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity onPressIn={()=>navigation.navigate('Recharge')}>
+                                            <View style={styles.servicesContainerPink}>
+                                                <Image style={styles.iconServices} source={require('../img/Movimientos.png')}/>
+                                                <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
 
-                                <Pressable>
-                                    <View style={styles.servicesContainerBlue}>
-                                        <Image style={styles.iconServices} source={require('../img/pedidos_icon.png')}/>
-                                        <Text style={styles.textNameService}>Mis{'\n'}pedidos</Text>
-                                    </View>
-                                </Pressable>
+                                <View>
+                                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        disabled={true}>
+                                            <View style={styles.servicesContainerGray}>
+                                                <Image style={styles.iconServicesDisabled} source={require('../img/Tarjeta.png')}/>
+                                                <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity>
+                                            <View style={styles.servicesContainerSkyBlue}>
+                                                <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
+                                                <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
 
-                                <Pressable>
+                                <View>
+                                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        disabled={true}>
+                                            <View style={styles.servicesContainerGray}>
+                                                <Image style={styles.iconServicesDisabled} source={require('../img/pedidos_icon.png')}/>
+                                                <Text style={styles.textNameService}>Mis{'\n'}pedidos</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity>
+                                            <View style={styles.servicesContainerBlue}>
+                                                <Image style={styles.iconServices} source={require('../img/pedidos_icon.png')}/>
+                                                <Text style={styles.textNameService}>Mis{'\n'}pedidos</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+
+                                <TouchableOpacity onPress={()=>navigation.navigate('Support', {userID: userID})}>
                                     <View style={styles.servicesContainerPurple}>
                                         <Image style={styles.iconServices} source={require('../img/support_icon.png')}/>
                                         <Text style={styles.textNameService}>Atención{'\n'}al cliente</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
-                                <Pressable>
+                                <TouchableOpacity>
                                     <View style={styles.servicesContainerYellow}>
                                         <Image style={styles.iconServices} source={require('../img/Notificaciones.png')}/>
                                         <Text style={styles.textNameService}>Mis{'\n'}mensajes</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
-                                <Pressable>
-                                    <View style={styles.servicesContainerProfile}>
-                                        <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                                        <Text style={styles.textNameService}>Menú{'\n'}digital</Text>
-                                    </View>
-                                </Pressable>
+                                <View>
+                                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        disabled={true}>
+                                            <View style={styles.servicesContainerGray}>
+                                                <Image style={styles.iconServicesDisabled} source={require('../img/menu_icon.png')}/>
+                                                <Text style={styles.textNameService}>Menú{'\n'}digital</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity>
+                                            <View style={styles.servicesContainerProfile}>
+                                                <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
+                                                <Text style={styles.textNameService}>Menú{'\n'}digital</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
 
                                 <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userID: userID})}>
                                     <View style={styles.servicesContainerOrange}>
@@ -233,12 +293,12 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </TouchableOpacity>
 
-                                <Pressable>
+                                <TouchableOpacity>
                                     <View style={styles.servicesContainerRed}>
                                         <Image style={styles.iconServices} source={require('../img/Comercios.png')}/>
                                         <Text style={styles.textNameService}>Comercios{'\n'}disponibles</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
                             </ScrollView>
 
@@ -536,6 +596,12 @@ const styles = StyleSheet.create({
         height: 55,
     },
 
+    iconServicesDisabled:{
+        width: 55, 
+        height: 55,
+        opacity: 0.35,
+    },
+
     servicesContainerProfile:{
         width: 125,
         height: 170,
@@ -609,6 +675,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         backgroundColor: '#E9F9E4',
+        borderRadius: 10,
+        marginRight: 20,
+    },
+
+    servicesContainerGray:{
+        width: 125,
+        height: 170,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: '#D4D4D4',
         borderRadius: 10,
         marginRight: 20,
     },

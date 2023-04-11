@@ -1,16 +1,44 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Linking } from 'react-native'
 import React from 'react'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 
 interface Props {
-    navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const CustomerSupport: React.FC<Props> = ({navigation}) => {
+const CustomerSupport: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+
+  const handleFB = () => {
+    Linking.openURL('https://www.facebook.com/profile.php?id=100091813294051&mibextid=ZbWKwL');
+  };
+
+  const handleIG = () => {
+    Linking.openURL('https://instagram.com/nizi_off_?igshid=ZDdkNTZiNTM=');
+  };
+
+  const handleTW = () => {
+    Linking.openURL('https://twitter.com/Nizi_Official_?t=ltop2pBIcMtgxEQleUCNJg&s=08');
+  };
+
+  const handleWEB = () => {
+    Linking.openURL('https://nizi.red-utz.com/');
+  };
+
+  const handleEMail = () => {
+    Linking.openURL('mailto:nizi.corporation@gmail.com?subject=Atención al Cliente&body=Hola, buen día.');
+  };
+
+  const handleTelephone = () => {
+    Linking.openURL('tel:3334559076');
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
@@ -19,8 +47,8 @@ const CustomerSupport: React.FC<Props> = ({navigation}) => {
 
           <View style={styles.head}>
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID: userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -38,48 +66,48 @@ const CustomerSupport: React.FC<Props> = ({navigation}) => {
 
           <Text style={styles.text_divider}>Redes sociales</Text>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+          <TouchableOpacity onPressOut={handleFB}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/facebook_logo.png')} />
               </View>
               <View style={styles.text_button_container}>
-                <Text style={styles.text_button}>Nizi Official</Text>
+                <Text style={styles.text_button}>Nizi_Official</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Info')}>
+                <TouchableOpacity onPressOut={handleFB}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
+          <TouchableOpacity onPressOut={handleIG}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/instagram_logo.png')} />
               </View>
               <View style={styles.text_button_container}>
-                <Text style={styles.text_button}>@Nizi_Official</Text>
+                <Text style={styles.text_button}>@Nizi_Off_</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Address')}>
+                <TouchableOpacity onPressOut={handleIG}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
+          <TouchableOpacity onPressOut={handleTW}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/twitter_logo.png')} />
               </View>
               <View style={styles.text_button_container}>
-                <Text style={styles.text_button}>@Nizi_Official</Text>
+                <Text style={styles.text_button}>@Nizi_Official_</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile_Password')}>
+                <TouchableOpacity onPressOut={handleTW}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
@@ -88,7 +116,7 @@ const CustomerSupport: React.FC<Props> = ({navigation}) => {
 
           <Text style={styles.text_divider}>Canales de comunicación</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={handleWEB}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/White_t_logo.png')} />
@@ -97,30 +125,30 @@ const CustomerSupport: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Nizi Website</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={handleWEB}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={handleEMail}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/email_icon.png')} />
               </View>
               <View style={styles.text_button_container}>
-                <Text style={styles.text_button}>contacto@nizi.com</Text>
+                <Text style={styles.text_button}>nizi.corporation@gmail.com</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={handleEMail}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPressOut={handleTelephone}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/telephone_icon.png')} />
@@ -129,7 +157,7 @@ const CustomerSupport: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>33 3455 9076</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPressOut={handleTelephone}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
