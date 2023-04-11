@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
-import CustomModal from '../components/CustomModal';
+import DesitionModal from '../components/DesitionModal';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -18,34 +18,21 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
   const { userID } = route.params;
   const [userInfo, setUserInfo] = useState<any>()
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [inLoop, setInLoop] = useState(false);
 
   const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
   const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
 
-  const [functionData, setFunctionData] = useState({
-    title: '',
-    info: '',
-    color: '',
-    icon: null,
-    btn: '',
-  });
-
-  const handleData = () => {
-    setFunctionData({
-      title: 'Ocurrió un error al obtener tu información',
-      info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
-      color: '#C71D1D',
-      icon: require('../animations/sorry_icon.json'),
-      btn: 'OK',
-    });
-    setInLoop(false)
-    setIsModalVisible(true);
-  };
-
   const handleCloseModal = () => {
       setIsModalVisible(false);
   };
+
+  const handleLogin = () => {
+    navigation.navigate('Login')
+  };
+
+  const handleDeleteAccount = () => {
+    deleteAccount();
+  }
 
   useEffect(() => {
     const documentLog = JSON.stringify({
@@ -66,32 +53,87 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
               console.log(data);
               setUserInfo(data);
             } else {
-                handleData()
+                Alert.alert('No pudimos obtener tu información, intenta reiniciar la aplicación o ingresar más tarde.')
             }
         }})
       })
       .catch((error) => {
-        handleData()
+        Alert.alert('No pudimos obtener tu información, intenta reiniciar la aplicación o ingresar más tarde.')
         console.log(error)
       })
   }, [userID._id])
+
+  const [desitionData, setDesitionData] = useState({
+    title: '',
+    info: '',
+    successColor: '',
+    cancelColor: '',
+    icon: null,
+    successBtn: '',
+    cancelBtn: '',
+  });
+
+
+  const handleDesition = () => {
+    setDesitionData({
+      title: '¿Deseas cerrar tu sesión?',
+      info: 'Recuerda que para acceder a tu cuenta deberás iniciar sesión nuevamente.',
+      successColor: '#43BFEA',
+      cancelColor: '#43BFEA',
+      icon: require('../animations/warning_icon.json'),
+      successBtn: 'Si, quiero cerrar mi sesión',
+      cancelBtn: 'No, mantener mi sesión iniciada',
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleCancelAccount = () => {
+    setDesitionData({
+      title: '¿Quieres eliminar tu cuenta?',
+      info: 'Si eliminas tu cuenta ya no podras acceder más a Nizi y deberás crear una cuenta nueva.',
+      successColor: '#EA4343',
+      cancelColor: '#00BA87',
+      icon: require('../animations/sorry_icon.json'),
+      successBtn: 'Si, quiero eliminar mi cuenta',
+      cancelBtn: 'No, quiero mantener mi cuenta',
+    });
+    setIsModalVisible(true);
+  };
+
+  const deleteAccount = () => {
+    const documentLog = JSON.stringify({
+      _id : userID._id,
+    });
+    fetch('http://192.168.0.3:3000/delete_account',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      response.text().then((text) => {
+        if (text && text.length > 0) {
+          const data = JSON.parse(text);
+          if (data) {
+            console.log(data);
+            navigation.navigate('Login');
+          } else {
+            Alert.alert('No pudimos eliminar tu cuenta, intenta reiniciar la aplicación o intentarlo más tarde.')
+          }
+      }})
+    })
+    .catch((error) => {
+      Alert.alert('No pudimos eliminar tu cuenta, intenta reiniciar la aplicación o intentarlo más tarde.')
+      console.log(error)
+    })
+  }
 
 
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-
-            <CustomModal
-                    title={functionData.title}
-                    info={functionData.info}
-                    color={functionData.color}
-                    icon={functionData.icon}
-                    isVisible={isModalVisible}
-                    onEvent={handleCloseModal}
-                    btn={functionData.btn}
-                    loop={inLoop}/>
-
 
           <View style={styles.head}>
             <View style={styles.menu_container}>
@@ -188,7 +230,18 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
 
           <Text style={styles.text_divider}>Mi cuenta</Text>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleDesition}>
+            <DesitionModal
+              title={desitionData.title}
+              info={desitionData.info}
+              successColor={desitionData.successColor}
+              cancelColor={desitionData.cancelColor}
+              icon={desitionData.icon}
+              successBtn={desitionData.successBtn}
+              cancelBtn={desitionData.cancelBtn}
+              isVisible={isModalVisible}
+              successEvent={handleLogin}
+              cancelEvent={handleCloseModal} />
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Door.png')} />
@@ -197,14 +250,25 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
                 <Text style={styles.text_button_sign_out}>Cerrar sesión</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleDesition}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleCancelAccount}>
+            <DesitionModal
+              title={desitionData.title}
+              info={desitionData.info}
+              successColor={desitionData.successColor}
+              cancelColor={desitionData.cancelColor}
+              icon={desitionData.icon}
+              successBtn={desitionData.successBtn}
+              cancelBtn={desitionData.cancelBtn}
+              isVisible={isModalVisible}
+              successEvent={handleDeleteAccount}
+              cancelEvent={handleCloseModal} />
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/advertencia.png')} />
@@ -213,7 +277,7 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
                 <Text style={styles.text_button_delete_account}>Eliminar cuenta</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleCancelAccount}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
