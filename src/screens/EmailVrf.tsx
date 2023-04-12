@@ -308,7 +308,7 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
           <Text style={styles.step}>Paso 1 de 2</Text>
           <Text style={styles.title}>Verifica tu correo electrónico</Text>
           <Text style={styles.subtitle}>
-            {userInfoObj.nombre} hemos enviado un código a tu correo electrónico para verificar que
+            Hemos enviado un código a tu correo electrónico para verificar que
             te pertenece, si no lo has recibido espera unos minutos además recuerda revisar tu bandeja de spam.
           </Text>
           <View style={styles.code_container}>

@@ -269,7 +269,6 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
           const data = JSON.parse(text);
           if (data) {
             console.log(data);
-            setUserData(data);
             handleSuccessVerifyCode();
           }
         } else {
