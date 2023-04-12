@@ -2,78 +2,130 @@
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image } from 'react-native'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { NavigationProp, RouteProp } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Messagges: React.FC<Props> = ({navigation}) => {
+const Messagges: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+
+  const [messagesInfo, setMessagesInfo] = useState<any>();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_messages',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setMessagesInfo(data);
+            } else {
+              console.log(data);
+              handleData()
+            }
+        }})
+      })
+      .catch((error) => {
+        handleData()
+        console.log(error)
+      })
+  }, [])
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Ocurrió un error al obtener tu información',
+      info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'OK',
+    });
+    setInLoop(false)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
-        {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
-        <View style={styles.head}>
+            <CustomModal
+              title={functionData.title}
+              info={functionData.info}
+              color={functionData.color}
+              icon={functionData.icon}
+              isVisible={isModalVisible}
+              onEvent={handleCloseModal}
+              btn={functionData.btn}
+              loop={inLoop}/>
 
-          <View style={styles.menu_container}>
-            <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-              <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
-            </TouchableOpacity>
+          {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
+          <View style={styles.head}>
+
+            <View style={styles.menu_container}>
+              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID : userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.title_container}>
+              <Text style={styles.section_title}>Mensajes</Text>
+            </View>
+
           </View>
 
-          <View style={styles.title_container}>
-            <Text style={styles.section_title}>Mensajes</Text>
-          </View>
+          {/*Este apartado es enfocado en generar cada recuadro de los mensajes*/}
 
-        </View>
+          {messagesInfo === undefined ? (
+            <View style={styles.container_noMessages}>
+              <Text style={styles.noMessages}>Aún no tienes mensajes</Text>
+            </View>
+          ) : (
+            <View style={styles.message_container}>
 
-        {/*Este apartado es enfocado en generar cada recuadro de los mensajes*/}
+              <View style={styles.left}>
+                <Image style={styles.icon_msg} source={require('../img/Sonrisa.png')}/>
+              </View>
 
-        <View style={styles.message_container}>
+              <View style={styles.right}>
+                <Text style={styles.title_msg}>Cuenta creada</Text>
+                <Text style={styles.content_msg}>Te damos la más cordial bienvenida a la familia Nizi.</Text>
+                <Text style={styles.hour_msg}>Hace 1 hora</Text>
+              </View>
 
-          <View style={styles.left}>
-            <Image style={styles.icon_msg} source={require('../img/Seguridad.png')}/>
-          </View>
-
-          <View style={styles.right}>
-            <Text style={styles.title_msg}>Revisión de seguridad</Text>
-            <Text style={styles.content_msg}>Te recomendamos revisar tus datos personales y tu tarjeta para mantener tus compras seguras.</Text>
-            <Text style={styles.hour_msg}>Hace 5 minutos</Text>
-          </View>
-
-        </View>
-
-        <View style={styles.message_container}>
-
-          <View style={styles.left}>
-            <Image style={styles.icon_msg} source={require('../img/Email_recibido.png')}/>
-          </View>
-
-          <View style={styles.right}>
-            <Text style={styles.title_msg}>Solicitud enviada</Text>
-            <Text style={styles.content_msg}>Hemos recibido tu solicitud, pronto tendrás una respuesta.</Text>
-            <Text style={styles.hour_msg}>Hace 25 minutos</Text>
-          </View>
-
-        </View>
-
-        <View style={styles.message_container}>
-
-          <View style={styles.left}>
-            <Image style={styles.icon_msg} source={require('../img/Sonrisa.png')}/>
-          </View>
-
-          <View style={styles.right}>
-            <Text style={styles.title_msg}>Cuenta creada</Text>
-            <Text style={styles.content_msg}>Te damos la más cordial bienvenida a la familia Nizi.</Text>
-            <Text style={styles.hour_msg}>Hace 1 hora</Text>
-          </View>
-
-        </View>
+            </View>
+          )}
 
         </View>
       </ScrollView>
@@ -104,6 +156,15 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
 
+  container_noMessages:{
+    flex: 1,
+    marginTop: '100%',
+    marginBottom: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    backgroundColor: '#FFF',
+  },
+
   head:{
     flexDirection: 'row',
     marginTop: 35,
@@ -127,6 +188,13 @@ const styles = StyleSheet.create({
       fontFamily: 'DMSans-Bold',
       fontSize: 21,
       color: '#000000',
+  },
+
+  noMessages:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 20,
+    color: '#000000',
+    textAlign: 'center',
   },
 
   message_container:{

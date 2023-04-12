@@ -345,7 +345,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity>
+                                <TouchableOpacity onPressOut={()=>navigation.navigate('Messagges', {userID : userID})}>
                                     <View style={styles.servicesContainerYellow}>
                                         <Image style={styles.iconServices} source={require('../img/Notificaciones.png')}/>
                                         <Text style={styles.textNameService}>Mis{'\n'}mensajes</Text>

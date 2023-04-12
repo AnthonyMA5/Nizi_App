@@ -341,7 +341,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                             <View style={styles.sectionStyle}>
                                 <TextInput style={styles.input} placeholder= 'Ingresa tu número telefónico' 
                                 placeholderTextColor={'#878787'} value={telefono} onChangeText={setTelefono}
-                                keyboardType='number-pad'/>
+                                keyboardType='phone-pad'/>
                             </View>
                         </View>
 
