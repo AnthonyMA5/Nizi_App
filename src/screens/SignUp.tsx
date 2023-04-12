@@ -112,7 +112,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
     const handleInvalidPhone = () => {
         setFunctionData({
           title: '¡Ups!',
-          info: 'El número telefónico debe \ncontener 12 dígitos.\n\nCódigo de tu pais a 2 dígitos \nseguido de tu número a 10 dígitos.',
+          info: 'El número telefónico debe \ncontener 13 dígitos.\n\nCódigo de tu pais a 3 dígitos (Ej. +52) \nseguido de tu número a 10 dígitos.',
           color: '#80D5FF',
           icon: require('../animations/warning_icon.json'),
           btn: 'Entendido',
@@ -186,7 +186,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
                 handleInputs()
             } else if (toggleCheckBox === false) {
                 handleTermsConditions()
-            } else if (telefono.length < 12 || telefono.length > 12) {
+            } else if (telefono.length < 13 || telefono.length > 13) {
                 handleInvalidPhone()
             } else if (contrasena.length < 8) {
                 handleInvalidPass()

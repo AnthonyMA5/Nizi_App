@@ -1,4 +1,6 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable eol-last */
@@ -9,6 +11,8 @@ import { ScrollView } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
 import CustomModal from '../components/CustomModal'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -19,12 +23,38 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
     const { userID } = route.params;
     const [userInfo, setUserInfo] = useState<any>()
+    const [solicitudInfo, setSolicitudInfo] = useState<any>();
+
+    const fechaSolicitud = solicitudInfo && solicitudInfo.fecha ? new Date(solicitudInfo.fecha) : null;
+    const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+    const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inLoop, setInLoop] = useState(false);
+
+    const Anuncios = () => {
+        const [anuncios, setAnuncios] = useState([
+          require('../img/anuncio1.jpeg'),
+          require('../img/anuncio2.jpg'),
+          require('../img/anuncio3.jpg'),
+        ]);
+      
+        return (
+          <View style={styles.sectionContainer}>
+            <Text style={styles.textTitleSection}>Anuncios</Text>
+            <View style={styles.announcementsContainer}>
+              <ScrollView horizontal={true} style={{flex: 1}}>
+                {anuncios.map((anuncio, index) => (
+                  <Image key={index} source={anuncio} style={styles.announcement_style} />
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        );
+    };
 
     const [functionData, setFunctionData] = useState({
         title: '',
@@ -95,6 +125,34 @@ const Home: React.FC<Props> = ({navigation, route}) => {
           })
     }, [])
   
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            _id : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_solicitud',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setSolicitudInfo(data);
+                } else {
+                    handleData()
+                }
+            }})
+          })
+          .catch((error) => {
+            handleData()
+            console.log(error)
+          })
+    }, [])
     
   return (
 
@@ -138,35 +196,62 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                         </View>
 
                     </View>
-
+                    
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
                     <View style={styles.main_container_card_view}>
-                        {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                <Pressable onPressIn={() => navigation.navigate('Card_Request', { userInfo: userInfo })}>
-                                    <View style={styles.borderRequest}>
-                                        <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
-                                        <Text style={styles.textNameService}>Solicitar tarjeta</Text>
+                        { solicitudInfo !== undefined ? (
+                            <View style={styles.yellow_container}>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.subtitle1}>Solicitud</Text>
                                     </View>
-                                </Pressable>
-                            ) : (
-                                <Pressable>
-                                    <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
-                                        <View style={styles.marginCardContainer}>
-                                            <View style={styles.headCard}>
-                                                <View style={styles.containerTextCard}>
-                                                    <Text style={styles.titleCard}>Nizi Card</Text>
-                                                </View>
-                                                <View style={styles.containerIconCard}>
-                                                    <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
-                                                </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.orange_subtitle}>{solicitudInfo ? solicitudInfo.estado : ''}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.subtitle_container}>
+                                    <View style={styles.left}>
+                                        <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                    </View>
+                                    <View style={styles.right}>
+                                        <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.divisor} />
+                                <Text style={styles.subtitle1}>Solicitante</Text>
+                                <View style={styles.subtitle_container}>
+                                    <View>
+                                        <Text style={styles.light_subtitle}>{userInfo ? userInfo.nombre : ''} {userInfo ? userInfo.apellido_paterno : ''} {userInfo ? userInfo.apellido_materno : ''}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        ) : userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
+                            <Pressable onPressIn={() => navigation.navigate('Card_Request', { userInfo: userInfo })}>
+                                <View style={styles.borderRequest}>
+                                    <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
+                                    <Text style={styles.textNameService}>Solicitar tarjeta</Text>
+                                </View>
+                            </Pressable>
+                        ) : (
+                            <>
+                            <Pressable>
+                                <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
+                                    <View style={styles.marginCardContainer}>
+                                        <View style={styles.headCard}>
+                                            <View style={styles.containerTextCard}>
+                                                <Text style={styles.titleCard}>Nizi Card</Text>
                                             </View>
-                                            <Text style={styles.moneyTextCard}>$500.00</Text>
-                                            <Text style={styles.numberTextCard}>**** **** **** **89</Text>
+                                            <View style={styles.containerIconCard}>
+                                                <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
+                                            </View>
                                         </View>
-                                    </LinearGradient>
-                                </Pressable>
-                            )
-                        }
+                                        <Text style={styles.moneyTextCard}>$500.00</Text>
+                                        <Text style={styles.numberTextCard}>**** **** **** **89</Text>
+                                    </View>
+                                </LinearGradient>
+                            </Pressable>
+                            </>
+                        )}
                     </View>
                     {/*Este apartado funciona como la sección de Servicios*/}
 
@@ -308,93 +393,70 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                     {/*Este apartado funciona como la sección de Anuncios*/}
 
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.textTitleSection}>Anuncios</Text>
-                        <View style={styles.announcementsContainer}>
-                            <ScrollView horizontal={true} style={{flex: 1}}>
-                                <Image source={require('../img/anuncio1.jpeg')} style={styles.announcement_style}/>
-                                <Image source={require('../img/anuncio2.jpg')} style={styles.announcement_style}/>
-                                <Image source={require('../img/anuncio3.jpg')} style={styles.announcement_style}/>
-                            </ScrollView>
-                        </View>
-                    </View>
+                    <Anuncios />
                     
                     <View style={[styles.sectionContainer, {marginBottom: 30}]}>
 
-                        <View style={styles.movementTitles}>
-                            <View style={styles.movementText1}>
-                                <Text style={styles.textTitleSection}>Actividad Reciente</Text>
-                            </View>
-                            <View style={styles.movementText2}>
-                                <TouchableOpacity>
-                                    <Text style={styles.textMoreMovements}>Ver más</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        <View style={styles.movementContainer}>
-
-                            <View style={styles.iconMainMovement_container}>
-                                <View style={styles.iconMovement_container}>
-                                    <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
+                        {userInfo && userInfo.tarjeta && userInfo.tarjeta.movimientos ? (
+                            <>
+                                <View style={styles.movementTitles}>
+                                    <View style={styles.movementText1}>
+                                        <Text style={styles.textTitleSection}>Actividad Reciente</Text>
+                                    </View>
+                                    <View style={styles.movementText2}>
+                                        <TouchableOpacity>
+                                            <Text style={styles.textMoreMovements}>Ver más</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
 
-                            <View style={styles.informationMovement_container}>
-                                <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
-                                <Text style={styles.dateText}>26 Febrero, 2023</Text>
-                            </View>
+                                <View style={styles.movementContainer}>
 
-                            <View style={styles.detailMovement_container}>
-                                <Text style={styles.AddmountText}>+ $500.50</Text>
-                                <Text style={styles.hourText}>00:10 A.M</Text>
-                            </View>
+                                    <View style={styles.iconMainMovement_container}>
+                                        <View style={styles.iconMovement_container}>
+                                            <Image style={styles.iconMovement} source={require('../img/Compra.png')}/>
+                                        </View>
+                                    </View>
 
-                        </View>
+                                    <View style={styles.informationMovement_container}>
+                                        <Text style={styles.movementTypeText}>Compra de comida</Text>
+                                        <Text style={styles.dateText}>25 Febrero, 2023</Text>
+                                    </View>
 
-                        <View style={styles.movementContainer}>
+                                    <View style={styles.detailMovement_container}>
+                                        <Text style={styles.RestmountText}>- $200.00</Text>
+                                        <Text style={styles.hourText}>23:25 P.M</Text>
+                                    </View>
 
-                            <View style={styles.iconMainMovement_container}>
-                                <View style={styles.iconMovement_container}>
-                                    <Image style={styles.iconMovement} source={require('../img/Compra.png')}/>
                                 </View>
-                            </View>
 
-                            <View style={styles.informationMovement_container}>
-                                <Text style={styles.movementTypeText}>Compra de comida</Text>
-                                <Text style={styles.dateText}>25 Febrero, 2023</Text>
-                            </View>
+                                <View style={styles.movementContainer}>
 
-                            <View style={styles.detailMovement_container}>
-                                <Text style={styles.RestmountText}>- $200.00</Text>
-                                <Text style={styles.hourText}>23:25 P.M</Text>
-                            </View>
+                                    <View style={styles.iconMainMovement_container}>
+                                        <View style={styles.iconMovement_container}>
+                                            <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
+                                        </View>
+                                    </View>
 
-                        </View>
+                                    <View style={styles.informationMovement_container}>
+                                        <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
+                                        <Text style={styles.dateText}>25 Febrero, 2023</Text>
+                                    </View>
 
-                        <View style={styles.movementContainer}>
+                                    <View style={styles.detailMovement_container}>
+                                        <Text style={styles.AddmountText}>+ $200.00</Text>
+                                        <Text style={styles.hourText}>22:43 P.M</Text>
+                                    </View>
 
-                            <View style={styles.iconMainMovement_container}>
-                                <View style={styles.iconMovement_container}>
-                                    <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
                                 </View>
-                            </View>
-
-                            <View style={styles.informationMovement_container}>
-                                <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
-                                <Text style={styles.dateText}>25 Febrero, 2023</Text>
-                            </View>
-
-                            <View style={styles.detailMovement_container}>
-                                <Text style={styles.AddmountText}>+ $200.00</Text>
-                                <Text style={styles.hourText}>22:43 P.M</Text>
-                            </View>
-
-                        </View>
-
-
+                            </>
+                        ) : (
+                            <>
+                            </>
+                        )}
                         
                     </View>
+
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -825,6 +887,71 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#939393',
         marginTop: 4,
+    },
+
+    yellow_container:{
+        flex: 1,
+        width: '100%',
+        height: 150,
+        backgroundColor: '#FEFDF0',
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 25,
+    },
+
+    subtitle_container:{
+        flex: 1,
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    
+    left:{
+        flex: 0.5,
+        alignItems: 'flex-start',
+    },
+    
+    right:{
+        flex: 0.5,
+        alignItems: 'flex-end',
+    },
+    
+    subtitle1:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#000000',
+        marginBottom: 5,
+    },
+    
+    subtitle2:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#002DCC',
+        marginBottom: 12,
+    },
+    
+    light_subtitle:{
+      fontFamily: 'DMSans-Regular',
+      fontSize: 14,
+      color: '#939393',
+    },
+    
+    light_subtitle2:{
+      fontFamily: 'DMSans-Medium',
+      fontSize: 14,
+      color: '#000',
+    },
+    
+    orange_subtitle:{
+      fontFamily: 'DMSans-Medium',
+      fontSize: 16,
+      color: '#E58009',
+      marginBottom: 5,
+    },
+
+    divisor:{
+        width: '100%',
+        height: 15,
     },
 
 })
