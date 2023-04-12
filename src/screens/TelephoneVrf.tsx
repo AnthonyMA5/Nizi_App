@@ -30,8 +30,6 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
   const userInfo = routeParams ? routeParams.userInfo : null;
   const userInfoObj = userInfo ? JSON.parse(userInfo) : null;
 
-  const [userData, setUserData] = useState(null);
-
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
   const [progress, setProgress] = useState(0.5);
@@ -175,19 +173,9 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
     setIsModalVisible(false);
   };
 
-  const handleModalCloseAndNavigate = (responseData: any) => {
-    if (responseData.admin && responseData.admin === true) { // Verificar si admin es verdadero
-      setIsModalVisible(false);
-      navigation.navigate('Home_Admin', { userID: responseData });
-    } else {
-      setIsModalVisible(false);
-      navigation.navigate('Home', { userID: responseData });
-    }
-  };
-
   const handleModalClose = () => {
     if (functionData.title === 'Tu número telefónico ha sido verificado') {
-      handleModalCloseAndNavigate(userData);
+      navigation.navigate('Login');
     } else {
       handleCloseModal();
     }
