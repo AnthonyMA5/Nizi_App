@@ -371,14 +371,14 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     )}
                                 </View>
 
-                                <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userID: userID})}>
+                                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile', {userID: userID})}>
                                     <View style={styles.servicesContainerOrange}>
                                         <Image style={styles.iconServices} source={require('../img/Perfil.png')}/>
                                         <Text style={styles.textNameService}>Mi{'\n'}perfil</Text>
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity>
+                                <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce', {userID: userID})}>
                                     <View style={styles.servicesContainerRed}>
                                         <Image style={styles.iconServices} source={require('../img/Comercios.png')}/>
                                         <Text style={styles.textNameService}>Comercios{'\n'}disponibles</Text>
