@@ -30,7 +30,7 @@ const Profile_Fingerprint: React.FC<Props> = ({navigation, route}) => {
           <View style={styles.head}>
               <View style={styles.menu_container}>
                 <TouchableOpacity onPressOut={() => navigation.navigate('Profile', {userID : userID})}>
-                  <Image style={styles.iconMenu} source={require('../img/back.png')}/>
+                  <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
                 </TouchableOpacity>
               </View>
 

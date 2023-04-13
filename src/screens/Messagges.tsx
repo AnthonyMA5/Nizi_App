@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Image } from 'react-native'
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import CustomModal from '../components/CustomModal';
+import moment from 'moment';
+import 'moment/locale/es';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -20,6 +22,33 @@ const Messagges: React.FC<Props> = ({navigation, route}) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [inLoop, setInLoop] = useState(false);
+
+  const renderMessages = ({ item }) => (
+    <View style={styles.message_container}>
+
+      <View style={styles.left}>
+      <Image
+        style={styles.icon_msg}
+        source={
+          item.titulo.includes('verificado')
+            ? require('../img/complete_icon.png')
+            : item.titulo.includes('Bienvenido')
+            ? require('../img/Sonrisa.png')
+            : item.titulo.includes('tarjeta')
+            ? require('../img/Tarjeta.png')
+            : require('../img/White_t_logo.png')
+        }
+      />
+      </View>
+
+      <View style={styles.right}>
+        <Text style={styles.title_msg}>{item.titulo}</Text>
+        <Text style={styles.content_msg}>{item.contenido}</Text>
+        <Text style={styles.hour_msg}>{moment(item.fecha).locale('es').fromNow()}</Text>
+      </View>
+
+    </View>
+  );
 
   useEffect(() => {
     const documentLog = JSON.stringify({
@@ -77,58 +106,49 @@ const Messagges: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
+      <View style={styles.container}>
 
-            <CustomModal
-              title={functionData.title}
-              info={functionData.info}
-              color={functionData.color}
-              icon={functionData.icon}
-              isVisible={isModalVisible}
-              onEvent={handleCloseModal}
-              btn={functionData.btn}
-              loop={inLoop}/>
+        <CustomModal
+          title={functionData.title}
+          info={functionData.info}
+          color={functionData.color}
+          icon={functionData.icon}
+          isVisible={isModalVisible}
+          onEvent={handleCloseModal}
+          btn={functionData.btn}
+          loop={inLoop}
+        />
 
-          {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
-          <View style={styles.head}>
-
-            <View style={styles.menu_container}>
-              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID : userID})}>
-                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.title_container}>
-              <Text style={styles.section_title}>Mensajes</Text>
-            </View>
-
+        {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
+        <View style={styles.head}>
+          <View style={styles.menu_container}>
+            <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID : userID})}>
+              <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
+            </TouchableOpacity>
           </View>
 
-          {/*Este apartado es enfocado en generar cada recuadro de los mensajes*/}
+          <View style={styles.title_container}>
+            <Text style={styles.section_title}>Mensajes</Text>
+          </View>
+        </View>
 
+        {/*Este apartado es enfocado en generar cada recuadro de los mensajes*/}
+        <View style={styles.scroll_container}>
           {messagesInfo === undefined ? (
             <View style={styles.container_noMessages}>
               <Text style={styles.noMessages}>Aún no tienes mensajes</Text>
             </View>
           ) : (
-            <View style={styles.message_container}>
-
-              <View style={styles.left}>
-                <Image style={styles.icon_msg} source={require('../img/Sonrisa.png')}/>
-              </View>
-
-              <View style={styles.right}>
-                <Text style={styles.title_msg}>Cuenta creada</Text>
-                <Text style={styles.content_msg}>Te damos la más cordial bienvenida a la familia Nizi.</Text>
-                <Text style={styles.hour_msg}>Hace 1 hora</Text>
-              </View>
-
-            </View>
+            <FlatList
+              data={messagesInfo}
+              renderItem={renderMessages}
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+            />
           )}
-
         </View>
-      </ScrollView>
+
+      </View>
     </SafeAreaView>
   )
 }
@@ -137,8 +157,6 @@ const styles = StyleSheet.create({
 
   main_container:{
     flex: 1,
-    justifyContent: 'center',
-    alignItems:'center',
     backgroundColor: '#FFFFFF',
   },
 
@@ -202,7 +220,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 30,
     borderRadius: 12,
-    backgroundColor: '#F0FEFA',
+    backgroundColor: '#F0F4FE',
   },
 
   left:{
@@ -225,18 +243,17 @@ const styles = StyleSheet.create({
   },
 
   title_msg:{
-    fontFamily: 'DMSans-Bold',
+    fontFamily: 'DMSans-Medium',
     fontSize: 16,
     color: '#000000',
     marginTop: 10,
   },
 
   content_msg:{
-    fontFamily: 'DMSans-Medium',
-    fontSize: 13,
+    fontFamily: 'DMSans-Regular',
+    fontSize: 14,
     color: '#404040',
     marginTop: 5,
-    textAlign: 'justify',
     marginRight: 10,
   },
 
