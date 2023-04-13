@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -30,6 +29,8 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
   const routeParams = route.params;
   const userInfo = routeParams ? routeParams.userInfo : null;
   const userInfoObj = userInfo ? JSON.parse(userInfo) : null;
+
+  const [newData, setNewData] = useState<any>();
   
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
@@ -198,27 +199,10 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
     }
   };
 
-  const handleCloseModalAndNavigate = (documentLog: string) => {
-    setIsModalVisible(false);
-    navigation.navigate('TelephoneV', { userInfo: documentLog });
-  };
-
   const handleModalClose = () => {
     if (functionData.title === 'Tu correo electrónico ha sido verificado') {
-        const documentLog = JSON.stringify({
-            nombre: userInfoObj.nombre,
-            apellido_paterno: userInfoObj.apellido_paterno,
-            apellido_materno: userInfoObj.apellido_materno,
-            telefono: userInfoObj.telefono,
-            email: userInfoObj.email,
-            username: userInfoObj.email,
-            password: userInfoObj.password,
-            estadoEmail: true,
-            numeroEmail: null,
-            estadoTelefono: userInfoObj.estadoTelefono,
-            numeroTelefono: userInfoObj.numeroTelefono,
-        });
-        handleCloseModalAndNavigate(documentLog);
+      navigation.navigate('TelephoneV', { userInfo: newData });
+      handleCloseModal();
     } else {
       handleCloseModal();
     }
@@ -277,6 +261,8 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
       response.text().then((text) => {
         if (text && text.length > 0) {
           const data = JSON.parse(text);
+            console.log(data);
+            setNewData(data);
             handleSuccessVerifyCode();
         } else {
           handleErrorVerifyCode();

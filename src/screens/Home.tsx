@@ -22,7 +22,7 @@ interface Props {
 const Home: React.FC<Props> = ({navigation, route}) => {
 
     const { userID } = route.params;
-    const [userInfo, setUserInfo] = useState<any>()
+    const [userInfo, setUserInfo] = useState<any>();
     const [solicitudInfo, setSolicitudInfo] = useState<any>();
 
     const fechaSolicitud = solicitudInfo && solicitudInfo.fecha ? new Date(solicitudInfo.fecha) : null;

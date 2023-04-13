@@ -28,7 +28,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
 
   const routeParams = route.params;
   const userInfo = routeParams ? routeParams.userInfo : null;
-  const userInfoObj = userInfo ? JSON.parse(userInfo) : null;
+  const userInfoObj = userInfo ? userInfo : null;
 
   const screenWidth = Dimensions.get('window').width;
   const barWidth = screenWidth * 0.5;
@@ -237,6 +237,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
   const verificarCode = () => {
 
     const documentLog = JSON.stringify({
+      _id: userInfoObj._id,
       telefono: userInfoObj.telefono,
       estadoTelefono: true,
       numeroTelefono: codeString,
