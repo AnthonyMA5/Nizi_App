@@ -44,8 +44,6 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
         const handleSubmit = () => {
             if ([name, apellido_p, apellido_m, telephone, email].includes('')) {
                 handleInputs();
-            } else if (telephone.length < 12 || telephone.length > 12) {
-                handleInvalidPhone();
             } else if (!email.trim()) {
                 handleWarningEmail();
             } else if (!validarCorreo(email)) {
@@ -454,7 +452,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
             <Text style={styles.final_title_text}>nos pondremos en contacto contigo vía:{'\n'}</Text>
 
             <Text style={styles.final_title_text}>Teléfono: </Text>
-            <Text style={styles.final_text}>+{telephone}{'\n'}</Text>
+            <Text style={styles.final_text}>{telephone}{'\n'}</Text>
 
             <Text style={styles.final_title_text}>Correo electrónico: </Text>
             <Text style={styles.final_text}>{email}{'\n'}</Text>
