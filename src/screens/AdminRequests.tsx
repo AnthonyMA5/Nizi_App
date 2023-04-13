@@ -17,6 +17,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
+  const solicitudesFiltradas = solicitudesInfo ? solicitudesInfo.filter((solicitud) => solicitud.estado === selectedCategory) : [];
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -96,13 +97,13 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                     <TouchableOpacity style={[
                       styles.categories_container,
-                      selectedCategory === 'Aprobadas' &&
+                      selectedCategory === 'Aprobada' &&
                       styles.selected_category_container]}
-                      onPress={() => handleCategorySelect('Aprobadas')}>
+                      onPress={() => handleCategorySelect('Aprobada')}>
 
                       <View style={styles.catg_left}>
                         <Text style={[styles.catg_text,
-                          selectedCategory === 'Aprobadas' &&
+                          selectedCategory === 'Aprobada' &&
                           styles.selected_category_text]}>Aprobadas</Text>
                       </View>
 
@@ -114,13 +115,13 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                     <TouchableOpacity style={[
                       styles.categories_container,
-                      selectedCategory === 'Rechazadas' &&
+                      selectedCategory === 'Rechazada' &&
                       styles.selected_category_container]}
-                      onPress={() => handleCategorySelect('Rechazadas')}>
+                      onPress={() => handleCategorySelect('Rechazada')}>
 
                       <View style={styles.catg_left}>
                         <Text style={[styles.catg_text,
-                          selectedCategory === 'Rechazadas' &&
+                          selectedCategory === 'Rechazada' &&
                           styles.selected_category_text]}>Rechazadas</Text>
                       </View>
 
@@ -133,47 +134,101 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                 </ScrollView>
               </View>
 
-              { solicitudesInfo && solicitudesInfo.map((solicitud, index) => {
-                                const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
-                                const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
-                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
-                                return (
-                                    <>
-                                        <View key={index} style={styles.green_container}>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left}>
-                                                    <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
-                                                </View>
-                                            </View>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left}>
-                                                    <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.light_subtitle}>{horaFormateada}</Text>
-                                                </View>
-                                            </View>
-                                            <View style={styles.divisor} />
-                                            <Text style={styles.subtitle1}>Solicitante</Text>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left}>
-                                                    <Text style={styles.light_subtitle}>
-                                                    {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
-                                                    </Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <TouchableOpacity>
-                                                        <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </>
-                                );
-                })}
+              { selectedCategory === 'Todas' ?
+                solicitudesInfo && solicitudesInfo.map((solicitud, index) => {
+                const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
+                const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                return (
+                    <>
+                        <View key={index} style={solicitud.estado === 'En espera' ?
+                        styles.yellow_container : solicitud.estado === 'Aprobada' ?
+                        styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
+                            <View style={styles.subtitle_container}>
+                                 <View style={styles.left}>
+                                     <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                 </View>
+                                 <View style={styles.right}>
+                                     <Text style={solicitud.estado === 'En espera' ?
+                                     styles.orange_subtitle : solicitud.estado === 'Aprobada' ?
+                                     styles.green_subtitle : solicitud.estado === 'Rechazada' ?
+                                     styles.red_subtitle : styles.gray_subtitle}>{solicitud.estado}</Text>
+                                 </View>
+                             </View>
+                             <View style={styles.subtitle_container}>
+                                 <View style={styles.left}>
+                                     <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                 </View>
+                                 <View style={styles.right}>
+                                     <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                 </View>
+                             </View>
+                             <View style={styles.divisor} />
+                             <Text style={styles.subtitle1}>Solicitante</Text>
+                             <View style={styles.subtitle_container}>
+                                 <View style={styles.left}>
+                                   <Text style={styles.light_subtitle}>
+                                     {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                     </Text>
+                                 </View>
+                                 <View style={styles.right}>
+                                     <TouchableOpacity>
+                                         <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                     </TouchableOpacity>
+                                 </View>
+                            </View>
+                         </View>
+                         </>
+                    );
+                })
+                :
+                solicitudesFiltradas && solicitudesFiltradas.map((solicitud, index) => {
+                  const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
+                  const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+                  const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                  return (
+                      <>
+                          <View key={index} style={solicitud.estado === 'En espera' ?
+                          styles.yellow_container : solicitud.estado === 'Aprobada' ?
+                          styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
+                              <View style={styles.subtitle_container}>
+                                   <View style={styles.left}>
+                                       <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                   </View>
+                                   <View style={styles.right}>
+                                       <Text style={solicitud.estado === 'En espera' ?
+                                       styles.orange_subtitle : solicitud.estado === 'Aprobada' ?
+                                       styles.green_subtitle : solicitud.estado === 'Rechazada' ?
+                                       styles.red_subtitle : styles.gray_subtitle}>{solicitud.estado}</Text>
+                                   </View>
+                               </View>
+                               <View style={styles.subtitle_container}>
+                                   <View style={styles.left}>
+                                       <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                   </View>
+                                   <View style={styles.right}>
+                                       <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                   </View>
+                               </View>
+                               <View style={styles.divisor} />
+                               <Text style={styles.subtitle1}>Solicitante</Text>
+                               <View style={styles.subtitle_container}>
+                                   <View style={styles.left}>
+                                     <Text style={styles.light_subtitle}>
+                                       {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                       </Text>
+                                   </View>
+                                   <View style={styles.right}>
+                                       <TouchableOpacity>
+                                           <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                       </TouchableOpacity>
+                                   </View>
+                              </View>
+                           </View>
+                           </>
+                      );
+                  })
+              }
 
             </View>
         </ScrollView>
@@ -276,6 +331,15 @@ const styles = StyleSheet.create({
     height: 25,
   },
 
+  gray_container:{
+    flex: 1,
+    width: '100%',
+    backgroundColor: 'gray',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 25,
+  },
+
   green_container:{
     flex: 1,
     width: '100%',
@@ -364,6 +428,13 @@ red_subtitle:{
   fontFamily: 'DMSans-Medium',
   fontSize: 16,
   color: '#E50909',
+  marginBottom: 5,
+},
+
+gray_subtitle:{
+  fontFamily: 'DMSans-Medium',
+  fontSize: 16,
+  color: 'gray',
   marginBottom: 5,
 },
 
