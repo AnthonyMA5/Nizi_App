@@ -554,7 +554,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
     const handleCloseModal = () => {
         if (functionData.title === 'Tu solicitud ha sido enviada') {
             setIsModalVisible(false);
-            navigation.navigate('Home', {userInfo: userInfo._id});
+            navigation.navigate('Home', {userID: userInfo._id});
         } else {
             setIsModalVisible(false);
         }
