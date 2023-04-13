@@ -184,7 +184,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
   const handleSuccessVerifyCode = () => {
     setFunctionData({
       title: 'Tu número telefónico ha sido verificado',
-      info: '¡Felicidades, ahora puedes hacer uso total de Nizi!',
+      info: '¡Felicidades, hemos verificado tus datos. A partir de este momento puedes iniciar sesión en tu cuenta Nizi!',
       color: '#00D4A1',
       icon: require('../animations/success_icon.json'),
       btn: 'Entendido',
