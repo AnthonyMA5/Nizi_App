@@ -1,20 +1,46 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { RouteProp } from '@react-navigation/native';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>;
+  navigation: any;
+  route: RouteProp<any, any>;
 }
 
-const AdminRequests: React.FC<Props> = ({navigation}) => {
+const AdminRequests: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
 
   const [selectedCategory, setSelectedCategory] = useState('Todas');
+  const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
   };
+
+  useEffect(() => {
+    fetch('http://192.168.0.3:3000/get_solicitudes', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then((response) => {
+        console.log(response);
+        return response.json();
+    })
+    .then((data) => {
+        console.log(data);
+        setSolicitudesInfo(data);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+}, []);
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -24,8 +50,8 @@ const AdminRequests: React.FC<Props> = ({navigation}) => {
               <View style={styles.head}>
 
                 <View style={styles.menu_container}>
-                  <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                    <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+                  <TouchableOpacity onPress={()=>navigation.navigate('Home_Admin', {userID:userID})}>
+                    <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
                   </TouchableOpacity>
                 </View>
 
@@ -52,14 +78,14 @@ const AdminRequests: React.FC<Props> = ({navigation}) => {
 
                     <TouchableOpacity style={[
                       styles.categories_container,
-                      selectedCategory === 'Sin respuesta' &&
+                      selectedCategory === 'En espera' &&
                       styles.selected_category_container]}
-                      onPress={() => handleCategorySelect('Sin respuesta')}>
+                      onPress={() => handleCategorySelect('En espera')}>
 
                       <View style={styles.catg_left}>
                         <Text style={[styles.catg_text,
-                          selectedCategory === 'Sin respuesta' &&
-                          styles.selected_category_text]}>Sin respuesta</Text>
+                          selectedCategory === 'En espera' &&
+                          styles.selected_category_text]}>En espera</Text>
                       </View>
 
                       <View style={styles.catg_right}>
@@ -107,98 +133,47 @@ const AdminRequests: React.FC<Props> = ({navigation}) => {
                 </ScrollView>
               </View>
 
-              <View style={styles.green_container}>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.subtitle1}>Solicitud #01</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.green_subtitle}>Aprobada</Text>
-                      </View>
-                  </View>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.light_subtitle}>9:00 am</Text>
-                      </View>
-                  </View>
-                  <View style={styles.divisor} />
-                  <Text style={styles.subtitle1}>Solicitante</Text>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <TouchableOpacity>
-                              <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-              </View>
-
-              <View style={styles.yellow_container}>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.subtitle1}>Solicitud #02</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.orange_subtitle}>Sin respuesta</Text>
-                      </View>
-                  </View>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.light_subtitle}>9:00 am</Text>
-                      </View>
-                  </View>
-                  <View style={styles.divisor} />
-                  <Text style={styles.subtitle1}>Solicitante</Text>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <TouchableOpacity>
-                              <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-              </View>
-
-              <View style={styles.red_container}>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.subtitle1}>Solicitud #03</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.red_subtitle}>Rechazada</Text>
-                      </View>
-                  </View>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <Text style={styles.light_subtitle}>9:00 am</Text>
-                      </View>
-                  </View>
-                  <View style={styles.divisor} />
-                  <Text style={styles.subtitle1}>Solicitante</Text>
-                  <View style={styles.subtitle_container}>
-                      <View style={styles.left}>
-                          <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
-                      </View>
-                      <View style={styles.right}>
-                          <TouchableOpacity>
-                              <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                          </TouchableOpacity>
-                      </View>
-                  </View>
-              </View>
+              { solicitudesInfo && solicitudesInfo.map((solicitud, index) => {
+                                const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
+                                const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                                return (
+                                    <>
+                                        <View key={index} style={styles.green_container}>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.divisor} />
+                                            <Text style={styles.subtitle1}>Solicitante</Text>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.light_subtitle}>
+                                                    {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                                    </Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <TouchableOpacity>
+                                                        <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </>
+                                );
+                })}
 
             </View>
         </ScrollView>
@@ -368,7 +343,7 @@ light_subtitle:{
 light_subtitle2:{
   fontFamily: 'DMSans-Medium',
   fontSize: 14,
-  color: '#000',
+  color: '#002DCC',
 },
 
 orange_subtitle:{

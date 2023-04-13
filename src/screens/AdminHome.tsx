@@ -1,28 +1,56 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-trailing-spaces */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-import LinearGradient from 'react-native-linear-gradient'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { RouteProp } from '@react-navigation/native'
+import CustomModal from '../components/CustomModal'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale';
 
 interface Props {
     navigation: any;
     route: RouteProp<any, any>;
-  }
+}
 
 const AdminHome: React.FC<Props> = ({navigation, route}) => {
 
-    const { userInfo } = route.params;
-    const { nombre } = userInfo;
+    const { userID } = route.params;
+    const [userInfo, setUserInfo] = useState<any>();
+    const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [inLoop, setInLoop] = useState(false);
+
+    const handleData = () => {
+        setFunctionData({
+          title: 'Ocurrió un error al obtener tu información',
+          info: 'Te recomendar reiniciar la aplicación e intentarlo de nuevo más tarde.',
+          color: '#C71D1D',
+          icon: require('../animations/sorry_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false)
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
+
+    const [functionData, setFunctionData] = useState({
+        title: '',
+        info: '',
+        color: '',
+        icon: null,
+        btn: '',
+    });
 
     useEffect(() => {
         const date = new Date();
@@ -40,11 +68,71 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
         }
     }, []);
 
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            _id : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_data',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setUserInfo(data);
+                } else {
+                    handleData()
+                }
+            }})
+          })
+          .catch((error) => {
+            handleData()
+            console.log(error)
+          })
+    }, [])
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/get_solicitudes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setSolicitudesInfo(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, []);
+    
+
   return (
 
     <SafeAreaView style={styles.main_container}>
             <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
+
+                    <CustomModal 
+                    title={functionData.title}
+                    info={functionData.info}
+                    color={functionData.color}
+                    icon={functionData.icon}
+                    isVisible={isModalVisible}
+                    onEvent={handleCloseModal}
+                    btn={functionData.btn}
+                    loop={inLoop}/>
 
                     {/*Este apartado funciona como la parte superior de la pantalla de inicio*/}
                     <View style={styles.head}>
@@ -56,7 +144,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                         </View>
 
                         <View style={styles.welcomeText_container}>
-                            <Text style={styles.welcomeText1}>{nombre}</Text>
+                            <Text style={styles.welcomeText1}>{userInfo ? userInfo.nombre : ''}</Text>
                             <View style={styles.welcomeText2_container}>
                                 <Text style={styles.welcomeText2}>{greeting}</Text>
                                 <Image style={styles.welcomeIcon} source={greetingIcon === 1 ? require('../img/moon_icon.png') : greetingIcon === 2 ? require('../img/sun_icon.png') : require('../img/Cara_sonrisa.png')}/>
@@ -65,8 +153,8 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
 
                         <View style={styles.menu_maincontainer}>
                             <View style={styles.menu_container}>
-                                <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                                    <Image style={styles.menu_icon} source={require('../img/menu_barra.png')}/>
+                                <TouchableOpacity onPressOut={()=>navigation.navigate('Login')}>
+                                    <Image style={styles.menu_icon} source={require('../img/Door.png')}/>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -182,41 +270,47 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     <Text style={styles.subtitle1}>Más recientes</Text>
                                 </View>
                                 <View style={styles.right}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPressOut={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
                                         <Text style={styles.subtitle2}>Ver más</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={styles.third_container}>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.subtitle1}>Solicitud #05</Text>
-                                    </View>
-                                    <View style={styles.right}>
-                                        <Text style={styles.orange_subtitle}>Sin respuesta</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
-                                    </View>
-                                    <View style={styles.right}>
-                                        <Text style={styles.light_subtitle}>9:00 am</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.divisor} />
-                                <Text style={styles.subtitle1}>Solicitante</Text>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
-                                    </View>
-                                    <View style={styles.right}>
-                                        <TouchableOpacity>
-                                            <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
+                            { solicitudesInfo && solicitudesInfo.slice(0, 1).map((solicitud, index) => {
+                                const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
+                                const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                                return (
+                                    <>
+                                        <View key={index} style={styles.third_container}>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left}>
+                                                    <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                                </View>
+                                                <View style={styles.right}>
+                                                    <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={styles.divisor} />
+                                            <Text style={styles.subtitle1}>Solicitante</Text>
+                                            <View style={styles.subtitle_container}>
+                                                <View style={styles.left2}>
+                                                    <Text style={styles.light_subtitle}>
+                                                    {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </>
+                                )
+                            })}
                         </View>
                     </View>
 
@@ -307,7 +401,7 @@ const styles = StyleSheet.create({
         width: 55,
         height: 55,
         borderRadius: 8,
-        backgroundColor: '#ECFCFF',
+        backgroundColor: '#FFECEC',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -411,6 +505,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
 
+    divisor_box:{
+        marginTop: 15,
+        marginBottom: 15,
+    },
+
     subtitle_container:{
         flex: 1,
         width: '100%',
@@ -419,12 +518,17 @@ const styles = StyleSheet.create({
     },
 
     left:{
-        flex: 0.5,
+        flex: 0.6,
+        alignItems: 'flex-start',
+    },
+
+    left2:{
+        flex: 1,
         alignItems: 'flex-start',
     },
 
     right:{
-        flex: 0.5,
+        flex: 0.4,
         alignItems: 'flex-end',
     },
 
