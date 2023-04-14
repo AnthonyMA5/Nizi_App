@@ -508,15 +508,15 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                                                           <View style={styles.buttons_container}>
                                                               <TouchableOpacity style={styles.button_approve} onPress={handleRequest}>
-                                                              <CustomModal
-                                                                  title={functionData.title}
-                                                                  info={functionData.info}
-                                                                  color={functionData.color}
-                                                                  icon={functionData.icon}
-                                                                  isVisible={isModalVisible}
-                                                                  onEvent={handleModalClose}
-                                                                  btn={functionData.btn}
-                                                                  loop={inLoop}/>
+                                                                <CustomModal
+                                                                    title={functionData.title}
+                                                                    info={functionData.info}
+                                                                    color={functionData.color}
+                                                                    icon={functionData.icon}
+                                                                    isVisible={isModalVisible}
+                                                                    onEvent={handleModalClose}
+                                                                    btn={functionData.btn}
+                                                                    loop={inLoop}/>
                                                                 <Text style={styles.button_approve_text}>Asignar tarjeta</Text>
                                                               </TouchableOpacity>
                                                           </View>
