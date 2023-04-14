@@ -21,6 +21,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     const { userID } = route.params;
     const [userInfo, setUserInfo] = useState<any>();
     const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
+    const [solicitudesTotal, setSolicitudesTotal] = useState<any>();
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
@@ -116,6 +117,26 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
             console.log(error);
         });
     }, []);
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/count_solicitudes', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setSolicitudesTotal(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, []);
     
 
   return (
@@ -186,13 +207,13 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </Pressable>
 
-                                <Pressable>
+                                <TouchableOpacity onPressOut={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
                                     <View style={styles.servicesContainerPink}>
                                         <Image style={styles.iconServices} source={require('../img/soli_icon.png')}/>
-                                        <Text style={styles.text_cant}>15</Text>
+                                        <Text style={styles.text_cant}>{solicitudesTotal}</Text>
                                         <Text style={styles.text_name_service}>Solicitudes</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
                                 <Pressable>
                                     <View style={styles.servicesContainerOrange}>
@@ -280,35 +301,33 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                 const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
                                 const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
                                 return (
-                                    <>
-                                        <View key={index} style={styles.third_container}>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left}>
-                                                    <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
-                                                </View>
+                                    <View key={solicitud._id} style={styles.third_container}>
+                                        <View style={styles.subtitle_container}>
+                                            <View style={styles.left}>
+                                                <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
                                             </View>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left}>
-                                                    <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
-                                                </View>
-                                                <View style={styles.right}>
-                                                    <Text style={styles.light_subtitle}>{horaFormateada}</Text>
-                                                </View>
-                                            </View>
-                                            <View style={styles.divisor} />
-                                            <Text style={styles.subtitle1}>Solicitante</Text>
-                                            <View style={styles.subtitle_container}>
-                                                <View style={styles.left2}>
-                                                    <Text style={styles.light_subtitle}>
-                                                    {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
-                                                    </Text>
-                                                </View>
+                                            <View style={styles.right}>
+                                                <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
                                             </View>
                                         </View>
-                                    </>
+                                        <View style={styles.subtitle_container}>
+                                            <View style={styles.left}>
+                                                <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                            </View>
+                                            <View style={styles.right}>
+                                                <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.divisor} />
+                                        <Text style={styles.subtitle1}>Solicitante</Text>
+                                        <View style={styles.subtitle_container}>
+                                                <View style={styles.left2}>
+                                                <Text style={styles.light_subtitle}>
+                                                {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                                </Text>
+                                               </View>
+                                        </View>
+                                    </View>
                                 )
                             })}
                         </View>

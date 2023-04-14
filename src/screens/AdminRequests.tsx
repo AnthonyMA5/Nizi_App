@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
-import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Modal from 'react-native-modal';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { RouteProp } from '@react-navigation/native';
@@ -19,8 +20,17 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
   const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
   const solicitudesFiltradas = solicitudesInfo ? solicitudesInfo.filter((solicitud) => solicitud.estado === selectedCategory) : [];
 
+  const [solicitudDetails, setSolicitudDetails] = useState(false);
+  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
+
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
+  };
+
+  const toggleModal = (solicitud) => {
+    setSelectedSolicitud(solicitud);
+    setSelectedSolicitud({...selectedSolicitud, fechaFormateada: fechaFormateada, horaFormateada: horaFormateada})
+    setSolicitudDetails(!solicitudDetails);
   };
 
   useEffect(() => {
@@ -140,8 +150,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                 const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
                 const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
                 return (
-                    <>
-                        <View key={index} style={solicitud.estado === 'En espera' ?
+                        <View key={solicitud._id} style={solicitud.estado === 'En espera' ?
                         styles.yellow_container : solicitud.estado === 'Aprobada' ?
                         styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
                             <View style={styles.subtitle_container}>
@@ -172,13 +181,82 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                      </Text>
                                  </View>
                                  <View style={styles.right}>
-                                     <TouchableOpacity>
-                                         <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                     <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                          <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                          <Modal backdropOpacity={0.3} style={styles.modal_main_container} isVisible={solicitudDetails}
+                                            animationInTiming={250}
+                                            animationOutTiming={600}
+                                            backdropTransitionInTiming={250}
+                                            backdropTransitionOutTiming={600}>
+                                            <View style={styles.modal_container}>
+
+                                              <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                                <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+                                              </TouchableOpacity>
+
+                                              <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 5) : ''}</Text>
+                                              {selectedSolicitud && (
+                                                <Text style={selectedSolicitud.estado === 'En espera' ? styles.orange_subtitle :
+                                                            selectedSolicitud.estado === 'Aprobada' ? styles.green_subtitle :
+                                                            selectedSolicitud.estado === 'Rechazada' ? styles.red_subtitle :
+                                                            styles.gray_subtitle}>
+                                                  {selectedSolicitud.estado}
+                                                </Text>
+                                              )}
+                                              <Text style={styles.title_text}>Nombre del solicitante</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
+                                              </Text>
+                                              <Text style={styles.title_text}>Domicilio</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
+                                              </Text>
+                                              <Text style={styles.title_text}>Número de teléfono</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
+                                              </Text>
+
+                                              <Text style={styles.title_text}>Correo electrónico</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
+                                              </Text>
+
+                                              <Text style={styles.title_text}>Fecha de solicitud</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.fechaFormateada : ''} a las {selectedSolicitud ? selectedSolicitud.horaFormateada : ''}
+                                              </Text>
+
+                                              {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
+                                                <View style={styles.buttons_container}>
+                                                  <View style={styles.button_left}>
+                                                    <Pressable style={styles.button_reject} android_ripple={{ color: 'red' }}>
+                                                      <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
+                                                    </Pressable>
+                                                  </View>
+                                                  <View style={styles.button_right}>
+                                                    <Pressable style={styles.button_approve} android_ripple={{ color: 'green' }}>
+                                                      <Text style={styles.button_approve_text}>Aprobar solicitud</Text>
+                                                    </Pressable>
+                                                  </View>
+                                                </View>
+                                              ) : (
+                                                <View style={styles.divisor} />
+                                              )}
+
+                                            </View>
+                                          </Modal>
                                      </TouchableOpacity>
                                  </View>
                             </View>
                          </View>
-                         </>
                     );
                 })
                 :
@@ -187,7 +265,6 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                   const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
                   const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
                   return (
-                      <>
                           <View key={index} style={solicitud.estado === 'En espera' ?
                           styles.yellow_container : solicitud.estado === 'Aprobada' ?
                           styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
@@ -219,13 +296,82 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                        </Text>
                                    </View>
                                    <View style={styles.right}>
-                                       <TouchableOpacity>
-                                           <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                                       </TouchableOpacity>
-                                   </View>
+                                     <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                          <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                          <Modal backdropOpacity={0.3} style={styles.modal_main_container} isVisible={solicitudDetails}
+                                            animationInTiming={250}
+                                            animationOutTiming={600}
+                                            backdropTransitionInTiming={250}
+                                            backdropTransitionOutTiming={600}>
+                                            <View style={styles.modal_container}>
+
+                                              <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                                <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+                                              </TouchableOpacity>
+
+                                              <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 5) : ''}</Text>
+                                              {selectedSolicitud && (
+                                                <Text style={selectedSolicitud.estado === 'En espera' ? styles.orange_subtitle :
+                                                            selectedSolicitud.estado === 'Aprobada' ? styles.green_subtitle :
+                                                            selectedSolicitud.estado === 'Rechazada' ? styles.red_subtitle :
+                                                            styles.gray_subtitle}>
+                                                  {selectedSolicitud.estado}
+                                                </Text>
+                                              )}
+                                              <Text style={styles.title_text}>Nombre del solicitante</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
+                                              </Text>
+                                              <Text style={styles.title_text}>Domicilio</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
+                                              </Text>
+                                              <Text style={styles.title_text}>Número de teléfono</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
+                                              </Text>
+
+                                              <Text style={styles.title_text}>Correo electrónico</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
+                                              </Text>
+
+                                              <Text style={styles.title_text}>Fecha de solicitud</Text>
+                                              <Text style={styles.subtitle_text}>
+                                                {selectedSolicitud ? selectedSolicitud.fechaFormateada : ''} a las {selectedSolicitud ? selectedSolicitud.horaFormateada : ''}
+                                              </Text>
+
+                                              {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
+                                                <View style={styles.buttons_container}>
+                                                  <View style={styles.button_left}>
+                                                    <Pressable style={styles.button_reject} android_ripple={{ color: 'red' }}>
+                                                      <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
+                                                    </Pressable>
+                                                  </View>
+                                                  <View style={styles.button_right}>
+                                                    <Pressable style={styles.button_approve} android_ripple={{ color: 'green' }}>
+                                                      <Text style={styles.button_approve_text}>Aprobar solicitud</Text>
+                                                    </Pressable>
+                                                  </View>
+                                                </View>
+                                              ) : (
+                                                <View style={styles.divisor} />
+                                              )}
+
+                                            </View>
+                                          </Modal>
+                                     </TouchableOpacity>
+                                 </View>
                               </View>
                            </View>
-                           </>
                       );
                   })
               }
@@ -372,76 +518,161 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-},
+  },
 
-left:{
-    flex: 0.5,
-    alignItems: 'flex-start',
-},
+  left:{
+      flex: 0.5,
+      alignItems: 'flex-start',
+  },
 
-right:{
-    flex: 0.5,
-    alignItems: 'flex-end',
-},
+  right:{
+      flex: 0.5,
+      alignItems: 'flex-end',
+  },
 
-subtitle1:{
+  subtitle1:{
+      fontFamily: 'DMSans-Medium',
+      fontSize: 16,
+      color: '#000000',
+      marginBottom: 5,
+  },
+
+  subtitle2:{
+      fontFamily: 'DMSans-Medium',
+      fontSize: 16,
+      color: '#002DCC',
+      marginBottom: 12,
+  },
+
+  light_subtitle:{
+    fontFamily: 'DMSans-Regular',
+    fontSize: 14,
+    color: '#939393',
+  },
+
+  light_subtitle2:{
     fontFamily: 'DMSans-Medium',
-    fontSize: 16,
-    color: '#000000',
-    marginBottom: 5,
-},
-
-subtitle2:{
-    fontFamily: 'DMSans-Medium',
-    fontSize: 16,
+    fontSize: 14,
     color: '#002DCC',
-    marginBottom: 12,
-},
+  },
 
-light_subtitle:{
-  fontFamily: 'DMSans-Regular',
-  fontSize: 14,
-  color: '#939393',
-},
+  orange_subtitle:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#E58009',
+    marginBottom: 5,
+  },
 
-light_subtitle2:{
-  fontFamily: 'DMSans-Medium',
-  fontSize: 14,
-  color: '#002DCC',
-},
+  green_subtitle:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#00BE35',
+    marginBottom: 5,
+  },
 
-orange_subtitle:{
-  fontFamily: 'DMSans-Medium',
-  fontSize: 16,
-  color: '#E58009',
-  marginBottom: 5,
-},
+  red_subtitle:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#E50909',
+    marginBottom: 5,
+  },
 
-green_subtitle:{
-  fontFamily: 'DMSans-Medium',
-  fontSize: 16,
-  color: '#00BE35',
-  marginBottom: 5,
-},
+  gray_subtitle:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 5,
+  },
 
-red_subtitle:{
-  fontFamily: 'DMSans-Medium',
-  fontSize: 16,
-  color: '#E50909',
-  marginBottom: 5,
-},
+  divisor:{
+    width: '100%',
+    height: 15,
+  },
 
-gray_subtitle:{
-  fontFamily: 'DMSans-Medium',
-  fontSize: 16,
-  color: 'gray',
-  marginBottom: 5,
-},
+  modal_main_container:{
+    justifyContent: 'center',
+    alignItems:'center',
+  },
 
-divisor:{
-  width: '100%',
-  height: 15,
-},
+  modal_container:{
+      width: '100%',
+      padding: 15,
+      justifyContent: 'center',
+      backgroundColor: '#FFF',
+      borderRadius: 12,
+  },
+
+  exit_icon:{
+    width: 20,
+    height: 20,
+    marginTop: 5,
+    alignSelf: 'flex-end',
+  },
+
+  title_text:{
+    fontFamily: 'DMSans-Medium',
+    color:'#000',
+    fontSize: 16,
+    marginTop: 15,
+  },
+
+  subtitle_text:{
+    fontFamily: 'DMSans-Regular',
+    color:'#424242',
+    fontSize: 15,
+    textAlign: 'left',
+    marginTop: 5,
+  },
+
+  button_reject:{
+    padding: 11,
+    width:'100%',
+    borderRadius: 10,
+    marginTop: 30,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#C71D1D',
+  },
+
+  button_approve:{
+    padding: 12,
+    width:'100%',
+    borderRadius: 10,
+    marginTop: 30,
+    marginBottom: 10,
+    backgroundColor: '#00D4A1',
+  },
+
+  button_reject_text:{
+    fontFamily: 'DMSans-Medium',
+    color: '#000',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  button_approve_text:{
+    fontFamily: 'DMSans-Medium',
+    color: '#FFF',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  buttons_container:{
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  button_left:{
+      flex: 0.5,
+      alignItems: 'flex-start',
+      marginRight: 10,
+  },
+
+  button_right:{
+      flex: 0.5,
+      alignItems: 'flex-end',
+      marginLeft: 10,
+  },
 
 });
 
