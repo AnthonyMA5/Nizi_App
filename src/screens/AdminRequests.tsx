@@ -84,7 +84,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
       icon: require('../animations/warning_icon.json'),
       btn: 'Entendido',
     });
-    setInLoop(true)
+    setInLoop(true);
     setIsModalVisible(true);
   };
 
@@ -139,6 +139,18 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     setIsModalVisible(true);
   };
 
+  const handleData2 = () => {
+    setFunctionData({
+      title: 'Solicitud rechazada',
+      info: 'La solicitud fue rechazada con éxito.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
   const handleRequest = () => {
     if ([codigoTarjeta, cvv, numeroTarjeta, fechaVencimiento].includes('')){
             handleInputs();
@@ -176,7 +188,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
       idSolicitud: selectedSolicitud._id,
       estado: 'Aprobada',
       idUsuario: selectedSolicitud.solicitante[0]._id,
-      numeroTarjeta: numeroTarjeta,
+      numeroTarjeta: numeroTarjeta + codigoTarjeta,
       cvv: cvv,
       fechaVencimiento: fecha,
     });
@@ -193,6 +205,40 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
         handleError();
       } else if (response.status === 201) {
         handleData();
+      } else {
+        handleServerError();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+  };
+
+  const sendRequestRejectedResponse = () => {
+
+    const [day, month, year] = fechaVencimiento.split('/');
+    const fecha = new Date(year, month - 1, day);
+
+    const documentLog = JSON.stringify({
+      idSolicitud: selectedSolicitud._id,
+      estado: 'Rechazada',
+      idUsuario: selectedSolicitud.solicitante[0]._id,
+      numeroTarjeta: numeroTarjeta,
+      cvv: cvv,
+      fechaVencimiento: fecha,
+    });
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/update_assign_card_request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        handleData2();
       } else {
         handleServerError();
       }
@@ -305,7 +351,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                         styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
                             <View style={styles.subtitle_container}>
                                  <View style={styles.left}>
-                                     <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                     <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 6)}</Text>
                                  </View>
                                  <View style={styles.right}>
                                      <Text style={solicitud.estado === 'En espera' ?
@@ -344,7 +390,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                                 <Image source={require('../img/x.png')} style={styles.exit_icon}/>
                                               </TouchableOpacity>
 
-                                              <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 5) : ''}</Text>
+                                              <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 6) : ''}</Text>
                                               {selectedSolicitud && (
                                                 <Text style={selectedSolicitud.estado === 'En espera' ? styles.orange_subtitle :
                                                             selectedSolicitud.estado === 'Aprobada' ? styles.green_subtitle :
@@ -394,7 +440,16 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                               {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
                                                 <View style={styles.buttons_container}>
                                                   <View style={styles.button_left}>
-                                                    <TouchableOpacity style={styles.button_reject}>
+                                                    <TouchableOpacity style={styles.button_reject} onPressOut={sendRequestRejectedResponse}>
+                                                      <CustomModal
+                                                                  title={functionData.title}
+                                                                  info={functionData.info}
+                                                                  color={functionData.color}
+                                                                  icon={functionData.icon}
+                                                                  isVisible={isModalVisible}
+                                                                  onEvent={handleModalClose}
+                                                                  btn={functionData.btn}
+                                                                  loop={inLoop}/>
                                                       <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
                                                     </TouchableOpacity>
                                                   </View>

@@ -34,7 +34,7 @@ const Messagges: React.FC<Props> = ({navigation, route}) => {
             ? require('../img/complete_icon.png')
             : item.titulo.includes('Bienvenido')
             ? require('../img/Sonrisa.png')
-            : item.titulo.includes('tarjeta')
+            : item.titulo.includes('Solicita')
             ? require('../img/Tarjeta.png')
             : require('../img/White_t_logo.png')
         }

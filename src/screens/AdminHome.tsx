@@ -304,7 +304,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     <View key={solicitud._id} style={styles.third_container}>
                                         <View style={styles.subtitle_container}>
                                             <View style={styles.left}>
-                                                <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
+                                                <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 6)}</Text>
                                             </View>
                                             <View style={styles.right}>
                                                 <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
