@@ -188,7 +188,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
       idSolicitud: selectedSolicitud._id,
       estado: 'Aprobada',
       idUsuario: selectedSolicitud.solicitante[0]._id,
-      numeroTarjeta: numeroTarjeta + codigoTarjeta,
+      numeroTarjeta: numeroTarjeta+codigoTarjeta,
       cvv: cvv,
       fechaVencimiento: fecha,
     });
@@ -203,7 +203,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     .then((response) => {
       if (response.status === 400) {
         handleError();
-      } else if (response.status === 201) {
+      } else if (response.status === 200) {
         handleData();
       } else {
         handleServerError();
@@ -544,122 +544,198 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                   const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
                   const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
                   return (
-                          <View key={index} style={solicitud.estado === 'En espera' ?
-                          styles.yellow_container : solicitud.estado === 'Aprobada' ?
-                          styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
-                              <View style={styles.subtitle_container}>
-                                   <View style={styles.left}>
-                                       <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 5)}</Text>
-                                   </View>
-                                   <View style={styles.right}>
-                                       <Text style={solicitud.estado === 'En espera' ?
-                                       styles.orange_subtitle : solicitud.estado === 'Aprobada' ?
-                                       styles.green_subtitle : solicitud.estado === 'Rechazada' ?
-                                       styles.red_subtitle : styles.gray_subtitle}>{solicitud.estado}</Text>
-                                   </View>
-                               </View>
-                               <View style={styles.subtitle_container}>
-                                   <View style={styles.left}>
-                                       <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
-                                   </View>
-                                   <View style={styles.right}>
-                                       <Text style={styles.light_subtitle}>{horaFormateada}</Text>
-                                   </View>
-                               </View>
-                               <View style={styles.divisor} />
-                               <Text style={styles.subtitle1}>Solicitante</Text>
-                               <View style={styles.subtitle_container}>
-                                   <View style={styles.left}>
-                                     <Text style={styles.light_subtitle}>
-                                       {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
-                                       </Text>
-                                   </View>
-                                   <View style={styles.right}>
-                                     <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
-                                          <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                                          <Modal backdropOpacity={0.3} style={styles.modal_main_container} isVisible={solicitudDetails}
-                                            animationInTiming={250}
-                                            animationOutTiming={600}
-                                            backdropTransitionInTiming={250}
-                                            backdropTransitionOutTiming={600}>
-                                            <View style={styles.modal_container}>
+                    <View key={solicitud._id} style={solicitud.estado === 'En espera' ?
+                    styles.yellow_container : solicitud.estado === 'Aprobada' ?
+                    styles.green_container : solicitud.estado === 'Rechazada' ? styles.red_container : styles.gray_container}>
+                        <View style={styles.subtitle_container}>
+                             <View style={styles.left}>
+                                 <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 6)}</Text>
+                             </View>
+                             <View style={styles.right}>
+                                 <Text style={solicitud.estado === 'En espera' ?
+                                 styles.orange_subtitle : solicitud.estado === 'Aprobada' ?
+                                 styles.green_subtitle : solicitud.estado === 'Rechazada' ?
+                                 styles.red_subtitle : styles.gray_subtitle}>{solicitud.estado}</Text>
+                             </View>
+                         </View>
+                         <View style={styles.subtitle_container}>
+                             <View style={styles.left}>
+                                 <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                             </View>
+                             <View style={styles.right}>
+                                 <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                             </View>
+                         </View>
+                         <View style={styles.divisor} />
+                         <Text style={styles.subtitle1}>Solicitante</Text>
+                         <View style={styles.subtitle_container}>
+                             <View style={styles.left}>
+                               <Text style={styles.light_subtitle}>
+                                 {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                 </Text>
+                             </View>
+                             <View style={styles.right}>
+                                 <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                      <Text style={styles.light_subtitle2}>Ver detalles</Text>
+                                      <Modal backdropOpacity={0.3} style={styles.modal_main_container} isVisible={solicitudDetails}
+                                        animationInTiming={250}
+                                        animationOutTiming={600}
+                                        backdropTransitionInTiming={250}
+                                        backdropTransitionOutTiming={600}>
+                                        <View style={styles.modal_container}>
 
-                                              <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
-                                                <Image source={require('../img/x.png')} style={styles.exit_icon}/>
-                                              </TouchableOpacity>
+                                          <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
+                                            <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+                                          </TouchableOpacity>
 
-                                              <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 5) : ''}</Text>
-                                              {selectedSolicitud && (
-                                                <Text style={selectedSolicitud.estado === 'En espera' ? styles.orange_subtitle :
-                                                            selectedSolicitud.estado === 'Aprobada' ? styles.green_subtitle :
-                                                            selectedSolicitud.estado === 'Rechazada' ? styles.red_subtitle :
-                                                            styles.gray_subtitle}>
-                                                  {selectedSolicitud.estado}
-                                                </Text>
-                                              )}
-                                              <Text style={styles.title_text}>Nombre del solicitante</Text>
-                                              <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
-                                              </Text>
-                                              <Text style={styles.title_text}>Domicilio</Text>
-                                              <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
-                                              </Text>
-                                              <Text style={styles.title_text}>Número de teléfono</Text>
-                                              <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
-                                              </Text>
+                                          <Text style={styles.title_text}>Solicitud #{selectedSolicitud ? selectedSolicitud._id.slice(0, 6) : ''}</Text>
+                                          {selectedSolicitud && (
+                                            <Text style={selectedSolicitud.estado === 'En espera' ? styles.orange_subtitle :
+                                                        selectedSolicitud.estado === 'Aprobada' ? styles.green_subtitle :
+                                                        selectedSolicitud.estado === 'Rechazada' ? styles.red_subtitle :
+                                                        styles.gray_subtitle}>
+                                              {selectedSolicitud.estado}
+                                            </Text>
+                                          )}
+                                          <Text style={styles.title_text}>Nombre del solicitante</Text>
+                                          <Text style={styles.subtitle_text}>
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
+                                          </Text>
+                                          <Text style={styles.title_text}>Domicilio</Text>
+                                          <Text style={styles.subtitle_text}>
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
+                                          </Text>
+                                          <Text style={styles.title_text}>Número de teléfono</Text>
+                                          <Text style={styles.subtitle_text}>
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
+                                          </Text>
 
-                                              <Text style={styles.title_text}>Correo electrónico</Text>
-                                              <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
-                                              </Text>
+                                          <Text style={styles.title_text}>Correo electrónico</Text>
+                                          <Text style={styles.subtitle_text}>
+                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
+                                          </Text>
 
-                                              <Text style={styles.title_text}>Fecha de solicitud</Text>
-                                              <Text style={styles.subtitle_text}>
-                                              {selectedSolicitud
-                                                ? format(new Date(selectedSolicitud.fecha), "dd 'de' MMMM 'del' yyyy", { locale: es })
-                                                : ''}
-                                              {' '}
-                                              a las
-                                              {' '}
-                                              {selectedSolicitud
-                                                ? format(new Date(selectedSolicitud.fecha), 'h:mm a', {timeZone: 'UTC'}) : ''}
-                                              </Text>
+                                          <Text style={styles.title_text}>Fecha de solicitud</Text>
+                                          <Text style={styles.subtitle_text}>
+                                          {selectedSolicitud
+                                            ? format(new Date(selectedSolicitud.fecha), "dd 'de' MMMM 'del' yyyy", { locale: es })
+                                            : ''}
+                                          {' '}
+                                          a las
+                                          {' '}
+                                          {selectedSolicitud
+                                            ? format(new Date(selectedSolicitud.fecha), 'h:mm a', {timeZone: 'UTC'}) : ''}
+                                          </Text>
 
-                                              {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
-                                                <View style={styles.buttons_container}>
-                                                  <View style={styles.button_left}>
-                                                    <Pressable style={styles.button_reject} android_ripple={{ color: 'red' }}>
-                                                      <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
-                                                    </Pressable>
-                                                  </View>
-                                                  <View style={styles.button_right}>
-                                                    <Pressable style={styles.button_approve} android_ripple={{ color: 'green' }}>
-                                                      <Text style={styles.button_approve_text}>Aprobar solicitud</Text>
-                                                    </Pressable>
-                                                  </View>
-                                                </View>
-                                              ) : (
-                                                <View style={styles.divisor} />
-                                              )}
+                                          {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
+                                            <View style={styles.buttons_container}>
+                                              <View style={styles.button_left}>
+                                                <TouchableOpacity style={styles.button_reject} onPressOut={sendRequestRejectedResponse}>
+                                                  <CustomModal
+                                                              title={functionData.title}
+                                                              info={functionData.info}
+                                                              color={functionData.color}
+                                                              icon={functionData.icon}
+                                                              isVisible={isModalVisible}
+                                                              onEvent={handleModalClose}
+                                                              btn={functionData.btn}
+                                                              loop={inLoop}/>
+                                                  <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
+                                                </TouchableOpacity>
+                                              </View>
+                                              <View style={styles.button_right}>
+                                                <TouchableOpacity style={styles.button_approve} onPressOut={() =>goCardDetails(solicitud)}>
+                                                  <Text style={styles.button_approve_text}>Aprobar solicitud</Text>
+                                                  <Modal backdropOpacity={0.6} style={styles.modal_main_container} isVisible={cardDetails}
+                                                    animationInTiming={250}
+                                                    animationOutTiming={600}
+                                                    backdropTransitionInTiming={250}
+                                                    backdropTransitionOutTiming={600}>
+                                                    <View style={styles.modal_container}>
 
+                                                      <TouchableOpacity onPressOut={() => goCardDetails(solicitud)}>
+                                                        <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+                                                      </TouchableOpacity>
+
+                                                      <Text style={styles.title_text}>Información de la tarjeta</Text>
+                                                      <Text style={styles.subtitle2_text}>Para completar la aprobación de la solicitud es necesario que llenes la información de la tarjeta que será asignada y enviada a{' '}
+                                                      {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre : ''}.</Text>
+
+                                                      <View style={styles.divisor}/>
+
+                                                      <Text style={styles.title_text}>Número de tarjeta</Text>
+                                                      <View style={styles.divisor}/>
+                                                      <View style={styles.cardnumber}>
+                                                        <TextInput style={styles.disabled_input} value={numeroTarjeta.match(/.{1,4}/g).join(' ')} editable={false}/>
+                                                        <View style={styles.horizontal_divisor}/>
+                                                        <TextInput style={styles.input} placeholder= "8 dígitos de tarjeta RFID    " value={codigoTarjeta ? codigoTarjeta.match(/(\d{1,4})/g).join(' ') : ''}
+                                                        onChangeText={setCodigoTarjeta} placeholderTextColor={'#878787'} keyboardType="number-pad" maxLength={9}/>
+                                                      </View>
+
+                                                      <View style={styles.cardnumber}>
+                                                        <View style={styles.left2}>
+                                                          <Text style={styles.title_text}>Fecha vencimiento</Text>
+                                                          <View style={styles.divisor}/>
+                                                          <TextInput
+                                                          style={styles.input}
+                                                          placeholder="DD/MM/AAAA"
+                                                          value={fechaVencimiento}
+                                                          onChangeText={handleFechaChange}
+                                                          placeholderTextColor="#878787"
+                                                          keyboardType="numeric"
+                                                          />
+                                                        </View>
+                                                        <View style={styles.right2}>
+                                                          <Text style={styles.title_text}>CVV</Text>
+                                                          <View style={styles.divisor}/>
+                                                          <TextInput
+                                                          style={styles.disabled_input}
+                                                          value={cvv}
+                                                          placeholderTextColor="#878787" editable={false}
+                                                          />
+                                                        </View>
+                                                      </View>
+
+                                                      <View style={styles.buttons_container}>
+                                                          <TouchableOpacity style={styles.button_approve} onPress={handleRequest}>
+                                                            <CustomModal
+                                                                title={functionData.title}
+                                                                info={functionData.info}
+                                                                color={functionData.color}
+                                                                icon={functionData.icon}
+                                                                isVisible={isModalVisible}
+                                                                onEvent={handleModalClose}
+                                                                btn={functionData.btn}
+                                                                loop={inLoop}/>
+                                                            <Text style={styles.button_approve_text}>Asignar tarjeta</Text>
+                                                          </TouchableOpacity>
+                                                      </View>
+
+                                                    </View>
+                                                  </Modal>
+                                                </TouchableOpacity>
+                                              </View>
                                             </View>
-                                          </Modal>
-                                     </TouchableOpacity>
-                                 </View>
-                              </View>
-                           </View>
-                      );
-                  })
+                                          ) : (
+                                            <View style={styles.divisor} />
+                                          )}
+
+                                        </View>
+                                      </Modal>
+                                 </TouchableOpacity>
+                             </View>
+                        </View>
+                     </View>
+                  );
+                })
               }
 
             </View>

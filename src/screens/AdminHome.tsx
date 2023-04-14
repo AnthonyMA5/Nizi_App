@@ -307,7 +307,10 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                                 <Text style={styles.subtitle1}>Solicitud #{solicitud._id.slice(0, 6)}</Text>
                                             </View>
                                             <View style={styles.right}>
-                                                <Text style={styles.orange_subtitle}>{solicitud.estado}</Text>
+                                            <Text style={solicitud.estado === 'En espera' ?
+                                                styles.orange_subtitle : solicitud.estado === 'Aprobada' ?
+                                                styles.green_subtitle : solicitud.estado === 'Rechazada' ?
+                                                styles.red_subtitle : styles.gray_subtitle}>{solicitud.estado}</Text>
                                             </View>
                                         </View>
                                         <View style={styles.subtitle_container}>
@@ -600,6 +603,27 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#3FBFA0',
         marginTop: 5,
+    },
+    
+    green_subtitle:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#00BE35',
+        marginBottom: 5,
+    },
+    
+    red_subtitle:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: '#E50909',
+        marginBottom: 5,
+    },
+    
+    gray_subtitle:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 16,
+        color: 'gray',
+        marginBottom: 5,
     },
 
 })
