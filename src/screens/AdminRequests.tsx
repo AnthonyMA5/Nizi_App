@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
-import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { RouteProp } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
   navigation: any;
@@ -16,12 +17,43 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
   const { userID } = route.params;
 
+  const [numeroTarjeta] = useState('35981167');
+  const [codigoTarjeta, setCodigoTarjeta] = useState('');
+
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
   const solicitudesFiltradas = solicitudesInfo ? solicitudesInfo.filter((solicitud) => solicitud.estado === selectedCategory) : [];
 
   const [solicitudDetails, setSolicitudDetails] = useState(false);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null);
+  const [cardDetails, setCardDetails] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const [fechaVencimiento, setFechaVencimiento] = useState('');
+  const [cvv, setCvv] = useState(generarCVV());
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleFechaChange = (text) => {
+    // remueve cualquier caracter que no sea un número
+    const cleaned = text.replace(/[^0-9]/g, '');
+    // si tiene más de 2 dígitos, agrega el separador /
+    if (cleaned.length > 2) {
+      const day = cleaned.slice(0, 2);
+      const month = cleaned.slice(2, 4);
+      const year = cleaned.slice(4, 8);
+      setFechaVencimiento(`${day}/${month}/${year}`);
+    } else {
+      setFechaVencimiento(cleaned);
+    }
+  };
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -29,8 +61,54 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
   const toggleModal = (solicitud) => {
     setSelectedSolicitud(solicitud);
-    setSelectedSolicitud({...selectedSolicitud, fechaFormateada: fechaFormateada, horaFormateada: horaFormateada})
     setSolicitudDetails(!solicitudDetails);
+  };
+
+  const goCardDetails = (solicitud) => {
+    setCardDetails(!cardDetails);
+  };
+
+  function generarCVV(): string {
+    let codigo: string = '';
+    for (let i = 0; i < 3; i++) {
+      codigo += Math.floor(Math.random() * 10).toString();
+    }
+    return codigo;
+  }
+
+  const handleInputs = () => {
+    setFunctionData({
+      title: '¡Ups!',
+      info: 'Algunos campos se encuentran vacíos, por favor completalos.',
+      color: '#80D5FF',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleModalClose = () => {
+    if (functionData.title === 'Solicitud aprobada' || 'Solicitud rechazada') {
+      setSolicitudDetails(false);
+      setCardDetails(false);
+      setIsModalVisible(false);
+      navigation.navigate('Requests_Admin', {userID:userID});
+    } else {
+      handleCloseModal();
+    }
+  };
+
+  const handleRequest = () => {
+    if ([codigoTarjeta, cvv, numeroTarjeta, fechaVencimiento].includes('')){
+            handleInputs();
+        } else {
+            sendRequestResponse();
+        }
   };
 
   useEffect(() => {
@@ -51,7 +129,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     .catch((error) => {
         console.log(error);
     });
-}, []);
+  }, []);
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -231,20 +309,94 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                                               <Text style={styles.title_text}>Fecha de solicitud</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.fechaFormateada : ''} a las {selectedSolicitud ? selectedSolicitud.horaFormateada : ''}
+                                              {selectedSolicitud
+                                                ? format(new Date(selectedSolicitud.fecha), "dd 'de' MMMM 'del' yyyy", { locale: es })
+                                                : ''}
+                                              {' '}
+                                              a las
+                                              {' '}
+                                              {selectedSolicitud
+                                                ? format(new Date(selectedSolicitud.fecha), 'h:mm a', {timeZone: 'UTC'}) : ''}
                                               </Text>
 
                                               {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
                                                 <View style={styles.buttons_container}>
                                                   <View style={styles.button_left}>
-                                                    <Pressable style={styles.button_reject} android_ripple={{ color: 'red' }}>
+                                                    <TouchableOpacity style={styles.button_reject}>
                                                       <Text style={styles.button_reject_text}>Rechazar solicitud</Text>
-                                                    </Pressable>
+                                                    </TouchableOpacity>
                                                   </View>
                                                   <View style={styles.button_right}>
-                                                    <Pressable style={styles.button_approve} android_ripple={{ color: 'green' }}>
+                                                    <TouchableOpacity style={styles.button_approve} onPressOut={() =>goCardDetails(solicitud)}>
                                                       <Text style={styles.button_approve_text}>Aprobar solicitud</Text>
-                                                    </Pressable>
+                                                      <Modal backdropOpacity={0.6} style={styles.modal_main_container} isVisible={cardDetails}
+                                                        animationInTiming={250}
+                                                        animationOutTiming={600}
+                                                        backdropTransitionInTiming={250}
+                                                        backdropTransitionOutTiming={600}>
+                                                        <View style={styles.modal_container}>
+
+                                                          <TouchableOpacity onPressOut={() => goCardDetails(solicitud)}>
+                                                            <Image source={require('../img/x.png')} style={styles.exit_icon}/>
+                                                          </TouchableOpacity>
+
+                                                          <Text style={styles.title_text}>Información de la tarjeta</Text>
+                                                          <Text style={styles.subtitle2_text}>Para completar la aprobación de la solicitud es necesario que llenes la información de la tarjeta que será asignada y enviada a{' '}
+                                                          {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre : ''}.</Text>
+
+                                                          <View style={styles.divisor}/>
+
+                                                          <Text style={styles.title_text}>Número de tarjeta</Text>
+                                                          <View style={styles.divisor}/>
+                                                          <View style={styles.cardnumber}>
+                                                            <TextInput style={styles.disabled_input} value={numeroTarjeta.match(/.{1,4}/g).join(' ')} editable={false}/>
+                                                            <View style={styles.horizontal_divisor}/>
+                                                            <TextInput style={styles.input} placeholder= "8 dígitos de tarjeta RFID    " value={codigoTarjeta ? codigoTarjeta.match(/(\d{1,4})/g).join(' ') : ''}
+                                                            onChangeText={setCodigoTarjeta} placeholderTextColor={'#878787'} keyboardType="number-pad" maxLength={9}/>
+                                                          </View>
+
+                                                          <View style={styles.cardnumber}>
+                                                            <View style={styles.left2}>
+                                                              <Text style={styles.title_text}>Fecha vencimiento</Text>
+                                                              <View style={styles.divisor}/>
+                                                              <TextInput
+                                                              style={styles.input}
+                                                              placeholder="DD/MM/AAAA"
+                                                              value={fechaVencimiento}
+                                                              onChangeText={handleFechaChange}
+                                                              placeholderTextColor="#878787"
+                                                              keyboardType="numeric"
+                                                              />
+                                                            </View>
+                                                            <View style={styles.right2}>
+                                                              <Text style={styles.title_text}>CVV</Text>
+                                                              <View style={styles.divisor}/>
+                                                              <TextInput
+                                                              style={styles.disabled_input}
+                                                              value={cvv}
+                                                              placeholderTextColor="#878787" editable={false}
+                                                              />
+                                                            </View>
+                                                          </View>
+
+                                                          <View style={styles.buttons_container}>
+                                                              <TouchableOpacity style={styles.button_approve}>
+                                                              <CustomModal
+                                                                  title={functionData.title}
+                                                                  info={functionData.info}
+                                                                  color={functionData.color}
+                                                                  icon={functionData.icon}
+                                                                  isVisible={isModalVisible}
+                                                                  onEvent={handleModalClose}
+                                                                  btn={functionData.btn}
+                                                                  loop={inLoop}/>
+                                                                <Text style={styles.button_approve_text}>Asignar tarjeta</Text>
+                                                              </TouchableOpacity>
+                                                          </View>
+
+                                                        </View>
+                                                      </Modal>
+                                                    </TouchableOpacity>
                                                   </View>
                                                 </View>
                                               ) : (
@@ -346,7 +498,14 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                                               <Text style={styles.title_text}>Fecha de solicitud</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.fechaFormateada : ''} a las {selectedSolicitud ? selectedSolicitud.horaFormateada : ''}
+                                              {selectedSolicitud
+                                                ? format(new Date(selectedSolicitud.fecha), "dd 'de' MMMM 'del' yyyy", { locale: es })
+                                                : ''}
+                                              {' '}
+                                              a las
+                                              {' '}
+                                              {selectedSolicitud
+                                                ? format(new Date(selectedSolicitud.fecha), 'h:mm a', {timeZone: 'UTC'}) : ''}
                                               </Text>
 
                                               {selectedSolicitud && selectedSolicitud.estado === 'En espera' ? (
@@ -530,6 +689,16 @@ const styles = StyleSheet.create({
       alignItems: 'flex-end',
   },
 
+  left2:{
+    flex: 0.6,
+    alignItems: 'flex-start',
+},
+
+  right2:{
+    flex: 0.4,
+    alignItems: 'flex-start',
+  },
+
   subtitle1:{
       fontFamily: 'DMSans-Medium',
       fontSize: 16,
@@ -624,6 +793,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  subtitle2_text:{
+    fontFamily: 'DMSans-Regular',
+    color:'#424242',
+    fontSize: 15,
+    textAlign: 'justify',
+    marginTop: 5,
+  },
+
   button_reject:{
     padding: 11,
     width:'100%',
@@ -672,6 +849,41 @@ const styles = StyleSheet.create({
       flex: 0.5,
       alignItems: 'flex-end',
       marginLeft: 10,
+  },
+
+  disabled_input: {
+    padding: 10,
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#000',
+    backgroundColor: '#E2E2E2',
+    borderRadius: 10,
+  },
+
+  input: {
+    padding: 10,
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    color: '#000',
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+
+  horizontal_divisor:{
+    width: 8,
+    height: '100%',
+  },
+
+  cardnumber:{
+    flexDirection: 'row',
+  },
+
+  extradata:{
+    flex:1,
+    flexDirection: 'row',
+    marginTop: 12,
   },
 
 });
