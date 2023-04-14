@@ -88,6 +88,30 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     setIsModalVisible(true);
   };
 
+  const handleServerError = () => {
+    setFunctionData({
+      title: 'Error al comunicarse con el servidor',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleError = () => {
+    setFunctionData({
+      title: 'No pudimos procesar la solicitud',
+      info: 'Ocurrió un error al procesar la solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
@@ -103,11 +127,23 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     }
   };
 
+  const handleData = () => {
+    setFunctionData({
+      title: 'Solicitud aprobada',
+      info: 'La solicitud fue aprobada con éxito.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
   const handleRequest = () => {
     if ([codigoTarjeta, cvv, numeroTarjeta, fechaVencimiento].includes('')){
             handleInputs();
         } else {
-            sendRequestResponse();
+            sendRequestApproveResponse();
         }
   };
 
@@ -130,6 +166,42 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
         console.log(error);
     });
   }, []);
+
+  const sendRequestApproveResponse = () => {
+
+    const [day, month, year] = fechaVencimiento.split('/');
+    const fecha = new Date(year, month - 1, day);
+
+    const documentLog = JSON.stringify({
+      idSolicitud: selectedSolicitud._id,
+      estado: 'Aprobada',
+      idUsuario: selectedSolicitud.solicitante[0]._id,
+      numeroTarjeta: numeroTarjeta,
+      cvv: cvv,
+      fechaVencimiento: fecha,
+    });
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/update_assign_card_request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 400) {
+        handleError();
+      } else if (response.status === 201) {
+        handleData();
+      } else {
+        handleServerError();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+  };
 
   return (
     <SafeAreaView style={styles.main_container}>
@@ -380,7 +452,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                                           </View>
 
                                                           <View style={styles.buttons_container}>
-                                                              <TouchableOpacity style={styles.button_approve}>
+                                                              <TouchableOpacity style={styles.button_approve} onPress={handleRequest}>
                                                               <CustomModal
                                                                   title={functionData.title}
                                                                   info={functionData.info}
