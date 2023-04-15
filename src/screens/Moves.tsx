@@ -1,27 +1,136 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Image } from 'react-native'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { NavigationProp, RouteProp } from '@react-navigation/native';
+import CustomModal from '../components/CustomModal';
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Moves: React.FC<Props> = ({navigation}) => {
+const Moves: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+
+  const [movesInfo, setMovesInfo] = useState<any>();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_moves',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setMovesInfo(data);
+            } else {
+              console.log(data);
+              handleData()
+            }
+        }})
+      })
+      .catch((error) => {
+        handleData()
+        console.log(error)
+      })
+  }, [])
+
+  const renderMessages = ({ item }) => {
+    const fechaMovimiento = item && item.fechaMovimiento ? new Date(item.fechaMovimiento) : null;
+    const horaFormateadaMovimiento = fechaMovimiento ? format(fechaMovimiento, 'h:mm a', { timeZone: 'UTC' }) : null;
+    const fechaFormateadaMovimiento = fechaMovimiento ? format(fechaMovimiento, 'dd MMMM, yyyy', { locale: es }) : null;
+
+    return (
+      <View style={styles.movementContainer}>
+        <View style={styles.iconMainMovement_container}>
+          <View style={styles.iconMovement_container}>
+            <Image
+              style={styles.iconMovement}
+              source={item.tipoMovimiento === true ? require('../img/Dinero.png') : require('../img/Compra.png')}
+            />
+          </View>
+        </View>
+
+        <View style={styles.informationMovement_container}>
+          <Text style={styles.movementTypeText}>
+            {item.tipoMovimiento === true ? 'Recarga de Saldo' : 'Compra de comida'}
+          </Text>
+          <Text style={styles.dateText}>{fechaFormateadaMovimiento}</Text>
+        </View>
+
+        <View style={styles.detailMovement_container}>
+          <Text style={item.tipoMovimiento === true ? styles.AddmountText : styles.RestmountText}>
+            {item.tipoMovimiento === true ? '+' : '-'} ${item.monto}
+          </Text>
+          <Text style={styles.hourText}>{horaFormateadaMovimiento}</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Ocurrió un error al obtener tu información',
+      info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/sorry_icon.json'),
+      btn: 'OK',
+    });
+    setInLoop(false)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
+
+          <CustomModal
+            title={functionData.title}
+            info={functionData.info}
+            color={functionData.color}
+            icon={functionData.icon}
+            isVisible={isModalVisible}
+            onEvent={handleCloseModal}
+            btn={functionData.btn}
+            loop={inLoop}
+          />
 
           {/*Este apartado funciona como la parte superior de la pantalla de notificaciones*/}
           <View style={styles.head}>
 
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID : userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -33,68 +142,22 @@ const Moves: React.FC<Props> = ({navigation}) => {
 
           {/*Este apartado es enfocado en generar cada recuadro de los mensajes*/}
 
-          <View style={styles.movementContainer}>
-
-            <View style={styles.iconMainMovement_container}>
-                <View style={styles.iconMovement_container}>
-                    <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
-                </View>
-            </View>
-
-            <View style={styles.informationMovement_container}>
-                <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
-                <Text style={styles.dateText}>26 Febrero, 2023</Text>
-            </View>
-
-            <View style={styles.detailMovement_container}>
-                <Text style={styles.AddmountText}>+ $500.50</Text>
-                <Text style={styles.hourText}>00:10 A.M</Text>
-            </View>
-
-          </View>
-
-          <View style={styles.movementContainer}>
-
-              <View style={styles.iconMainMovement_container}>
-                  <View style={styles.iconMovement_container}>
-                      <Image style={styles.iconMovement} source={require('../img/Compra.png')}/>
-                  </View>
+          <View style={styles.scroll_container}>
+            {movesInfo === undefined ? (
+              <View style={styles.container_noMoves}>
+                <Text style={styles.noMoves}>Aún no has hecho movimientos con tu tarjeta</Text>
               </View>
-
-              <View style={styles.informationMovement_container}>
-                  <Text style={styles.movementTypeText}>Compra de comida</Text>
-                  <Text style={styles.dateText}>25 Febrero, 2023</Text>
-              </View>
-
-              <View style={styles.detailMovement_container}>
-                  <Text style={styles.RestmountText}>- $200.00</Text>
-                  <Text style={styles.hourText}>23:25 P.M</Text>
-              </View>
-
-          </View>
-
-          <View style={styles.movementContainer}>
-
-              <View style={styles.iconMainMovement_container}>
-                  <View style={styles.iconMovement_container}>
-                      <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
-                  </View>
-              </View>
-
-              <View style={styles.informationMovement_container}>
-                  <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
-                  <Text style={styles.dateText}>25 Febrero, 2023</Text>
-              </View>
-
-              <View style={styles.detailMovement_container}>
-                  <Text style={styles.AddmountText}>+ $200.00</Text>
-                  <Text style={styles.hourText}>22:43 P.M</Text>
-              </View>
-
+            ) : (
+              <FlatList
+                data={movesInfo}
+                renderItem={renderMessages}
+                keyExtractor={(item) => item._id}
+                showsVerticalScrollIndicator={false}
+              />
+            )}
           </View>
 
         </View>
-      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -103,8 +166,6 @@ const styles = StyleSheet.create({
 
   main_container:{
     flex: 1,
-    justifyContent: 'center',
-    alignItems:'center',
     backgroundColor: '#FFFFFF',
   },
 
@@ -119,6 +180,7 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     backgroundColor: '#FFFFFF',
+    marginBottom: 50,
   },
 
   head:{
@@ -220,6 +282,22 @@ const styles = StyleSheet.create({
       fontSize: 15,
       color: '#939393',
       marginTop: 4,
+  },
+
+  container_noMoves:{
+    flex: 1,
+    marginTop: '100%',
+    marginBottom: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    backgroundColor: '#FFF',
+  },
+
+  noMoves:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 20,
+    color: '#000000',
+    textAlign: 'center',
   },
 
 })

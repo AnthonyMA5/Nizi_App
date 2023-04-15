@@ -27,7 +27,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
     const fechaSolicitud = solicitudInfo && solicitudInfo.length > 0 && solicitudInfo[0].fecha ? new Date(solicitudInfo[0].fecha) : null;
     const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
-    const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+    const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd 'de' MMMM 'del' yyyy", { locale: es }) : null;
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
@@ -36,6 +36,16 @@ const Home: React.FC<Props> = ({navigation, route}) => {
     const [inLoop, setInLoop] = useState(false);
 
     const [refreshing, setRefreshing] = useState(false);
+
+    const saldoTotal = userInfo && userInfo.tarjeta && userInfo.tarjeta.length > 0
+    ? userInfo.tarjeta[0].movimientos.reduce((total, movimiento) => {
+            if (movimiento.tipoMovimiento) {
+            return total + movimiento.monto;
+            } else {
+            return total - movimiento.monto;
+            }
+        }, 0)
+    : 0;
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -199,9 +209,9 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                         <View style={styles.notifications_maincontainer}>
                             <View style={styles.notifications_container}>
-                                <Pressable onPressOut={()=>navigation.navigate('Login')}>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Login')}>
                                     <Image style={styles.notifications_icon} source={require('../img/Door.png')}/>
-                                </Pressable>
+                                </TouchableOpacity>
                             </View>
                         </View>
 
@@ -236,7 +246,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                 </View>
                             </View>
                         ) : userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                            <Pressable onPressOut={() => navigation.navigate('Card_Request', { userID: userID })}>
+                            <Pressable onPress={() => navigation.navigate('Card_Request', { userID: userID })}>
                                 <View style={styles.borderRequest}>
                                     <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
                                     <Text style={styles.textNameService}>Solicitar tarjeta</Text>
@@ -245,7 +255,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                         ) : userInfo && userInfo.tarjeta && userInfo.tarjeta.length !== 0 ? (
                             <>
                             {userInfo && userInfo.tarjeta && userInfo.tarjeta.length > 0 && userInfo.tarjeta[0].estadoTarjeta === 'Desactivada' ? (
-                                <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Card', {userID: userID})}>
                                     <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#BBBBBB', '#DDDDDD', '#EEEEEE']} style={styles.cardView}>
                                         <View style={styles.marginCardContainer}>
                                             <View style={styles.headCard}>
@@ -262,7 +272,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     </LinearGradient>
                                 </TouchableOpacity>
                             ) : (
-                                <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Card', {userID: userID})}>
                                     <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
                                         <View style={styles.marginCardContainer}>
                                             <View style={styles.headCard}>
@@ -273,7 +283,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                                     <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
                                                 </View>
                                             </View>
-                                            <Text style={styles.moneyTextCard}>$500.00</Text>
+                                            <Text style={styles.moneyTextCard}>${saldoTotal}</Text>
                                             {userInfo ? userInfo.tarjeta.map(tarjeta => (
                                                 <Text key={tarjeta._id} style={styles.numberTextCard}>
                                                     {'**** **** **** **' + tarjeta.numeroTarjeta.slice(-2)}
@@ -308,7 +318,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge', { userID: userID })}>
+                                        <TouchableOpacity onPress={()=>navigation.navigate('Recharge', { userID: userID })}>
                                             <View style={styles.servicesContainerGreen}>
                                                 <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
                                                 <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
@@ -319,15 +329,14 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
-                                        disabled={true}>
+                                        <TouchableOpacity disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/Movimientos.png')}/>
                                                 <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPressIn={()=>navigation.navigate('Recharge')}>
+                                        <TouchableOpacity onPress={()=>navigation.navigate('Movement', {userID:userID})}>
                                             <View style={styles.servicesContainerPink}>
                                                 <Image style={styles.iconServices} source={require('../img/Movimientos.png')}/>
                                                 <Text style={styles.textNameService}>Mi{'\n'}actividad</Text>
@@ -346,7 +355,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
+                                        <TouchableOpacity onPress={() => navigation.navigate('Card', {userID: userID})}>
                                             <View style={styles.servicesContainerSkyBlue}>
                                                 <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
                                                 <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>
@@ -357,7 +366,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        <TouchableOpacity
                                         disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/pedidos_icon.png')}/>
@@ -381,7 +390,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity onPressOut={()=>navigation.navigate('Messagges', {userID : userID})}>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Messagges', {userID : userID})}>
                                     <View style={styles.servicesContainerYellow}>
                                         <Image style={styles.iconServices} source={require('../img/Notificaciones.png')}/>
                                         <Text style={styles.textNameService}>Mis{'\n'}mensajes</Text>
@@ -390,7 +399,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        <TouchableOpacity onPress={()=>navigation.navigate('Recharge')} 
                                         disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/menu_icon.png')}/>
@@ -407,14 +416,14 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                     )}
                                 </View>
 
-                                <TouchableOpacity onPressOut={()=>navigation.navigate('Profile', {userID: userID})}>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Profile', {userID: userID})}>
                                     <View style={styles.servicesContainerOrange}>
                                         <Image style={styles.iconServices} source={require('../img/Perfil.png')}/>
                                         <Text style={styles.textNameService}>Mi{'\n'}perfil</Text>
                                     </View>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce', {userID: userID})}>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Commerce', {userID: userID})}>
                                     <View style={styles.servicesContainerRed}>
                                         <Image style={styles.iconServices} source={require('../img/Comercios.png')}/>
                                         <Text style={styles.textNameService}>Comercios{'\n'}disponibles</Text>
@@ -433,64 +442,53 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     
                     <View style={[styles.sectionContainer, {marginBottom: 30}]}>
 
-                        {userInfo && userInfo.tarjeta && userInfo.tarjeta.movimientos ? (
-                            <>
-                                <View style={styles.movementTitles}>
-                                    <View style={styles.movementText1}>
-                                        <Text style={styles.textTitleSection}>Actividad Reciente</Text>
-                                    </View>
-                                    <View style={styles.movementText2}>
-                                        <TouchableOpacity>
-                                            <Text style={styles.textMoreMovements}>Ver más</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                    {userInfo && userInfo.tarjeta && userInfo.tarjeta.length > 0 && userInfo.tarjeta[0].movimientos ? (
+                    <>
+                        <View style={styles.movementTitles}>
+                        <View style={styles.movementText1}>
+                            <Text style={styles.textTitleSection}>Actividad Reciente</Text>
+                        </View>
+                        <View style={styles.movementText2}>
+                            <TouchableOpacity onPressOut={()=>navigation.navigate('Movement', {userID:userID})}>
+                            <Text style={styles.textMoreMovements}>Ver más</Text>
+                            </TouchableOpacity>
+                        </View>
+                        </View>
 
-                                <View style={styles.movementContainer}>
-
+                        {userInfo.tarjeta[0].movimientos.sort((a, b) => new Date(b.fechaMovimiento) - new Date(a.fechaMovimiento)).slice(0, 3).map((movimiento, index) => {
+                            const fechaMovimiento = movimiento && movimiento.fechaMovimiento ? new Date(movimiento.fechaMovimiento) : null;
+                            const horaFormateadaMovimiento = fechaMovimiento ? format(fechaMovimiento, 'h:mm a', {timeZone: 'UTC'}) : null;
+                            const fechaFormateadaMovimiento = fechaMovimiento ? format(fechaMovimiento, 'dd MMMM, yyyy', { locale: es }) : null;
+                            return (
+                                <View key={index} style={styles.movementContainer}>
                                     <View style={styles.iconMainMovement_container}>
                                         <View style={styles.iconMovement_container}>
-                                            <Image style={styles.iconMovement} source={require('../img/Compra.png')}/>
+                                        <Image style={styles.iconMovement} source={
+                                            movimiento.tipoMovimiento === true ? require('../img/Dinero.png')
+                                            : require('../img/Compra.png')
+                                            }/>
                                         </View>
                                     </View>
 
                                     <View style={styles.informationMovement_container}>
-                                        <Text style={styles.movementTypeText}>Compra de comida</Text>
-                                        <Text style={styles.dateText}>25 Febrero, 2023</Text>
+                                        <Text style={styles.movementTypeText}>
+                                            {movimiento.tipoMovimiento === true ? 'Recarga de Saldo' : 'Compra de comida'}
+                                        </Text>
+                                        <Text style={styles.dateText}>{fechaFormateadaMovimiento}</Text>
                                     </View>
 
                                     <View style={styles.detailMovement_container}>
-                                        <Text style={styles.RestmountText}>- $200.00</Text>
-                                        <Text style={styles.hourText}>23:25 P.M</Text>
+                                        <Text style={movimiento.tipoMovimiento === true ? styles.AddmountText : styles.RestmountText}>
+                                            {movimiento.tipoMovimiento === true ? '+' : '-'} ${movimiento.monto}
+                                        </Text>
+                                        <Text style={styles.hourText}>{horaFormateadaMovimiento}</Text>
                                     </View>
-
                                 </View>
+                            );
+                        })}
+                    </>
+                    ) : null}
 
-                                <View style={styles.movementContainer}>
-
-                                    <View style={styles.iconMainMovement_container}>
-                                        <View style={styles.iconMovement_container}>
-                                            <Image style={styles.iconMovement} source={require('../img/Ingreso.png')}/>
-                                        </View>
-                                    </View>
-
-                                    <View style={styles.informationMovement_container}>
-                                        <Text style={styles.movementTypeText}>Recarga de Saldo</Text>
-                                        <Text style={styles.dateText}>25 Febrero, 2023</Text>
-                                    </View>
-
-                                    <View style={styles.detailMovement_container}>
-                                        <Text style={styles.AddmountText}>+ $200.00</Text>
-                                        <Text style={styles.hourText}>22:43 P.M</Text>
-                                    </View>
-
-                                </View>
-                            </>
-                        ) : (
-                            <>
-                            </>
-                        )}
-                        
                     </View>
 
                 </View>
@@ -886,6 +884,7 @@ const styles = StyleSheet.create({
 
     informationMovement_container:{
         flex: 0.6,
+        alignItems: 'flex-start',
     },
 
     movementTypeText:{
@@ -896,7 +895,7 @@ const styles = StyleSheet.create({
 
     dateText:{
         fontFamily: 'DMSans-Medium',
-        fontSize: 15,
+        fontSize: 14,
         color: '#939393',
         marginTop: 4,
     },

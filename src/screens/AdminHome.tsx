@@ -299,7 +299,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                             { solicitudesInfo && solicitudesInfo.slice(0, 1).map((solicitud, index) => {
                                 const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
                                 const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
-                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd 'de' MMMM 'del' yyyy", { locale: es }) : null;
                                 return (
                                     <View key={solicitud._id} style={styles.third_container}>
                                         <View style={styles.subtitle_container}>

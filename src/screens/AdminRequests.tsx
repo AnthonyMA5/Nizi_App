@@ -348,7 +348,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                 solicitudesInfo && solicitudesInfo.map((solicitud, index) => {
                 const fechaSolicitud = solicitud && solicitud.fecha ? new Date(solicitud.fecha) : null;
                 const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
-                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
+                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd 'de' MMMM 'del' yyyy", { locale: es }) : null;
                 return (
                         <View key={solicitud._id} style={solicitud.estado === 'En espera' ?
                         styles.yellow_container : solicitud.estado === 'Aprobada' ?
