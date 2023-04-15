@@ -60,6 +60,18 @@ const Card: React.FC<Props> = ({navigation, route}) => {
     setIsModalVisible(true);
   };
 
+  const handleData2 = () => {
+      setFunctionData({
+        title: 'Tu tarjeta ha sido eliminada',
+        info: 'Haz eliminado tu tarjeta, por ende algunos servicios de Nizi no se encontrarán disponibles.',
+        color: '#00D4A1',
+        icon: require('../animations/success_icon.json'),
+        btn: 'Entendido',
+      });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
   const handleServerError = () => {
     setFunctionData({
       title: 'Error al comunicarse con el servidor',
@@ -99,6 +111,31 @@ const Card: React.FC<Props> = ({navigation, route}) => {
         handleServerError();
       }
       onRefresh();
+    })
+    .catch((error) => {
+      console.log(error);
+      handleServerError();
+    });
+  };
+
+  const deleteCard = () => {
+    const documentLog = JSON.stringify({
+      _id: userInfo ? userInfo._id : '',
+    });
+    console.log('Datos enviados al servidor:', documentLog);
+    fetch('http://192.168.0.3:3000/delete_card', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: documentLog,
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        handleData2();
+      } else {
+        handleServerError();
+      }
     })
     .catch((error) => {
       console.log(error);

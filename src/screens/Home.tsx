@@ -36,6 +36,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
     const [inLoop, setInLoop] = useState(false);
 
     const [refreshing, setRefreshing] = useState(false);
+
     const onRefresh = () => {
         setRefreshing(true);
     };

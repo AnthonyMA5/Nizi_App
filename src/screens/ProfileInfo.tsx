@@ -124,7 +124,7 @@ const Profile_Info: React.FC<Props> = ({navigation, route}) => {
   const handleData = () => {
     setFunctionData({
       title: 'Información actualizada',
-      info: 'La proxima vez que ingreses a tu cuenta verás los cambios reflejados.',
+      info: 'Tus datos han sido actualizados.',
       color: '#00D4A1',
       icon: require('../animations/success_icon.json'),
       btn: 'Entendido',
