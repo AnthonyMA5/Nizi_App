@@ -1,14 +1,17 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import {DrawerNavigationProp} from '@react-navigation/drawer';
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>;
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Orders: React.FC<Props> = ({navigation}) => {
+const Orders: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
 
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
@@ -24,8 +27,8 @@ const Orders: React.FC<Props> = ({navigation}) => {
               <View style={styles.head}>
 
                 <View style={styles.menu_container}>
-                  <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                    <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+                  <TouchableOpacity onPress={()=>navigation.navigate('Home', {userID:userID})}>
+                    <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
                   </TouchableOpacity>
                 </View>
 

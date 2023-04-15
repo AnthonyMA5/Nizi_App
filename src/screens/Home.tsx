@@ -374,7 +374,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => navigation.navigate('Orders', {userID: userID})}>
                                             <View style={styles.servicesContainerBlue}>
                                                 <Image style={styles.iconServices} source={require('../img/pedidos_icon.png')}/>
                                                 <Text style={styles.textNameService}>Mis{'\n'}pedidos</Text>
@@ -399,7 +399,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPress={()=>navigation.navigate('Recharge')} 
+                                        <TouchableOpacity
                                         disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/menu_icon.png')}/>
@@ -407,7 +407,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={()=>navigation.navigate('Menu', { userID: userID })}>
                                             <View style={styles.servicesContainerProfile}>
                                                 <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
                                                 <Text style={styles.textNameService}>Menú{'\n'}digital</Text>

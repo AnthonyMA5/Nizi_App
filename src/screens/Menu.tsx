@@ -4,18 +4,21 @@
 /* eslint-disable semi */
 import { View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { ScrollView } from 'react-native'
 import { Image } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import { TextInput } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import { NavigationProp, RouteProp } from '@react-navigation/native'
 
 interface Props {
-    navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Menu: React.FC<Props> = ({navigation}) => {
+const Menu: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
 
   const [selectedCategory, setSelectedCategory] = useState('Todos');
 
@@ -32,8 +35,8 @@ const Menu: React.FC<Props> = ({navigation}) => {
           <View style={styles.header_container}>
 
             <View style={styles.left_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.back_icon} source={require('../img/menu_barra.png')} />
+              <TouchableOpacity onPress={()=>navigation.navigate('Home', {userID:userID})}>
+                <Image style={styles.back_icon} source={require('../img/back_black_icon.png')} />
               </TouchableOpacity>
             </View>
 

@@ -53,6 +53,7 @@ const App: React.FC<Props> = ({navigation}) => {
         <Stack.Screen name="Recharge" component={Recharge} />
         <Stack.Screen name="Movement" component={Moves} />
         <Stack.Screen name="Card" component={Card} />
+        <Stack.Screen name="Orders" component={Orders} />
         <Stack.Screen name="Messagges" component={Messagges} />
         <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Commerce" component={Comerce} />
