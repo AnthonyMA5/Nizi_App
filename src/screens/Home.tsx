@@ -25,7 +25,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
     const [userInfo, setUserInfo] = useState<any>();
     const [solicitudInfo, setSolicitudInfo] = useState<any>();
 
-    const fechaSolicitud = solicitudInfo && solicitudInfo.fecha ? new Date(solicitudInfo.fecha) : null;
+    const fechaSolicitud = solicitudInfo && solicitudInfo.length > 0 && solicitudInfo[0].fecha ? new Date(solicitudInfo[0].fecha) : null;
     const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
     const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd MMMM',' yyyy", { locale: es }) : null;
 
@@ -155,7 +155,6 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     handleData()
                 }
             }
-            setRefreshing(false);
             })
           })
           .catch((error) => {
@@ -210,14 +209,14 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
                     <View style={styles.main_container_card_view}>
-                        { solicitudInfo !== undefined && solicitudInfo.estado === 'En espera' ? (
+                        { solicitudInfo !== undefined && solicitudInfo[0].estado === 'En espera' ? (
                             <View style={styles.yellow_container}>
                                 <View style={styles.subtitle_container}>
                                     <View style={styles.left}>
                                         <Text style={styles.subtitle1}>Solicitud</Text>
                                     </View>
                                     <View style={styles.right}>
-                                        <Text style={styles.orange_subtitle}>{solicitudInfo ? solicitudInfo.estado : ''}</Text>
+                                        <Text style={styles.orange_subtitle}>{solicitudInfo ? solicitudInfo[0].estado : ''}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.subtitle_container}>
@@ -275,7 +274,11 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                                 </View>
                                             </View>
                                             <Text style={styles.moneyTextCard}>$500.00</Text>
-                                            <Text style={styles.numberTextCard}>**** **** **** **89</Text>
+                                            {userInfo ? userInfo.tarjeta.map(tarjeta => (
+                                                <Text key={tarjeta._id} style={styles.numberTextCard}>
+                                                    {'**** **** **** **' + tarjeta.numeroTarjeta.slice(-2)}
+                                                </Text>
+                                            )) : ''}
                                         </View>
                                     </LinearGradient>
                                 </TouchableOpacity>
@@ -297,7 +300,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        <TouchableOpacity 
                                         disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/Dinero.png')}/>
@@ -305,7 +308,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPressIn={()=>navigation.navigate('Recharge')}>
+                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge', { userID: userID })}>
                                             <View style={styles.servicesContainerGreen}>
                                                 <Image style={styles.iconServices} source={require('../img/Dinero.png')}/>
                                                 <Text style={styles.textNameService}>Recargar{'\n'}tarjeta</Text>
@@ -617,7 +620,7 @@ const styles = StyleSheet.create({
         flex:1, 
         marginLeft: 20, 
         marginRight: 20, 
-        marginTop: 15,
+        marginTop: 20,
         marginBottom:15,
         justifyContent: 'center',
     },
@@ -665,9 +668,10 @@ const styles = StyleSheet.create({
 
     numberTextCard:{
         fontFamily: 'DMSans-Medium',
-        fontSize: 17,
+        fontSize: 16,
         color: '#FFFFFF',
         marginTop: 30,
+        marginBottom: 5,
     },
 
     sectionContainer:{

@@ -5,13 +5,17 @@
 /* eslint-disable semi */
 import { View, Text, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 
 interface Props {
-    navigation: DrawerNavigationProp<any, any>
+  navigation: NavigationProp<any, any>;
+  route: RouteProp<any, any>;
 }
 
-const Recharge: React.FC<Props> = ({navigation}) => {
+const Recharge: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID } = route.params;
+
   return (
     <SafeAreaView style={styles.main_container}>
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
@@ -21,8 +25,8 @@ const Recharge: React.FC<Props> = ({navigation}) => {
           <View style={styles.head}>
 
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.navigate('Home')}>
-                <Image style={styles.iconMenu} source={require('../img/back.png')}/>
+              <TouchableOpacity onPress={()=>navigation.navigate('Home', { userID: userID })}>
+                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -38,7 +42,7 @@ const Recharge: React.FC<Props> = ({navigation}) => {
             Nizi cuenta con puntos de recarga en establecimientos participantes al igual que recargas utilizando PayPal.
           </Text>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce')}>
+          <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce', { userID: userID })}>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Dinero.png')} />
@@ -47,14 +51,14 @@ const Recharge: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Recarga en establecimiento</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce')}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Commerce', { userID: userID })}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPressOut={()=>navigation.navigate('Payment')}>
+          <TouchableOpacity>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/paypal.png')} />
@@ -63,7 +67,7 @@ const Recharge: React.FC<Props> = ({navigation}) => {
                 <Text style={styles.text_button}>Recarga con PayPal</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPressOut={()=>navigation.navigate('Payment')}>
+                <TouchableOpacity>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>

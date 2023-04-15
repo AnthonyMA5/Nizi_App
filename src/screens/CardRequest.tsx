@@ -151,13 +151,13 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
 
     const View2 = ({onSubmit}) => {
 
-        const [calle, setCalle] = useState('');
-        const [numExt, setNumExt] = useState('');
-        const [numInt, setNumInt] = useState('');
-        const [colonia, setColonia] = useState('');
-        const [ciudad, setCiudad] = useState('');
-        const [cp, setCP] = useState('');
-        const [estado, setEstado] = useState('');
+        const [calle, setCalle] = useState(userInfo ? userInfo.direccion[0].calle : '');
+        const [numExt, setNumExt] = useState(userInfo ? userInfo.direccion[0].numeroExterior : '');
+        const [numInt, setNumInt] = useState(userInfo ? userInfo.direccion[0].numeroInterior : '');
+        const [colonia, setColonia] = useState(userInfo ? userInfo.direccion[0].colonia : '');
+        const [ciudad, setCiudad] = useState(userInfo ? userInfo.direccion[0].municipio : '');
+        const [cp, setCP] = useState(userInfo ? userInfo.direccion[0].codigoPostal.toString() : '');
+        const [estado, setEstado] = useState(userInfo ? userInfo.direccion[0].estado : '');
 
         const handleSubmit = () => {
             if ([calle, numExt, colonia, ciudad, cp, estado].includes('')) {
@@ -573,7 +573,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
         setFunctionData({
           title: 'Tu solicitud ha sido enviada',
           info: 'Hemos recibido tu solicitud, pronto tendrás una respuesta.',
-          color: '#42E18B',
+          color: '#00D4A1',
           icon: require('../animations/success_icon.json'),
           btn: 'Entendido',
         });

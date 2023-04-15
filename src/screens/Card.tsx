@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, RefreshC
 import { ScrollView } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import CustomModal from '../components/CustomModal';
+import Modal from 'react-native-modal';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -23,6 +24,7 @@ const Card: React.FC<Props> = ({navigation, route}) => {
   const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalCancel, setModalCancel] = useState(false);
   const [inLoop, setInLoop] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -85,8 +87,13 @@ const Card: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleCloseModal = () => {
-      setRefreshing(false);
-      setIsModalVisible(false);
+      if (functionData.title === 'Tu tarjeta ha sido eliminada'){
+        setIsModalVisible(false);
+        navigation.navigate('Home', {userID:userID});
+      } else {
+        setRefreshing(false);
+        setIsModalVisible(false);
+      }
   };
 
   const updateCardState = () => {
@@ -120,7 +127,7 @@ const Card: React.FC<Props> = ({navigation, route}) => {
 
   const deleteCard = () => {
     const documentLog = JSON.stringify({
-      _id: userInfo ? userInfo._id : '',
+      idUsuario: userInfo ? userInfo._id : '',
     });
     console.log('Datos enviados al servidor:', documentLog);
     fetch('http://192.168.0.3:3000/delete_card', {
@@ -141,6 +148,10 @@ const Card: React.FC<Props> = ({navigation, route}) => {
       console.log(error);
       handleServerError();
     });
+  };
+
+  const toggleModal = () => {
+    setModalCancel(!modalCancel);
   };
 
   useEffect(() => {
@@ -278,9 +289,44 @@ const Card: React.FC<Props> = ({navigation, route}) => {
             </View>
 
             <View style={styles.button_background2}>
-              <TouchableOpacity style={styles.button_content}>
+              <TouchableOpacity style={styles.button_content} onPress={toggleModal}>
                 <Image style={styles.iconButton} source={require('../img/Eliminar_tarjeta.png')}/>
                 <Text style={styles.textButton}>Cancelar{'\n'}tarjeta</Text>
+                <Modal backdropOpacity={0.5} style={styles.modal_main_container} isVisible={modalCancel}
+                  animationInTiming={250}
+                  animationOutTiming={600}
+                  backdropTransitionInTiming={250}
+                  backdropTransitionOutTiming={600}>
+                  <View style={styles.modal_container}>
+                      <Text style={styles.titleInfo}>¿Quieres cancelar tu Nizi Card?</Text>
+                      <View style={styles.divisor} />
+                      <Text style={styles.textInfo}>
+                        Recuerda que si cancelas tu tarjeta perderás acceso a distintos servicios que ofrece Nizi.
+                      </Text>
+                      <View style={styles.button_container}>
+                        <View style={styles.button_left}>
+                          <TouchableOpacity style={styles.button_reject} onPress={toggleModal}>
+                            <Text style={styles.button_reject_text}>No, quiero mantener mi tarjeta</Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.button_right}>
+                          <TouchableOpacity style={styles.button_approve} onPress={deleteCard}>
+                            <CustomModal
+                              title={functionData.title}
+                              info={functionData.info}
+                              color={functionData.color}
+                              icon={functionData.icon}
+                              isVisible={isModalVisible}
+                              onEvent={handleCloseModal}
+                              btn={functionData.btn}
+                              loop={inLoop}/>
+                            <Text style={styles.button_approve_text}>Si, quiero cancelar mi tarjeta</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                  </View>
+
+                </Modal>
               </TouchableOpacity>
             </View>
 
@@ -459,7 +505,75 @@ const styles = StyleSheet.create({
       marginTop: 7,
     },
   
+    modal_main_container:{
+      justifyContent: 'center',
+      alignItems:'center',
+    },
   
+    modal_container:{
+        width: '100%',
+        padding: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+    },
+
+    button_reject:{
+      padding: 11,
+      width:'100%',
+      borderRadius: 10,
+      marginTop: 30,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: '#C71D1D',
+    },
+  
+    button_approve:{
+      padding: 12,
+      width:'100%',
+      borderRadius: 10,
+      marginTop: 30,
+      marginBottom: 10,
+      backgroundColor: '#00C999',
+    },
+  
+    button_reject_text:{
+      fontFamily: 'DMSans-Medium',
+      color: '#000',
+      fontSize: 15,
+      textAlign: 'center',
+    },
+  
+    button_approve_text:{
+      fontFamily: 'DMSans-Medium',
+      color: '#FFF',
+      fontSize: 15,
+      textAlign: 'center',
+    },
+
+    button_left:{
+      flex: 0.5,
+      alignItems: 'flex-start',
+      marginRight: 10,
+    },
+
+    button_right:{
+        flex: 0.5,
+        alignItems: 'flex-end',
+        marginLeft: 10,
+    },
+
+    button_container:{
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+
+    divisor:{
+      width: '100%',
+      height: 15,
+    },
+
   })
   
   export default Card;
