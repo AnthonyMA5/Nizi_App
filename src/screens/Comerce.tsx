@@ -23,48 +23,54 @@ const Comerce: React.FC<Props> = ({navigation, route}) => {
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
 
-          <View style={styles.head}>
-            <View style={styles.menu_container}>
-              <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID:userID})}>
-                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
-              </TouchableOpacity>
+            <View style={styles.head}>
+              <View style={styles.menu_container}>
+                <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID:userID})}>
+                  <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.title_container}>
+                <Text style={styles.section_title}>Comercios disponibles</Text>
+              </View>
             </View>
 
-            <View style={styles.title_container}>
-              <Text style={styles.section_title}>Comercios disponibles</Text>
+            <View style={styles.commerce_container}>
+              <View style={styles.commerce_left}>
+                <Image style={styles.commerce_icon} source={require('../img/coffee_win.jpg')}/>
+              </View>
+              <View style={styles.commerce_right}>
+                <Text style={styles.commerce_name}>
+                    Coffee Win
+                </Text>
+                <Text style={styles.commerce_address}>
+                  Carretera Santa Cruz-San Isidro 880 A Santa Cruz de las Flores, 45640 Tlajomulco de Zúñiga, Jal.
+                </Text>
+              </View>
             </View>
-          </View>
 
-          <MapView
-            provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-            style={styles.map}
-            region={{
-              latitude: 20.658037378059745,
-              longitude: -103.36288148542783,
-              latitudeDelta: 0.5,
-              longitudeDelta: 0.45,
-            }}
-            >
-              <Marker
-                coordinate={{
-                  latitude: 20.531162461878896,
-                  longitude: -103.42355677485271,
-                }}
-                image={require('../img/Marcador.png')}
-                title="Mariscos La Herradura"
-                description="C. Constitución 84, Centro,45640, San Sebastián el Grande, Jal."
-              />
-
-              <Marker
-                coordinate={{
+            <View style={styles.mapContainer}>
+              <MapView
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                region={{
                   latitude: 20.48257609509584,
                   longitude: -103.53270144917131,
+                  latitudeDelta: 0.05, // ajusta este valor para controlar el nivel de zoom
+                  longitudeDelta: 0.05, // ajusta este valor para controlar el nivel de zoom
                 }}
-                image={require('../img/Marcador.png')}
-                title="Coffee Win"
-                description="Carretera Santa cruz-San Isidro 880 A, Santa Cruz de las Flores, 45640 Tlajomulco de Zuñiga, Jal.          "
-              />
-            </MapView>
+              >
+                <Marker
+                  coordinate={{
+                    latitude: 20.48257609509584,
+                    longitude: -103.53270144917131,
+                  }}
+                  image={require('../img/Marcador.png')}
+                  title="Coffee Win"
+                  description="Carretera Santa cruz-San Isidro 880 A, Santa Cruz de las Flores, 45640 Tlajomulco de Zuñiga, Jal.          "
+                />
+              </MapView>
+            </View>
 
           </View>
       </ScrollView>
@@ -120,11 +126,15 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
 
+  mapContainer: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginTop: 35,
+  },
+
   map: {
     width: '100%',
-    height: 700,
-    borderRadius:10,
-    marginTop: 35,
+    height: 600,
   },
 
   bubble:{
@@ -136,6 +146,44 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     padding:15,
     width: 150,
+  },
+
+  commerce_container:{
+    flexDirection: 'row',
+    marginTop: 30,
+    padding: 15,
+    backgroundColor: '#FFFDEA',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+
+  commerce_left:{
+    flex: 0.2,
+  },
+
+  commerce_right:{
+    flex: 0.8,
+  },
+
+  commerce_name:{
+    fontFamily: 'DMSans-Medium',
+    fontSize: 16,
+    marginBottom: 3,
+    color: '#000',
+    textAlign: 'justify',
+  },
+
+  commerce_address:{
+    fontFamily: 'DMSans-Regular',
+    fontSize: 14,
+    color: '#595959',
+    textAlign: 'justify',
+  },
+
+  commerce_icon:{
+    width: 45,
+    height: 45,
+    borderRadius: 50,
   },
 
  });
