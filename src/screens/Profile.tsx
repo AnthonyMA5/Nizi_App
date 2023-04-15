@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, RefreshControl } from 'react-native'
+import React, { useEffect, useState  } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -21,6 +21,11 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
 
   const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
   const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+  };
 
   const handleCloseModal = () => {
       setIsModalVisible(false);
@@ -55,13 +60,15 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
             } else {
                 Alert.alert('No pudimos obtener tu información, intenta reiniciar la aplicación o ingresar más tarde.')
             }
-        }})
+        }
+        setRefreshing(false);
+      })
       })
       .catch((error) => {
         Alert.alert('No pudimos obtener tu información, intenta reiniciar la aplicación o ingresar más tarde.')
         console.log(error)
       })
-  }, [userID._id])
+  }, [userID._id, refreshing])
 
   const [desitionData, setDesitionData] = useState({
     title: '',
@@ -132,7 +139,8 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <View style={styles.container}>
 
           <View style={styles.head}>

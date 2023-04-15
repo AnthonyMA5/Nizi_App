@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import CheckBox from '@react-native-community/checkbox';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -25,15 +25,46 @@ interface Props {
 
 const CardRequest: React.FC<Props> = ({navigation, route}) => {
 
-    const { userInfo } = route.params;
+    const { userID } = route.params;
+    const [userInfo, setUserInfo] = useState<any>();
+
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            _id : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_data',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setUserInfo(data);
+                } else {
+                    handleData();
+                }
+            }
+        });
+          })
+          .catch((error) => {
+            handleData();
+            console.log(error);
+          });
+    }, [userID._id]);
 
     const View1 = ({onSubmit}) => {
 
-        const [name, setName] = useState(userInfo.nombre);
-        const [apellido_p, setApellidoP] = useState(userInfo.apellido_paterno);
-        const [apellido_m, setApellidoM] = useState(userInfo.apellido_materno);
-        const [telephone, setTelephone] = useState(userInfo.telefono);
-        const [email, setEmail] = useState(userInfo.email);
+        const [name, setName] = useState(userInfo ? userInfo.nombre : '');
+        const [apellido_p, setApellidoP] = useState(userInfo ? userInfo.apellido_paterno : '');
+        const [apellido_m, setApellidoM] = useState(userInfo ? userInfo.apellido_materno : '');
+        const [telephone, setTelephone] = useState(userInfo ? userInfo.telefono : '');
+        const [email, setEmail] = useState(userInfo ? userInfo.email : '');
         const editable = false;
 
         function validarCorreo(correo: string): boolean {
@@ -554,7 +585,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
     const handleCloseModal = () => {
         if (functionData.title === 'Tu solicitud ha sido enviada') {
             setIsModalVisible(false);
-            navigation.navigate('Home', {userID: userInfo._id});
+            navigation.navigate('Home', {userID: userID});
         } else {
             setIsModalVisible(false);
         }
@@ -607,7 +638,7 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
 
                     <View style={styles.head}>
                         <View style={styles.menu_container}>
-                            <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID: userInfo._id})}>
+                            <TouchableOpacity onPressOut={()=>navigation.navigate('Home', {userID: userID})}>
                                 <Image style={styles.iconMenu} source={require('../img/x.png')}/>
                             </TouchableOpacity>
                         </View>

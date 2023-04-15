@@ -6,7 +6,7 @@
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, RefreshControl } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
@@ -34,6 +34,11 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inLoop, setInLoop] = useState(false);
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = () => {
+        setRefreshing(true);
+    };
 
     const Anuncios = () => {
         const [anuncios, setAnuncios] = useState([
@@ -117,13 +122,15 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                 } else {
                     handleData()
                 }
-            }})
+            }
+            setRefreshing(false);
+        })
           })
           .catch((error) => {
             handleData()
             console.log(error)
           })
-    }, [])
+    }, [userID._id, refreshing])
   
     useEffect(() => {
         const documentLog = JSON.stringify({
@@ -146,18 +153,21 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                 } else {
                     handleData()
                 }
-            }})
+            }
+            setRefreshing(false);
+            })
           })
           .catch((error) => {
             handleData()
             console.log(error)
           })
-    }, [])
+    }, [userID._id, refreshing])
     
   return (
 
     <SafeAreaView style={styles.main_container}>
-            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View style={styles.container}>
 
                     <CustomModal 
@@ -199,7 +209,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
                     <View style={styles.main_container_card_view}>
-                        { solicitudInfo !== undefined ? (
+                        { solicitudInfo !== undefined && solicitudInfo.estado === 'En espera' ? (
                             <View style={styles.yellow_container}>
                                 <View style={styles.subtitle_container}>
                                     <View style={styles.left}>
@@ -226,31 +236,53 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                 </View>
                             </View>
                         ) : userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                            <Pressable onPressIn={() => navigation.navigate('Card_Request', { userInfo: userInfo })}>
+                            <Pressable onPressOut={() => navigation.navigate('Card_Request', { userID: userID })}>
                                 <View style={styles.borderRequest}>
                                     <Image style={styles.iconRequest} source={require('../img/add_icon.png')}/>
                                     <Text style={styles.textNameService}>Solicitar tarjeta</Text>
                                 </View>
                             </Pressable>
-                        ) : (
+                        ) : userInfo && userInfo.tarjeta && userInfo.tarjeta.length !== 0 ? (
                             <>
-                            <Pressable>
-                                <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
-                                    <View style={styles.marginCardContainer}>
-                                        <View style={styles.headCard}>
-                                            <View style={styles.containerTextCard}>
-                                                <Text style={styles.titleCard}>Nizi Card</Text>
+                            {userInfo && userInfo.tarjeta && userInfo.tarjeta.length > 0 && userInfo.tarjeta[0].estadoTarjeta === 'Desactivada' ? (
+                                <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
+                                    <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#BBBBBB', '#DDDDDD', '#EEEEEE']} style={styles.cardView}>
+                                        <View style={styles.marginCardContainer}>
+                                            <View style={styles.headCard}>
+                                                <View style={styles.containerTextCard}>
+                                                    <Text style={styles.titleCard}>Nizi Card</Text>
+                                                </View>
+                                                <View style={styles.containerIconCard}>
+                                                    <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
+                                                </View>
                                             </View>
-                                            <View style={styles.containerIconCard}>
-                                                <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
-                                            </View>
+                                            <Text style={styles.moneyTextCard} />
+                                            <Text style={styles.numberTextCard} />
                                         </View>
-                                        <Text style={styles.moneyTextCard}>$500.00</Text>
-                                        <Text style={styles.numberTextCard}>**** **** **** **89</Text>
-                                    </View>
-                                </LinearGradient>
-                            </Pressable>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
+                                    <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#20BDFF', '#64FFA6']} style={styles.cardView}>
+                                        <View style={styles.marginCardContainer}>
+                                            <View style={styles.headCard}>
+                                                <View style={styles.containerTextCard}>
+                                                    <Text style={styles.titleCard}>Nizi Card</Text>
+                                                </View>
+                                                <View style={styles.containerIconCard}>
+                                                    <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
+                                                </View>
+                                            </View>
+                                            <Text style={styles.moneyTextCard}>$500.00</Text>
+                                            <Text style={styles.numberTextCard}>**** **** **** **89</Text>
+                                        </View>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                            )}
+                            
                             </>
+                        ) : (
+                            <></>
                         )}
                     </View>
                     {/*Este apartado funciona como la sección de Servicios*/}
@@ -302,7 +334,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
 
                                 <View>
                                     {userInfo && userInfo.tarjeta && userInfo.tarjeta.length === 0 ? (
-                                        <TouchableOpacity onPressOut={()=>navigation.navigate('Recharge')} 
+                                        <TouchableOpacity 
                                         disabled={true}>
                                             <View style={styles.servicesContainerGray}>
                                                 <Image style={styles.iconServicesDisabled} source={require('../img/Tarjeta.png')}/>
@@ -310,7 +342,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                             </View>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPressOut={() => navigation.navigate('Card', {userID: userID})}>
                                             <View style={styles.servicesContainerSkyBlue}>
                                                 <Image style={styles.iconServices} source={require('../img/Tarjeta.png')}/>
                                                 <Text style={styles.textNameService}>Mi{'\n'}tarjeta</Text>

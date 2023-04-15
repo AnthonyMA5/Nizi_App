@@ -182,13 +182,17 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
   const sendRequestApproveResponse = () => {
 
     const [day, month, year] = fechaVencimiento.split('/');
-    const fecha = new Date(year, month - 1, day);
+    const formattedDate = `${year}-${month}-${day}`;
+    const fecha = new Date(formattedDate);
+
+    const finalCodigoTarjeta = codigoTarjeta.replace(/\s/g, '');
 
     const documentLog = JSON.stringify({
       idSolicitud: selectedSolicitud._id,
       estado: 'Aprobada',
       idUsuario: selectedSolicitud.solicitante[0]._id,
-      numeroTarjeta: numeroTarjeta+codigoTarjeta,
+      numeroTarjeta: numeroTarjeta + codigoTarjeta,
+      codigoTarjeta: finalCodigoTarjeta,
       cvv: cvv,
       fechaVencimiento: fecha,
     });
@@ -372,9 +376,11 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                              <Text style={styles.subtitle1}>Solicitante</Text>
                              <View style={styles.subtitle_container}>
                                  <View style={styles.left}>
-                                   <Text style={styles.light_subtitle}>
-                                     {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
-                                     </Text>
+                                 {solicitud.solicitante && solicitud.solicitante[0] &&
+                                    <Text style={styles.light_subtitle}>
+                                      {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
+                                    </Text>
+                                  }
                                  </View>
                                  <View style={styles.right}>
                                      <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
