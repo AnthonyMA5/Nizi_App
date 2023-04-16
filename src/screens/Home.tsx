@@ -219,7 +219,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                     
                     {/*Este apartado funciona como la creación de la vista para la tarjeta virtual desde el inicio*/}
                     <View style={styles.main_container_card_view}>
-                        { solicitudInfo !== undefined && solicitudInfo[0].estado === 'En espera' ? (
+                        { solicitudInfo && solicitudInfo[0] && solicitudInfo[0].estado === 'En espera' ? (
                             <View style={styles.yellow_container}>
                                 <View style={styles.subtitle_container}>
                                     <View style={styles.left}>

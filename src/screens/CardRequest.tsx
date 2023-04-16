@@ -151,13 +151,13 @@ const CardRequest: React.FC<Props> = ({navigation, route}) => {
 
     const View2 = ({onSubmit}) => {
 
-        const [calle, setCalle] = useState(userInfo ? userInfo.direccion[0].calle : '');
-        const [numExt, setNumExt] = useState(userInfo ? userInfo.direccion[0].numeroExterior : '');
-        const [numInt, setNumInt] = useState(userInfo ? userInfo.direccion[0].numeroInterior : '');
-        const [colonia, setColonia] = useState(userInfo ? userInfo.direccion[0].colonia : '');
-        const [ciudad, setCiudad] = useState(userInfo ? userInfo.direccion[0].municipio : '');
-        const [cp, setCP] = useState(userInfo ? userInfo.direccion[0].codigoPostal.toString() : '');
-        const [estado, setEstado] = useState(userInfo ? userInfo.direccion[0].estado : '');
+        const [calle, setCalle] = useState(userInfo?.direccion[0]?.calle ?? '');
+        const [numExt, setNumExt] = useState(userInfo?.direccion[0]?.numeroExterior ?? '');
+        const [numInt, setNumInt] = useState(userInfo?.direccion[0]?.numeroInterior ?? '');
+        const [colonia, setColonia] = useState(userInfo?.direccion[0]?.colonia ?? '');
+        const [ciudad, setCiudad] = useState(userInfo?.direccion[0]?.municipio ?? '');
+        const [cp, setCP] = useState(userInfo?.direccion[0]?.codigoPostal.toString() ?? '');
+        const [estado, setEstado] = useState(userInfo?.direccion[0]?.estado ?? '');
 
         const handleSubmit = () => {
             if ([calle, numExt, colonia, ciudad, cp, estado].includes('')) {
