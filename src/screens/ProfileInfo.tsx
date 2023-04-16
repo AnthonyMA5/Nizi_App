@@ -134,20 +134,20 @@ const Profile_Info: React.FC<Props> = ({navigation, route}) => {
   };
 
   const handleModalClose = () => {
-  if (functionData.title === 'Información actualizada') {
-    navigation.navigate('Profile', {userID:userID});
-    setIsModalVisible(false);
-  } else {
-    setIsModalVisible(false);
-  }
+    if (functionData.title === 'Información actualizada') {
+      navigation.navigate('Profile', {userID:userID});
+      setIsModalVisible(false);
+    } else {
+      setIsModalVisible(false);
+    }
   };
 
   const handleUpdateInfo = () => {
     if ([nombre, app, apm, telefono, username, email].includes('')){
-            handleInputs();
-        } else {
-            actualizarDatos();
-        }
+      handleInputs();
+    } else {
+      actualizarDatos();
+    }
   };
 
   const actualizarDatos = () => {

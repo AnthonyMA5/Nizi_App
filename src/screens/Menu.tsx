@@ -2,14 +2,15 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable eol-last */
 /* eslint-disable semi */
-import { View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, Pressable, RefreshControl } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { Image } from 'react-native'
 import { TouchableOpacity } from 'react-native'
 import { TextInput } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
+import CustomModal from '../components/CustomModal'
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -19,18 +20,121 @@ interface Props {
 const Menu: React.FC<Props> = ({navigation, route}) => {
 
   const { userID } = route.params;
+  const [userInfo, setUserInfo] = useState<any>();
+  const [menuInfo, setMenuInfo] = useState([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const categoriasFiltradas = menuInfo ? menuInfo.filter((producto) => producto.categoria === selectedCategory) : [];
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const colors = [
+    ['#5433FF', '#00E0FF'],
+    ['#FF9897', '#F650A0'],
+    ['#00B8BA', '#00FFED'],
+  ];
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleData = () => {
+      setFunctionData({
+        title: 'Ocurrió un error al obtener información de la aplicación',
+        info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+        color: '#C71D1D',
+        icon: require('../animations/sorry_icon.json'),
+        btn: 'OK',
+      });
+      setInLoop(false)
+      setIsModalVisible(true);
+  };
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    const documentLog = JSON.stringify({
+        _id : userID._id,
+      });
+      fetch('http://192.168.0.3:3000/get_data',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: documentLog,
+      })
+      .then((response) => {
+        response.text().then((text) => {
+          if (text && text.length > 0) {
+            const data = JSON.parse(text);
+            if (data) {
+              console.log(data);
+              setUserInfo(data);
+            } else {
+                handleData()
+            }
+        }
+        setRefreshing(false);
+    })
+      })
+      .catch((error) => {
+        handleData()
+        console.log(error)
+      })
+  }, [userID._id, refreshing])
+
+  useEffect(() => {
+    fetch('http://192.168.0.3:3000/get_menu', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then((response) => {
+        console.log(response);
+        return response.json();
+    })
+    .then((data) => {
+        console.log(data);
+        setMenuInfo(data);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+  }, []);
+
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <View style={styles.container}>
 
+          <CustomModal
+            title={functionData.title}
+            info={functionData.info}
+            color={functionData.color}
+            icon={functionData.icon}
+             isVisible={isModalVisible}
+            onEvent={handleCloseModal}
+            btn={functionData.btn}
+            loop={inLoop}/>
 
           <View style={styles.header_container}>
 
@@ -56,7 +160,7 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
             </View>
 
             <View style={styles.right_container}>
-              <TouchableOpacity onPressOut={()=>navigation.navigate('Cart')}>
+              <TouchableOpacity onPress={()=>navigation.navigate('Cart')}>
                 <Image style={styles.cart_icon} source={require('../img/carrito.png')} />
               </TouchableOpacity>
             </View>
@@ -64,70 +168,42 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
           </View>
 
           <Text style={styles.title}>Menú digital</Text>
-          <Text style={styles.subtitle}>Platillos de la semana</Text>
+          <Text style={styles.subtitle}>Nuevos platillos</Text>
 
           <View style={styles.sectionContainer}>
               <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
 
-                  <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#00E0FF']} style={styles.cardView}>
+                {menuInfo.slice(0, 3).map((producto, index) => {
+                  const randomColorIndex = Math.floor(Math.random() * colors.length);
+                  const randomColors = colors[randomColorIndex];
 
-                    <View style={styles.subcontainer_food}>
-                      <Image source={require('../img/platillo2.png')} style={styles.food_image}/>
-                    </View>
-
-                    <View style={styles.info_container}>
-                      <View style={styles.left_info}>
-                        <Text style={styles.text_name}>Ensalada de pollo con vegetales</Text>
+                  return (
+                    <LinearGradient key={index} start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={randomColors} style={styles.cardView}>
+                      <View style={styles.subcontainer_food}>
+                        {producto.nombre === 'Ensalada de pollo con vegetales' ? (
+                          <Image source={require('../img/platillo2.png')} style={styles.food_image}/>
+                        ) : producto.nombre === 'Papas fritas caseras' ? (
+                          <Image source={require('../img/platillo3.png')} style={styles.food_image}/>
+                        ) : producto.nombre === 'Café cappuccino' ? (
+                          <Image source={require('../img/platillo4.png')} style={styles.food_image}/>
+                        ) : (
+                          <Image source={require('../img/White_t_logo.png')} style={styles.food_image}/>
+                        )}
                       </View>
+                      <View style={styles.info_container}>
+                        <View style={styles.left_info}>
+                          <Text style={styles.text_name}>{producto.nombre}</Text>
+                        </View>
 
-                      <View style={styles.right_info}>
-                        <View style={styles.price_container}>
-                          <Text style={styles.text_price}>$ 85.00</Text>
+                        <View style={styles.right_info}>
+                          <View style={styles.price_container}>
+                            <Text style={styles.text_price}>$ {producto.precio.toFixed(2)}</Text>
+                          </View>
                         </View>
                       </View>
-
-                    </View>
-                  </LinearGradient>
-
-                  <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#CA33FF', '#0075FF']} style={styles.cardView}>
-
-                    <View style={styles.subcontainer_food}>
-                      <Image source={require('../img/platillo1.png')} style={styles.food_image}/>
-                    </View>
-
-                    <View style={styles.info_container}>
-                      <View style={styles.left_info}>
-                        <Text style={styles.text_name}>Ensalada de pollo con vegetales</Text>
-                      </View>
-
-                      <View style={styles.right_info}>
-                        <View style={styles.price_container}>
-                          <Text style={styles.text_price}>$ 85.00</Text>
-                        </View>
-                      </View>
-
-                    </View>
-                  </LinearGradient>
-
-                  <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#5433FF', '#00E0FF']} style={styles.cardView}>
-
-                    <View style={styles.subcontainer_food}>
-                      <Image source={require('../img/platillo2.png')} style={styles.food_image}/>
-                    </View>
-
-                    <View style={styles.info_container}>
-                      <View style={styles.left_info}>
-                        <Text style={styles.text_name}>Ensalada de pollo con vegetales</Text>
-                      </View>
-
-                      <View style={styles.right_info}>
-                        <View style={styles.price_container}>
-                          <Text style={styles.text_price}>$ 85.00</Text>
-                        </View>
-                      </View>
-
-                    </View>
-                  </LinearGradient>
+                    </LinearGradient>
+                  );
+                })}
 
               </ScrollView>
           </View>
@@ -208,60 +284,69 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
 
           <View style={styles.sectionContainer3}>
 
-            <Pressable style={styles.product_main_container}
-              android_ripple={{ color: 'lightgray', borderless: false }}
-              onPressOut={() => navigation.navigate('ProductDetails')}>
+            { selectedCategory === 'Todos' ?
+              menuInfo.map((producto, index) => {
+                return (
+                  <Pressable key={index} style={styles.product_main_container}
+                    android_ripple={{ color: 'lightgray', borderless: false }}
+                    onPress={() => navigation.navigate('ProductDetails', {userID: userID, productID: producto._id})}>
 
-              <View style={styles.product_left}>
-                <Image source={require('../img/platillo1.png')} style={styles.product_image}/>
-              </View>
+                    <View style={styles.product_left}>
+                      {producto.nombre === 'Ensalada de pollo con vegetales' ? (
+                        <Image source={require('../img/platillo2.png')} style={styles.product_image}/>
+                      ) : producto.nombre === 'Papas fritas caseras' ? (
+                        <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
+                      ) : producto.nombre === 'Café cappuccino' ? (
+                        <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
+                      ) : (
+                        <Image source={require('../img/White_t_logo.png')} style={styles.product_image}/>
+                      )}
+                    </View>
 
-              <View style={styles.product_right}>
-                <Text style={styles.name_product}>Ensalada griega</Text>
-                <Text style={styles.desc_product}>Un plato de la dieta mediterránea saludable con lechuga, queso panela.</Text>
-                <View style={styles.price_product_container}>
-                  <Text style={styles.price_product}>$ 90.00</Text>
-                </View>
-              </View>
+                    <View style={styles.product_right}>
+                      <Text style={styles.name_product}>{producto.nombre}</Text>
+                          <Text style={styles.desc_product}>{producto.descripcion}</Text>
+                      <View style={styles.price_product_container}>
+                        <Text style={styles.price_product}>$ {producto.precio.toFixed(2)}</Text>
+                      </View>
+                    </View>
 
-            </Pressable>
+                  </Pressable>
+                );
+              })
+              :
+                categoriasFiltradas && categoriasFiltradas.map((producto, index) => {
+                return (
+                  <Pressable key={index} style={styles.product_main_container}
+                    android_ripple={{ color: 'lightgray', borderless: false }}
+                    onPress={() => navigation.navigate('ProductDetails', {userID: userID, productID: producto._id})}>
 
-            <Pressable style={styles.product_main_container}
-            android_ripple={{ color: 'lightgray', borderless: false }}>
+                    <View style={styles.product_left}>
+                      {producto.nombre === 'Ensalada de pollo con vegetales' ? (
+                        <Image source={require('../img/platillo2.png')} style={styles.product_image}/>
+                      ) : producto.nombre === 'Papas fritas caseras' ? (
+                        <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
+                      ) : producto.nombre === 'Café cappuccino' ? (
+                        <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
+                      ) : (
+                        <Image source={require('../img/White_t_logo.png')} style={styles.product_image}/>
+                      )}
+                    </View>
 
-              <View style={styles.product_left}>
-                <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
-              </View>
+                    <View style={styles.product_right}>
+                      <Text style={styles.name_product}>{producto.nombre}</Text>
+                          <Text style={styles.desc_product}>{producto.descripcion}</Text>
+                      <View style={styles.price_product_container}>
+                        <Text style={styles.price_product}>$ {producto.precio.toFixed(2)}</Text>
+                      </View>
+                    </View>
 
-              <View style={styles.product_right}>
-                <Text style={styles.name_product}>Papas fritas</Text>
-                <Text style={styles.desc_product}>Papas naturales fritas con chile en polvo.</Text>
-                <View style={styles.price_product_container}>
-                  <Text style={styles.price_product}>$ 25.00</Text>
-                </View>
-              </View>
-
-            </Pressable>
-
-            <Pressable style={styles.product_main_container}
-            android_ripple={{ color: 'lightgray', borderless: false }}>
-
-              <View style={styles.product_left}>
-                <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
-              </View>
-
-              <View style={styles.product_right}>
-                <Text style={styles.name_product}>Café cappuccino</Text>
-                <Text style={styles.desc_product}>Café mezclado con leche y crema de leche.</Text>
-                <View style={styles.price_product_container}>
-                  <Text style={styles.price_product}>$ 32.00</Text>
-                </View>
-              </View>
-
-            </Pressable>
+                  </Pressable>
+                );
+              })
+            }
 
           </View>
-
 
         </View>
       </ScrollView>
@@ -404,6 +489,7 @@ const styles = StyleSheet.create({
   food_image:{
     width: 130,
     height: 130,
+    resizeMode: 'contain',
   },
 
   info_container:{
