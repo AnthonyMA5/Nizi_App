@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NavigationProp, RouteProp } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, PermissionsAndroid, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
     navigation: NavigationProp<any, any>;
@@ -11,15 +12,111 @@ interface Props {
 
 const Ticket: React.FC<Props> = ({navigation, route}) => {
 
-    const {userInfo, carritoInfo} = route.params;
+    const {userID} = route.params;
+    const [userInfo, setUserInfo] = useState<any>();
+    const [carritoInfo, setCarritoInfo] = useState<any>();
 
-    {console.log(userInfo)};
-    {console.log(carritoInfo)};
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [inLoop, setInLoop] = useState(false);
+
+    const [functionData, setFunctionData] = useState({
+        title: '',
+        info: '',
+        color: '',
+        icon: null,
+        btn: '',
+    });
+
+    const handleData = () => {
+        setFunctionData({
+          title: 'Ocurrió un error al obtener información de la aplicación',
+          info: 'Te recomendar reiniciar la aplicación e intentarlo más tarde.',
+          color: '#C71D1D',
+          icon: require('../animations/sorry_icon.json'),
+          btn: 'OK',
+        });
+        setInLoop(false);
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+    };
+
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            _id : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_data',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setUserInfo(data);
+                } else {
+                    handleData();
+                }
+            }
+        });
+          })
+          .catch((error) => {
+            handleData();
+            console.log(error);
+          });
+    }, [userID._id]);
+
+    useEffect(() => {
+        const documentLog = JSON.stringify({
+            idUsuario : userID._id,
+          });
+          fetch('http://192.168.0.3:3000/get_cart',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: documentLog,
+          })
+          .then((response) => {
+            response.text().then((text) => {
+              if (text && text.length > 0) {
+                const data = JSON.parse(text);
+                if (data) {
+                  console.log(data);
+                  setCarritoInfo(data);
+                } else {
+                    handleData();
+                }
+            }
+        });
+          })
+          .catch((error) => {
+            handleData();
+            console.log(error);
+          });
+    }, [userID._id]);
 
     return (
         <SafeAreaView style={styles.main_container}>
             <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
                     <View style={styles.container}>
+
+                        <CustomModal
+                        title={functionData.title}
+                        info={functionData.info}
+                        color={functionData.color}
+                        icon={functionData.icon}
+                        isVisible={isModalVisible}
+                        onEvent={handleCloseModal}
+                        btn={functionData.btn}
+                        loop={inLoop}/>
 
                         <Text style={styles.section_title}>Comprobante de compra</Text>
 

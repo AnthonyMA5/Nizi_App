@@ -106,7 +106,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
     const handleCloseModal = () => {
         if (functionData.title === 'Se ha acreditado el pago de tu pedido'){
             setIsModalVisible(false);
-            navigation.navigate('Ticket', {userInfo: userInfo, carritoInfo: carritoInfo});
+            navigation.navigate('Ticket', {userID: userID});
         } else {
             setIsModalVisible(false);
         }
@@ -202,6 +202,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
           idUsuario: userID._id,
           idProducto: id,
+          idPedido: carritoInfo._id,
           cantidad: newQuantity,
           newTotal: newTotal,
         });
@@ -233,6 +234,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             idUsuario: userID._id,
             idProducto: producto.idProducto._id,
+            idPedido: carritoInfo._id,
             total: nuevoTotal,
         });
         console.log('Datos enviados al servidor:', documentLog);
@@ -323,93 +325,113 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
                         </View>
                     </View>
 
-                    <Text style={styles.title_text}>
-                        Realiza tu pedido ahora y lo tendremos listo para recogerlo en:
-                    </Text>
+                    {carritoInfo ? (
+                        carritoInfo.estado === 'En carrito de compras' ? (
+                            carritoInfo.productos.length === 0 ? (
+                            <View style={styles.container_noProducts}>
+                                <Text style={styles.noProducts}>Aún no has agregado productos a tu carrito</Text>
+                            </View>
+                            ) : (
+                                <View>
+                                <Text style={styles.title_text}>
+                                    Realiza tu pedido ahora y lo tendremos listo para recogerlo en:
+                                </Text>
 
-                    <View style={styles.subtitle_container}>
-                        <Image style={styles.logo} source={require('../img/coffee_win.jpg')} />
-                        <Text style={styles.subtitle_text}>Coffee Win</Text>
-                        <TouchableOpacity onPress={()=> navigation.navigate('Commerce', {userID:userID})}>
-                            <Text style={styles.subtitle2_text}>Ver ubicación</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View>
-
-                    {carritoInfo && carritoInfo.productos.map((producto) => {
-                        total += producto.idProducto.precio * producto.cantidad;
-                        return (
-                            <View style={styles.product_main_container} key={producto._id}>
-                                <View style={styles.product_left}>
-                                {producto.idProducto.nombre === 'Ensalada de pollo con vegetales' ? (
-                                    <Image source={require('../img/platillo2.png')} style={styles.product_image}/>
-                                    ) : producto.idProducto.nombre === 'Papas fritas caseras' ? (
-                                    <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
-                                    ) : producto.idProducto.nombre === 'Café cappuccino' ? (
-                                    <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
-                                    ) : (
-                                    <Image source={require('../img/White_t_logo.png')} style={styles.product_image}/>
-                                )}
-                                </View>
-                                <View style={styles.product_center}>
-                                    <Text style={styles.name_product}>{producto.idProducto.nombre}</Text>
-                                    <View style={styles.quantity_container}>
-                                        <TouchableOpacity style={styles.quantity_button} onPress={() => decrementQuantity(producto.idProducto._id, producto.cantidad)}>
-                                            <Text style={styles.symbol}>-</Text>
-                                        </TouchableOpacity>
-                                        <Text style={styles.text_quantity}>{producto.cantidad}</Text>
-                                        <TouchableOpacity style={styles.quantity_button} onPress={() => incrementQuantity(producto.idProducto._id, producto.cantidad)}>
-                                            <Text style={styles.symbol}>+</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <TouchableOpacity onPress={() => deleteProductCart(producto)}>
-                                        <Text style={styles.delete_product}>Eliminar producto</Text>
+                                <View style={styles.subtitle_container}>
+                                    <Image style={styles.logo} source={require('../img/coffee_win.jpg')} />
+                                    <Text style={styles.subtitle_text}>Coffee Win</Text>
+                                    <TouchableOpacity onPress={()=> navigation.navigate('Commerce', {userID:userID})}>
+                                        <Text style={styles.subtitle2_text}>Ver ubicación</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={styles.product_right}>
-                                    <Text style={styles.price_product}>${(producto.idProducto.precio * producto.cantidad)}</Text>
+
+                                <View>
+
+                                {carritoInfo && carritoInfo.productos.map((producto) => {
+                                    total += producto.idProducto.precio * producto.cantidad;
+                                    return (
+                                        <View style={styles.product_main_container} key={producto._id}>
+                                            <View style={styles.product_left}>
+                                            {producto.idProducto.nombre === 'Ensalada de pollo con vegetales' ? (
+                                                <Image source={require('../img/platillo2.png')} style={styles.product_image}/>
+                                                ) : producto.idProducto.nombre === 'Papas fritas caseras' ? (
+                                                <Image source={require('../img/platillo3.png')} style={styles.product_image}/>
+                                                ) : producto.idProducto.nombre === 'Café cappuccino' ? (
+                                                <Image source={require('../img/platillo4.png')} style={styles.product_image}/>
+                                                ) : (
+                                                <Image source={require('../img/White_t_logo.png')} style={styles.product_image}/>
+                                            )}
+                                            </View>
+                                            <View style={styles.product_center}>
+                                                <Text style={styles.name_product}>{producto.idProducto.nombre}</Text>
+                                                <View style={styles.quantity_container}>
+                                                    <TouchableOpacity style={styles.quantity_button} onPress={() => decrementQuantity(producto.idProducto._id, producto.cantidad)}>
+                                                        <Text style={styles.symbol}>-</Text>
+                                                    </TouchableOpacity>
+                                                    <Text style={styles.text_quantity}>{producto.cantidad}</Text>
+                                                    <TouchableOpacity style={styles.quantity_button} onPress={() => incrementQuantity(producto.idProducto._id, producto.cantidad)}>
+                                                        <Text style={styles.symbol}>+</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <TouchableOpacity onPress={() => deleteProductCart(producto)}>
+                                                    <Text style={styles.delete_product}>Eliminar producto</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={styles.product_right}>
+                                                <Text style={styles.price_product}>${(producto.idProducto.precio * producto.cantidad)}</Text>
+                                            </View>
+                                        </View>
+                                    );
+                                    })}
+                                    </View>
+
+                                    <View style={styles.divider}/>
+
+                                    <View style={styles.section_container}>
+
+                                        <View style={styles.section_left}>
+                                            <Text style={styles.title_text_section}>Costos adicionales de entrega</Text>
+                                            <Text style={styles.subtitle_text_section}>Sin costos adicionales</Text>
+                                        </View>
+
+                                        <View style={styles.section_right}>
+                                            <Text style={styles.price_product}>$0.00</Text>
+                                        </View>
+
+                                    </View>
+
+                                    <View style={styles.divider}/>
+
+                                    <View style={styles.section_container}>
+
+                                        <View style={styles.section_left}>
+                                            <Text style={styles.title_text_section}>Total a pagar</Text>
+                                        </View>
+
+                                        <View style={styles.section_right}>
+                                            <Text style={styles.price_product}>${total.toFixed(2)}</Text>
+                                        </View>
+
+                                    </View>
+
+                                    <View style={styles.button_container}>
+                                        <Pressable style={styles.button} onPress={payOrder}
+                                                android_ripple={{ color: 'lightgray' }}>
+                                        <Text style={styles.text_button}>Pagar</Text>
+                                        </Pressable>
+                                    </View>
                                 </View>
+                            )
+                        ) : (
+                            <View style={styles.container_noProducts}>
+                            <Text style={styles.noProducts}>Aún no has agregado productos a tu carrito</Text>
                             </View>
-                        );
-                    })}
-                    </View>
-
-                    <View style={styles.divider}/>
-
-                    <View style={styles.section_container}>
-
-                        <View style={styles.section_left}>
-                            <Text style={styles.title_text_section}>Costos adicionales de entrega</Text>
-                            <Text style={styles.subtitle_text_section}>Sin costos adicionales</Text>
+                        )
+                        ) : (
+                        <View style={styles.container_noProducts}>
+                            <Text style={styles.noProducts}>Aún no has agregado productos a tu carrito</Text>
                         </View>
-
-                        <View style={styles.section_right}>
-                            <Text style={styles.price_product}>$0.00</Text>
-                        </View>
-
-                    </View>
-
-                    <View style={styles.divider}/>
-
-                    <View style={styles.section_container}>
-
-                        <View style={styles.section_left}>
-                            <Text style={styles.title_text_section}>Total a pagar</Text>
-                        </View>
-
-                        <View style={styles.section_right}>
-                            <Text style={styles.price_product}>${total.toFixed(2)}</Text>
-                        </View>
-
-                    </View>
-
-                    <View style={styles.button_container}>
-                        <Pressable style={styles.button} onPress={payOrder}
-                                android_ripple={{ color: 'lightgray' }}>
-                        <Text style={styles.text_button}>Pagar</Text>
-                        </Pressable>
-                    </View>
+                    )}
 
                 </View>
             </ScrollView>
@@ -635,6 +657,22 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Bold',
         fontSize: 16,
         color: '#FFFFFF',
+        textAlign: 'center',
+    },
+
+    container_noProducts:{
+        flex: 1,
+        marginTop: '100%',
+        marginBottom: '100%',
+        justifyContent: 'center',
+        alignContent: 'center',
+        backgroundColor: '#FFF',
+    },
+
+    noProducts:{
+        fontFamily: 'DMSans-Medium',
+        fontSize: 20,
+        color: '#000000',
         textAlign: 'center',
     },
 
