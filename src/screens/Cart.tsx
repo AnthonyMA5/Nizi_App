@@ -7,7 +7,7 @@ import CustomModal from '../components/CustomModal';
 interface Props {
     navigation: NavigationProp<any, any>;
     route: RouteProp<any, any>;
-  }
+}
 
 const Cart: React.FC<Props> = ({navigation, route}) => {
 
@@ -224,10 +224,16 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
           });
     };
 
-    const deleteProductCart = (id: string) => {
+    const deleteProductCart = (producto: any) => {
+        const precioProducto = producto.idProducto.precio;
+        const cantidadProducto = producto.cantidad;
+        const nuevoTotal = total - (precioProducto * cantidadProducto);
+        console.log(producto);
+        console.log(nuevoTotal);
         const documentLog = JSON.stringify({
-          idUsuario: userID._id,
-          idProducto: id,
+            idUsuario: userID._id,
+            idProducto: producto.idProducto._id,
+            total: nuevoTotal,
         });
         console.log('Datos enviados al servidor:', documentLog);
         fetch('http://192.168.0.3:3000/delete_product_cart', {
@@ -357,7 +363,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
                                             <Text style={styles.symbol}>+</Text>
                                         </TouchableOpacity>
                                     </View>
-                                    <TouchableOpacity onPress={() => deleteProductCart(producto.idProducto._id)}>
+                                    <TouchableOpacity onPress={() => deleteProductCart(producto)}>
                                         <Text style={styles.delete_product}>Eliminar producto</Text>
                                     </TouchableOpacity>
                                 </View>

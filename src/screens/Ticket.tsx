@@ -1,13 +1,20 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React from 'react';
 import { Image, PermissionsAndroid, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface Props {
-  navigation: any;
+    navigation: NavigationProp<any, any>;
+    route: RouteProp<any, any>;
 }
 
-const Ticket: React.FC<Props> = ({navigation}) => {
+const Ticket: React.FC<Props> = ({navigation, route}) => {
+
+    const {userInfo, carritoInfo} = route.params;
+
+    {console.log(userInfo)};
+    {console.log(carritoInfo)};
 
     return (
         <SafeAreaView style={styles.main_container}>
