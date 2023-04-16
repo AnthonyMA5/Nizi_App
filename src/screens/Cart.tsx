@@ -59,6 +59,42 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         setIsModalVisible(true);
     };
 
+    const handleStockError = (message) => {
+        setFunctionData({
+          title: 'Existencias insuficientes',
+          info: message,
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(false);
+        setIsModalVisible(true);
+    };
+
+    const handleCardStatus = (message) => {
+        setFunctionData({
+          title: 'Tu Nizi Card se encuentra desactivada',
+          info: message,
+          color: '#C71D1D',
+          icon: require('../animations/error_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(false);
+        setIsModalVisible(true);
+    };
+
+    const handleCardAmount = (message) => {
+        setFunctionData({
+          title: 'Saldo insuficiente',
+          info: message,
+          color: '#80D5FF',
+          icon: require('../animations/warning_icon.json'),
+          btn: 'Entendido',
+        });
+        setInLoop(true);
+        setIsModalVisible(true);
+    };
+
     const [functionData, setFunctionData] = useState({
         title: '',
         info: '',
@@ -68,7 +104,12 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
     });
 
     const handleCloseModal = () => {
-        setIsModalVisible(false);
+        if (functionData.title === 'Se ha acreditado el pago de tu pedido'){
+            setIsModalVisible(false);
+            navigation.navigate('Ticket', {userInfo: userInfo, carritoInfo: carritoInfo});
+        } else {
+            setIsModalVisible(false);
+        }
     };
 
     const handleData = () => {
@@ -207,7 +248,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
           });
     };
 
-    const payOrder = (id: string) => {
+    const payOrder = () => {
         const documentLog = JSON.stringify({
           idUsuario: userID._id,
         });
@@ -235,6 +276,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
                         } else if (message.type === 'card_amount') {
                             handleCardAmount(message.message);
                         } else {
+                            handleServerError();
                             console.error(message.message);
                         }
                     });
@@ -242,6 +284,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
             }
         })
         .catch(error => {
+            handleServerError();
             console.error('Error en la petición:', error);
         });
     };
@@ -356,8 +399,8 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
                     </View>
 
                     <View style={styles.button_container}>
-                        <Pressable style={styles.button}
-                                android_ripple={{ color: 'lightgray' }} onPressOut={()=>navigation.navigate('Ticket', {userInfo:userInfo})}>
+                        <Pressable style={styles.button} onPress={payOrder}
+                                android_ripple={{ color: 'lightgray' }}>
                         <Text style={styles.text_button}>Pagar</Text>
                         </Pressable>
                     </View>

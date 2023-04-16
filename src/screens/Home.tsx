@@ -283,7 +283,7 @@ const Home: React.FC<Props> = ({navigation, route}) => {
                                                     <Image style={styles.iconCard} source={require('../img/contactless.png')}/>
                                                 </View>
                                             </View>
-                                            <Text style={styles.moneyTextCard}>${saldoTotal}</Text>
+                                            <Text style={styles.moneyTextCard}>${saldoTotal.toFixed(2)}</Text>
                                             {userInfo ? userInfo.tarjeta.map(tarjeta => (
                                                 <Text key={tarjeta._id} style={styles.numberTextCard}>
                                                     {'**** **** **** **' + tarjeta.numeroTarjeta.slice(-2)}
