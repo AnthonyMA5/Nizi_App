@@ -160,7 +160,7 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
             </View>
 
             <View style={styles.right_container}>
-              <TouchableOpacity onPress={()=>navigation.navigate('Cart')}>
+              <TouchableOpacity onPress={()=>navigation.navigate('Cart', {userID: userID})}>
                 <Image style={styles.cart_icon} source={require('../img/carrito.png')} />
               </TouchableOpacity>
             </View>
