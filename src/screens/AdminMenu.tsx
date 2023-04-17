@@ -1,23 +1,56 @@
 /* eslint-disable prettier/prettier */
-import {DrawerNavigationProp} from '@react-navigation/drawer';
-import React from 'react';
-import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import {Image, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>;
-}
+    navigation: any;
+    route: RouteProp<any, any>;
+  }
 
-const AdminMenu: React.FC<Props> = ({navigation}) => {
+const AdminMenu: React.FC<Props> = ({navigation, route}) => {
+
+    const { userID } = route.params;
+    const [productsInfo, setProductsInfo] = useState<any>();
+
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+    };
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/get_products', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setProductsInfo(data);
+            setRefreshing(false);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [refreshing]);
+
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <View style={styles.container}>
 
           <View style={styles.head}>
 
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPress={()=>navigation.navigate('Home_Admin', {userID:userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -34,103 +67,33 @@ const AdminMenu: React.FC<Props> = ({navigation}) => {
 
           <View style={styles.services_mainContainer}>
 
-            <Pressable style={styles.service1}>
+            <TouchableOpacity style={styles.service}>
                 <View style={styles.servicesNewProduct}>
                     <Image style={styles.iconServices} source={require('../img/add_icon.png')}/>
                     <Text style={styles.textNameService}>Añadir{'\n'}producto</Text>
                 </View>
-            </Pressable>
-
-            <Pressable style={styles.service2}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service3}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
+            </TouchableOpacity>
 
           </View>
 
-          <View style={styles.services_mainContainer}>
-
-            <Pressable style={styles.service1}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service2}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service3}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-          </View>
-
-          <View style={styles.services_mainContainer}>
-
-            <Pressable style={styles.service1}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service2}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service3}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-          </View>
-
-          <View style={styles.services_mainContainer}>
-
-            <Pressable style={styles.service1}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service2}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-            <Pressable style={styles.service3}>
-                <View style={styles.servicesContainerGlobal}>
-                    <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                    <Text style={styles.textNameService}>Nombre{'\n'}producto</Text>
-                </View>
-            </Pressable>
-
-          </View>
+            <View style={styles.services_mainContainer}>
+                {productsInfo && productsInfo.map((product) => (
+                    <TouchableOpacity style={styles.service} key={product.id}>
+                    <View style={styles.servicesContainerGlobal}>
+                    {product.nombre === 'Ensalada de pollo con vegetales' ? (
+                          <Image source={require('../img/platillo2.png')} style={styles.iconServices}/>
+                        ) : product.nombre === 'Papas fritas caseras' ? (
+                          <Image source={require('../img/platillo3.png')} style={styles.iconServices}/>
+                        ) : product.nombre === 'Café cappuccino' ? (
+                          <Image source={require('../img/platillo4.png')} style={styles.iconServices}/>
+                        ) : (
+                          <Image source={require('../img/White_t_logo.png')} style={styles.iconServices}/>
+                        )}
+                        <Text style={styles.textNameService}>{product.nombre}</Text>
+                    </View>
+                    </TouchableOpacity>
+                ))}
+            </View>
 
         </View>
       </ScrollView>
@@ -200,21 +163,11 @@ const styles = StyleSheet.create({
     marginTop: 35,
 },
 
-service1:{
+service:{
     flex: 0.33,
     alignItems: 'flex-start',
     flexDirection: 'row',
     marginRight: 10,
-},
-
-service2:{
-    flex: 0.33,
-    marginRight: 10,
-},
-
-service3:{
-    flex: 0.33,
-    alignItems: 'flex-end',
 },
 
 servicesNewProduct:{
@@ -239,8 +192,9 @@ servicesContainerGlobal:{
 },
 
 iconServices:{
-    width: 38,
-    height: 38,
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
 },
 
 textNameService:{
