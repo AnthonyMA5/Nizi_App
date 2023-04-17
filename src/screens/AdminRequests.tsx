@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
-import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Image, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -32,6 +32,8 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
   const [fechaVencimiento, setFechaVencimiento] = useState('');
   const [cvv, setCvv] = useState(generarCVV());
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const [functionData, setFunctionData] = useState({
     title: '',
@@ -159,6 +161,10 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
         }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+  };
+
   useEffect(() => {
     fetch('http://192.168.0.3:3000/get_solicitudes', {
         method: 'GET',
@@ -173,11 +179,12 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
     .then((data) => {
         console.log(data);
         setSolicitudesInfo(data);
+        setRefreshing(false);
     })
     .catch((error) => {
         console.log(error);
     });
-  }, []);
+  }, [refreshing]);
 
   const sendRequestApproveResponse = () => {
 
@@ -255,7 +262,8 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.main_container}>
-        <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
             <View style={styles.container}>
 
               <View style={styles.head}>
@@ -575,11 +583,11 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                          <View style={styles.divisor} />
                          <Text style={styles.subtitle1}>Solicitante</Text>
                          <View style={styles.subtitle_container}>
-                             <View style={styles.left}>
-                               <Text style={styles.light_subtitle}>
-                                 {solicitud.solicitante[0].nombre} {solicitud.solicitante[0].apellido_paterno} {solicitud.solicitante[0].apellido_materno}
-                                 </Text>
-                             </View>
+                          <View style={styles.left}>
+                            <Text style={styles.light_subtitle}>
+                              {solicitud.solicitante[0]?.nombre} {solicitud.solicitante[0]?.apellido_paterno} {solicitud.solicitante[0]?.apellido_materno}
+                            </Text>
+                          </View>
                              <View style={styles.right}>
                                  <TouchableOpacity onPressOut={() => toggleModal(solicitud)}>
                                       <Text style={styles.light_subtitle2}>Ver detalles</Text>
@@ -605,30 +613,28 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                           )}
                                           <Text style={styles.title_text}>Nombre del solicitante</Text>
                                           <Text style={styles.subtitle_text}>
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
+                                            {selectedSolicitud?.solicitante?.[0]?.nombre + ' '}
+                                            {selectedSolicitud?.solicitante?.[0]?.apellido_paterno + ' '}
+                                            {selectedSolicitud?.solicitante?.[0]?.apellido_materno}
                                           </Text>
                                           <Text style={styles.title_text}>Domicilio</Text>
                                           <Text style={styles.subtitle_text}>
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.calle + ' #'}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.numeroExterior + ', '}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.numeroInterior + ' '}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.colonia + ', '}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.municipio + ', '}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.codigoPostal + ', '}
+                                            {selectedSolicitud?.solicitante?.[0]?.direccion?.[0]?.estado + '.'}
                                           </Text>
                                           <Text style={styles.title_text}>Número de teléfono</Text>
                                           <Text style={styles.subtitle_text}>
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
+                                            {selectedSolicitud?.solicitante?.[0]?.telefono}
                                           </Text>
-
                                           <Text style={styles.title_text}>Correo electrónico</Text>
                                           <Text style={styles.subtitle_text}>
-                                            {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
+                                            {selectedSolicitud?.solicitante?.[0]?.email}
                                           </Text>
-
                                           <Text style={styles.title_text}>Fecha de solicitud</Text>
                                           <Text style={styles.subtitle_text}>
                                           {selectedSolicitud

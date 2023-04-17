@@ -4,7 +4,7 @@
 /* eslint-disable eol-last */
 /* eslint-disable semi */
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, RefreshControl } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { RouteProp } from '@react-navigation/native'
 import CustomModal from '../components/CustomModal'
@@ -22,12 +22,18 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     const [userInfo, setUserInfo] = useState<any>();
     const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
     const [solicitudesTotal, setSolicitudesTotal] = useState<any>();
+    const [pedidosInfo, setPedidosInfo] = useState<any>();
+    const [pedidosTotal, setPedidosTotal] = useState<any>();
+    const [gananciasInfo, setGananciasInfo] = useState<any>();
+    const [productosInfo, setProductosInfo] = useState<any>();
 
     const [greeting, setGreeting] = useState('');
     const [greetingIcon, setGreetingIcon] = useState(0);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inLoop, setInLoop] = useState(false);
+
+    const [refreshing, setRefreshing] = useState(false);
 
     const handleData = () => {
         setFunctionData({
@@ -52,6 +58,10 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
         icon: null,
         btn: '',
     });
+
+    const onRefresh = () => {
+        setRefreshing(true);
+    };
 
     useEffect(() => {
         const date = new Date();
@@ -91,12 +101,13 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                     handleData()
                 }
             }})
+            setRefreshing(false);
           })
           .catch((error) => {
             handleData()
             console.log(error)
           })
-    }, [])
+    }, [refreshing])
 
     useEffect(() => {
         fetch('http://192.168.0.3:3000/get_solicitudes', {
@@ -116,7 +127,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
         .catch((error) => {
             console.log(error);
         });
-    }, []);
+    }, [refreshing]);
 
     useEffect(() => {
         fetch('http://192.168.0.3:3000/count_solicitudes', {
@@ -136,13 +147,93 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
         .catch((error) => {
             console.log(error);
         });
-    }, []);
+    }, [refreshing]);
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/get_pedidos', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setPedidosInfo(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [refreshing]);
     
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/count_pedidos', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setPedidosTotal(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [refreshing]);
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/count_revenue', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setGananciasInfo(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [refreshing]);
+
+    useEffect(() => {
+        fetch('http://192.168.0.3:3000/count_productos', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log(response);
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            setProductosInfo(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, [refreshing]);
 
   return (
 
     <SafeAreaView style={styles.main_container}>
-            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
                 <View style={styles.container}>
 
                     <CustomModal 
@@ -159,7 +250,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                     <View style={styles.head}>
                         
                         <View style={styles.profilePhoto_container}>
-                            <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
+                            <TouchableOpacity disabled={true}>
                                 <Image style={styles.profilePhoto} source={require('../img/coffee_win.jpg')}/>
                             </TouchableOpacity>
                         </View>
@@ -191,23 +282,23 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
 
                             <ScrollView horizontal={true} style={{flex: 1}} showsHorizontalScrollIndicator={false}>
                             
-                                <Pressable>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Revenues_Admin', {userID:userID, gananciasInfo: gananciasInfo})}>
                                     <View style={styles.servicesContainerGreen}>
                                         <Image style={styles.iconServices} source={require('../img/ganancias_icon.png')}/>
-                                        <Text style={styles.text_cant}>$ 2000.00</Text>
+                                        <Text style={styles.text_cant}>${gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
                                         <Text style={styles.text_name_service}>Ganancias</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
-                                <Pressable>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Orders_Admin', {userID:userID})}>
                                     <View style={styles.servicesContainerBlue}>
                                         <Image style={styles.iconServices} source={require('../img/pedidos_icon.png')}/>
-                                        <Text style={styles.text_cant}>35</Text>
+                                        <Text style={styles.text_cant}>{pedidosTotal}</Text>
                                         <Text style={styles.text_name_service}>Pedidos</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
-                                <TouchableOpacity onPressOut={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
                                     <View style={styles.servicesContainerPink}>
                                         <Image style={styles.iconServices} source={require('../img/soli_icon.png')}/>
                                         <Text style={styles.text_cant}>{solicitudesTotal}</Text>
@@ -215,13 +306,13 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     </View>
                                 </TouchableOpacity>
 
-                                <Pressable>
+                                <TouchableOpacity onPress={()=>navigation.navigate('Menu_Admin', {userID:userID})}>
                                     <View style={styles.servicesContainerOrange}>
                                         <Image style={styles.iconServices} source={require('../img/menu_icon.png')}/>
-                                        <Text style={styles.text_cant}>5</Text>
+                                        <Text style={styles.text_cant}>{productosInfo}</Text>
                                         <Text style={styles.text_name_service}>Productos</Text>
                                     </View>
-                                </Pressable>
+                                </TouchableOpacity>
 
                             </ScrollView>
 
@@ -232,8 +323,8 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                     <View style={styles.sectionContainer}>
                         <Text style={styles.textTitleSection}>Ganancias</Text>
                         <View style={styles.second_container}>
-                            <Text style={styles.chart_title}>Ganancias de hoy</Text>
-                            <Text style={styles.chart_cant}>$ 2000.00</Text>
+                            <Text style={styles.chart_title}>Ganancias del día</Text>
+                            <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
                         </View>
                     </View>
 
@@ -245,41 +336,48 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     <Text style={styles.subtitle1}>Más recientes</Text>
                                 </View>
                                 <View style={styles.right}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>navigation.navigate('Orders_Admin', {userID:userID})}>
                                         <Text style={styles.subtitle2}>Ver más</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={styles.third_container}>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.subtitle1}>Pedido #05</Text>
+                            { pedidosInfo && pedidosInfo.slice(0, 1).map((pedido, index) => {
+                                const fechaSolicitud = pedido && pedido.fecha ? new Date(pedido.fecha) : null;
+                                const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+                                const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, "dd 'de' MMMM 'del' yyyy", { locale: es }) : null;
+                                return (
+                                    <View key={pedido._id} style={styles.third_container}>
+                                        <View style={styles.subtitle_container}>
+                                            <View style={styles.left}>
+                                                <Text style={styles.subtitle1}>Pedido #{pedido._id.slice(0, 6)}</Text>
+                                            </View>
+                                            <View style={styles.right}>
+                                            <Text style={pedido.estado === 'En espera' ?
+                                                styles.orange_subtitle : pedido.estado === 'Aprobada' ?
+                                                styles.green_subtitle : pedido.estado === 'Rechazada' ?
+                                                styles.red_subtitle : styles.gray_subtitle}>{pedido.estado}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.subtitle_container}>
+                                            <View style={styles.left}>
+                                                <Text style={styles.light_subtitle}>{fechaFormateada}</Text>
+                                            </View>
+                                            <View style={styles.right}>
+                                                <Text style={styles.light_subtitle}>{horaFormateada}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.divisor} />
+                                        <Text style={styles.subtitle1}>Cliente</Text>
+                                        <View style={styles.subtitle_container}>
+                                                <View style={styles.left2}>
+                                                <Text style={styles.light_subtitle}>
+                                                    {pedido.cliente[0].nombre} {pedido.cliente[0].apellido_paterno} {pedido.cliente[0].apellido_materno}
+                                                </Text>
+                                               </View>
+                                        </View>
                                     </View>
-                                    <View style={styles.right}>
-                                        <Text style={styles.orange_subtitle}>En espera</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.light_subtitle}>24 Enero, 2023</Text>
-                                    </View>
-                                    <View style={styles.right}>
-                                        <Text style={styles.light_subtitle}>9:00 am</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.divisor} />
-                                <Text style={styles.subtitle1}>Cliente</Text>
-                                <View style={styles.subtitle_container}>
-                                    <View style={styles.left}>
-                                        <Text style={styles.light_subtitle}>Anthony Martinez Arellano</Text>
-                                    </View>
-                                    <View style={styles.right}>
-                                        <TouchableOpacity>
-                                            <Text style={styles.light_subtitle2}>Ver detalles</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
+                                )
+                            })}
                         </View>
                     </View>
 
@@ -291,7 +389,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                     <Text style={styles.subtitle1}>Más recientes</Text>
                                 </View>
                                 <View style={styles.right}>
-                                    <TouchableOpacity onPressOut={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
+                                    <TouchableOpacity onPress={()=>navigation.navigate('Requests_Admin', {userID:userID})}>
                                         <Text style={styles.subtitle2}>Ver más</Text>
                                     </TouchableOpacity>
                                 </View>

@@ -1,17 +1,74 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import {DrawerNavigationProp} from '@react-navigation/drawer';
+import { RouteProp } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
-  navigation: DrawerNavigationProp<any, any>;
+  navigation: any;
+  route: RouteProp<any, any>;
 }
 
-const AdminRevenue: React.FC<Props> = ({navigation}) => {
+const AdminRevenue: React.FC<Props> = ({navigation, route}) => {
+
+  const { userID, gananciasInfo } = route.params;
 
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  {console.log(selectedPeriod)}
+  {console.log(selectedFormat)}
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleData = () => {
+    setFunctionData({
+      title: 'Reporte generado',
+      info: 'Tu reporte ha sido generado con éxito.',
+      color: '#00D4A1',
+      icon: require('../animations/success_icon.json'),
+      btn: 'OK',
+    });
+    setInLoop(false)
+    setIsModalVisible(true);
+  };
+
+  const handleSelected = () => {
+    setFunctionData({
+      title: '¡Ups!',
+      info: 'Para generar tu reporte es necesario que selecciones el periodo y el formato del mismo.',
+      color: '#80D5FF',
+      icon: require('../animations/warning_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(true)
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    if (selectedFormat === '') {
+      handleSelected();
+    } else if (selectedPeriod === '') {
+      handleSelected();
+    } else {
+      handleData();
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
 
   const handlePeriodSelect = (period: string) => {
     setSelectedPeriod(period);
@@ -21,16 +78,32 @@ const AdminRevenue: React.FC<Props> = ({navigation}) => {
     setSelectedFormat(format);
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    setRefreshing(false);
+  };
+
   return (
     <SafeAreaView style={styles.main_container}>
-      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <View style={styles.container}>
+
+                  <CustomModal
+                    title={functionData.title}
+                    info={functionData.info}
+                    color={functionData.color}
+                    icon={functionData.icon}
+                    isVisible={isModalVisible}
+                    onEvent={handleModalClose}
+                    btn={functionData.btn}
+                    loop={inLoop}/>
 
           <View style={styles.head}>
 
             <View style={styles.menu_container}>
-              <TouchableOpacity onPress={()=>navigation.openDrawer()}>
-                <Image style={styles.iconMenu} source={require('../img/menu_barra.png')}/>
+              <TouchableOpacity onPress={()=>navigation.navigate('Home_Admin', {userID:userID})}>
+                <Image style={styles.iconMenu} source={require('../img/back_black_icon.png')}/>
               </TouchableOpacity>
             </View>
 
@@ -43,7 +116,7 @@ const AdminRevenue: React.FC<Props> = ({navigation}) => {
           <View style={styles.sectionContainer}>
               <View style={styles.second_container}>
                 <Text style={styles.chart_title}>Ganancias del día</Text>
-                <Text style={styles.chart_cant}>$ 2000.00</Text>
+                <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
               </View>
           </View>
 
@@ -141,7 +214,7 @@ const AdminRevenue: React.FC<Props> = ({navigation}) => {
           </View>
 
           <View style={styles.button_container}>
-            <Pressable style={styles.button}
+            <Pressable style={styles.button} onPress={handleCloseModal}
                        android_ripple={{ color: 'lightgray' }}>
               <Text style={styles.text_button}>Generar reporte</Text>
             </Pressable>
