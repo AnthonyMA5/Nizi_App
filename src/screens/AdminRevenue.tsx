@@ -19,9 +19,6 @@ const AdminRevenue: React.FC<Props> = ({navigation, route}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [inLoop, setInLoop] = useState(false);
 
-  {console.log(selectedPeriod)}
-  {console.log(selectedFormat)}
-
   const [refreshing, setRefreshing] = useState(false);
 
   const [functionData, setFunctionData] = useState({
