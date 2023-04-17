@@ -2,8 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, PermissionsAndroid, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CustomModal from '../components/CustomModal';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface Props {
     navigation: NavigationProp<any, any>;
@@ -15,6 +17,10 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
     const {userID} = route.params;
     const [userInfo, setUserInfo] = useState<any>();
     const [carritoInfo, setCarritoInfo] = useState<any>();
+
+    const fechaSolicitud = carritoInfo && carritoInfo.fecha ? new Date(carritoInfo.fecha) : null;
+    const horaFormateada = fechaSolicitud ? format(fechaSolicitud, 'h:mm a', {timeZone: 'UTC'}) : null;
+    const fechaFormateada = fechaSolicitud ? format(fechaSolicitud, 'dd/MM/yyyy', { locale: es }) : null;
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inLoop, setInLoop] = useState(false);
@@ -77,7 +83,7 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             idUsuario : userID._id,
           });
-          fetch('http://192.168.0.3:3000/get_cart',{
+          fetch('http://192.168.0.3:3000/get_order',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -136,7 +142,7 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>#90886471</Text>
+                                <Text style={styles.content_text}>#{carritoInfo && carritoInfo._id ? carritoInfo._id.slice(0, 10) : ''}</Text>
                             </View>
                         </View>
 
@@ -146,7 +152,7 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>20/03/2023</Text>
+                                <Text style={styles.content_text}>{fechaFormateada}</Text>
                             </View>
                         </View>
 
@@ -156,7 +162,9 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>Anthony Martinez Arellano</Text>
+                                <Text style={styles.content_text}>
+                                    {userInfo ? userInfo.nombre : ''} {userInfo ? userInfo.apellido_paterno : ''} {userInfo ? userInfo.apellido_materno : ''}
+                                </Text>
                             </View>
                         </View>
 
@@ -174,15 +182,11 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
 
                         <View style={styles.columns_container}>
 
-                            <View style={styles.column_number}>
-                                <Text style={styles.table_title}>#</Text>
-                            </View>
-
                             <View style={styles.column_product}>
-                                <Text style={styles.table_title}>Prod</Text>
+                                <Text style={styles.table_title}>Producto</Text>
                             </View>
 
-                            <View style={styles.column}>
+                            <View style={styles.column_c}>
                                 <Text style={styles.table_title}>Cant</Text>
                             </View>
 
@@ -190,59 +194,36 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                                 <Text style={styles.table_title}>Precio</Text>
                             </View>
 
-                            <View style={styles.column}>
+                            <View style={styles.column_total}>
                                 <Text style={styles.table_title}>Total</Text>
                             </View>
 
                         </View>
 
-                        <View style={styles.rows_container}>
-
-                            <View style={styles.row_number}>
-                                <Text style={styles.table_subtitle}>5</Text>
-                            </View>
-
-                            <View style={styles.row_product}>
-                                <Text style={styles.table_subtitle}>Ensalada de pollo con vegetales</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>1</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>85.00</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>85.00</Text>
-                            </View>
-
-                        </View>
-
-                        <View style={styles.rows_container}>
-
-                            <View style={styles.row_number}>
-                                <Text style={styles.table_subtitle}>12</Text>
-                            </View>
-
-                            <View style={styles.row_product}>
-                                <Text style={styles.table_subtitle}>Papas fritas</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>2</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>25.00</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.table_subtitle}>50.00</Text>
-                            </View>
-
-                        </View>
+                        {carritoInfo && carritoInfo.productos && carritoInfo.productos.map((producto) => {
+                            return (
+                                <View style={styles.rows_container} key={producto._id}>
+                                    <View style={styles.row_product}>
+                                        <Text style={styles.table_subtitle}>{producto.idProducto.nombre}</Text>
+                                    </View>
+                                    <View style={styles.row_c}>
+                                        <Text style={styles.table_subtitle}>{producto.cantidad}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        {producto.idProducto && producto.idProducto.precio && (
+                                            <Text style={styles.table_subtitle}>${producto.idProducto.precio.toFixed(2)}</Text>
+                                        )}
+                                    </View>
+                                    <View style={styles.row_total}>
+                                        <Text style={styles.table_subtitle}>
+                                            ${producto.idProducto && producto.idProducto.precio
+                                            ? (producto.idProducto.precio * producto.cantidad).toFixed(2)
+                                            : ''}
+                                        </Text>
+                                    </View>
+                                </View>
+                            );
+                        })}
 
                         <View style={styles.divider}/>
 
@@ -252,7 +233,9 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>$135.00</Text>
+                                <Text style={styles.content_text}>
+                                    ${carritoInfo && carritoInfo.total ? carritoInfo.total.toFixed(2) : ''}
+                                </Text>
                             </View>
                         </View>
 
@@ -264,7 +247,11 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>**** **** **** **89</Text>
+                                {userInfo ? userInfo.tarjeta.map(tarjeta => (
+                                    <Text key={tarjeta._id} style={styles.content_text}>
+                                        {'**** **** **** **' + tarjeta.numeroTarjeta.slice(-2)}
+                                    </Text>
+                                )) : ''}
                             </View>
                         </View>
 
@@ -274,7 +261,7 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                             </View>
 
                             <View style={styles.right_container}>
-                                <Text style={styles.content_text}>Pagado</Text>
+                                <Text style={styles.content_text}>{carritoInfo ? carritoInfo.estado : ''}</Text>
                             </View>
                         </View>
 
@@ -286,7 +273,7 @@ const Ticket: React.FC<Props> = ({navigation, route}) => {
                         <View style={styles.buttons_container}>
 
                             <View style={styles.button_background}>
-                            <Pressable style={styles.button_content} android_ripple={{ color: 'lightgray' }} onPressOut={()=>navigation.navigate('Menu')}>
+                            <Pressable style={styles.button_content} android_ripple={{ color: 'lightgray' }} onPressOut={()=>navigation.navigate('Menu', {userID:userID})}>
                                 <Image style={styles.iconButton} source={require('../img/Eliminar_tarjeta.png')}/>
                                 <Text style={styles.textButton}>Cerrar{'\n'}ticket</Text>
                             </Pressable>
@@ -413,17 +400,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 
-    column_number: {
-        flex: 0.05,
+    column_total: {
+        flex: 0.25,
         marginRight: 5,
+        alignItems: 'flex-end',
     },
 
     column_product:{
-        flex:0.5,
+        flex:0.35,
     },
 
     column:{
-        flex:0.15,
+        flex:0.2,
+        alignItems: 'flex-end',
+    },
+
+    column_c:{
+        flex:0.2,
         alignItems: 'center',
     },
 
@@ -435,17 +428,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 
-    row_number: {
-        flex: 0.05,
+    row_total: {
+        flex: 0.25,
         marginRight: 5,
+        alignItems: 'flex-end',
     },
 
     row_product:{
-        flex:0.5,
+        flex:0.35,
     },
 
     row:{
-        flex:0.15,
+        flex:0.2,
+        alignItems: 'flex-end',
+    },
+
+    row_c:{
+        flex:0.2,
         alignItems: 'center',
     },
 

@@ -107,6 +107,9 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         if (functionData.title === 'Se ha acreditado el pago de tu pedido'){
             setIsModalVisible(false);
             navigation.navigate('Ticket', {userID: userID});
+        } else if (functionData.title === 'Saldo insuficiente'){
+            setIsModalVisible(false);
+            navigation.navigate('Ticket', {userID: userID});
         } else {
             setIsModalVisible(false);
         }
