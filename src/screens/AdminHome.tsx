@@ -20,11 +20,15 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
 
     const { userID } = route.params;
     const [userInfo, setUserInfo] = useState<any>();
+
     const [solicitudesInfo, setSolicitudesInfo] = useState<any>();
     const [solicitudesTotal, setSolicitudesTotal] = useState<any>();
+
     const [pedidosInfo, setPedidosInfo] = useState<any>();
     const [pedidosTotal, setPedidosTotal] = useState<any>();
+
     const [gananciasInfo, setGananciasInfo] = useState<any>();
+
     const [productosInfo, setProductosInfo] = useState<any>();
 
     const [greeting, setGreeting] = useState('');
@@ -285,7 +289,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                 <TouchableOpacity onPress={()=>navigation.navigate('Revenues_Admin', {userID:userID, gananciasInfo: gananciasInfo})}>
                                     <View style={styles.servicesContainerGreen}>
                                         <Image style={styles.iconServices} source={require('../img/ganancias_icon.png')}/>
-                                        <Text style={styles.text_cant}>${gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
+                                        <Text style={styles.text_cant}>$ {gananciasInfo ? gananciasInfo.toFixed(2) : '0.00'}</Text>
                                         <Text style={styles.text_name_service}>Ganancias</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -324,7 +328,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                         <Text style={styles.textTitleSection}>Ganancias</Text>
                         <View style={styles.second_container}>
                             <Text style={styles.chart_title}>Ganancias del día</Text>
-                            <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
+                            <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : '0.00'}</Text>
                         </View>
                     </View>
 
@@ -352,9 +356,9 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
                                                 <Text style={styles.subtitle1}>Pedido #{pedido._id.slice(0, 6)}</Text>
                                             </View>
                                             <View style={styles.right}>
-                                            <Text style={pedido.estado === 'En espera' ?
-                                                styles.orange_subtitle : pedido.estado === 'Aprobada' ?
-                                                styles.green_subtitle : pedido.estado === 'Rechazada' ?
+                                            <Text style={pedido.estado === 'En cocina' ?
+                                                styles.orange_subtitle : pedido.estado === 'Entregado' ?
+                                                styles.green_subtitle : pedido.estado === 'En espera' ?
                                                 styles.red_subtitle : styles.gray_subtitle}>{pedido.estado}</Text>
                                             </View>
                                         </View>

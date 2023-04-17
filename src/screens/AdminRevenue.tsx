@@ -113,7 +113,7 @@ const AdminRevenue: React.FC<Props> = ({navigation, route}) => {
           <View style={styles.sectionContainer}>
               <View style={styles.second_container}>
                 <Text style={styles.chart_title}>Ganancias del día</Text>
-                <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : ''}</Text>
+                <Text style={styles.chart_cant}>+  $ {gananciasInfo ? gananciasInfo.toFixed(2) : '0.00'}</Text>
               </View>
           </View>
 
