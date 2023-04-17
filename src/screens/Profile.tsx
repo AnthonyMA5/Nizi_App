@@ -6,7 +6,9 @@ import React, { useEffect, useState  } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationProp, RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
-import DesitionModal from '../components/DesitionModal';
+import Modal from 'react-native-modal';
+import LottieView from 'lottie-react-native';
+import CustomModal from '../components/CustomModal';
 
 interface Props {
   navigation: NavigationProp<any, any>;
@@ -16,28 +18,86 @@ interface Props {
 const Profile: React.FC<Props> = ({navigation, route}) => {
 
   const { userID } = route.params;
-  const [userInfo, setUserInfo] = useState<any>()
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>();
 
   const fechaCreacion = userInfo && userInfo.fechaCreacion ? new Date(userInfo.fechaCreacion) : null;
   const fechaFormateada = fechaCreacion ? format(fechaCreacion, 'dd/MM/yyyy') : null;
+
+  const [signOut, setSignOut] = useState(false);
+  const [cancelAccount, setCancelAccount] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [inLoop, setInLoop] = useState(false);
+
+  const handleModalSignOutCloseAndNavigate = () => {
+    setSignOut(false);
+    navigation.navigate('Login');
+  };
+
+  const handleModalSignOutClose = () => {
+    setSignOut(false);
+  };
+
+  const handleModalSignOutOpen = () => {
+    setSignOut(true);
+  };
+
+  const handleCancelAccount = () => {
+    setCancelAccount(true);
+  };
+
+  const handleCloseCancelAccount = () => {
+    setCancelAccount(false);
+  };
+
+  const handleCloseModal = () => {
+    if (functionData.title === 'Tu cuenta ha sido eliminada'){
+      setIsModalVisible(false);
+      navigation.navigate('Login');
+    } else {
+      setIsModalVisible(false);
+    }
+};
+
+  const [functionData, setFunctionData] = useState({
+    title: '',
+    info: '',
+    color: '',
+    icon: null,
+    btn: '',
+  });
+
+  const handleModalOpen = () => {
+    setSignOut(true);
+  };
+
+  const handleData = () => {
+      setFunctionData({
+        title: 'Tu cuenta ha sido eliminada',
+        info: 'Lamentamos que hayas eliminado tu cuenta, esperamos tenerte pronto de regreso con nosotros.',
+        color: '#00D4A1',
+        icon: require('../animations/success_icon.json'),
+        btn: 'Entendido',
+      });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
+
+  const handleServerError = () => {
+    setFunctionData({
+      title: 'Error al comunicarse con el servidor',
+      info: 'Ocurrió un error al procesar tu solicitud, intentalo de nuevo más tarde.',
+      color: '#C71D1D',
+      icon: require('../animations/error_icon.json'),
+      btn: 'Entendido',
+    });
+    setInLoop(false);
+    setIsModalVisible(true);
+  };
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
   };
-
-  const handleCloseModal = () => {
-      setIsModalVisible(false);
-  };
-
-  const handleLogin = () => {
-    navigation.navigate('Login')
-  };
-
-  const handleDeleteAccount = () => {
-    deleteAccount();
-  }
 
   useEffect(() => {
     const documentLog = JSON.stringify({
@@ -70,43 +130,6 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
       })
   }, [userID._id, refreshing])
 
-  const [desitionData, setDesitionData] = useState({
-    title: '',
-    info: '',
-    successColor: '',
-    cancelColor: '',
-    icon: null,
-    successBtn: '',
-    cancelBtn: '',
-  });
-
-
-  const handleDesition = () => {
-    setDesitionData({
-      title: '¿Deseas cerrar tu sesión?',
-      info: 'Recuerda que para acceder a tu cuenta deberás iniciar sesión nuevamente.',
-      successColor: '#43BFEA',
-      cancelColor: '#43BFEA',
-      icon: require('../animations/warning_icon.json'),
-      successBtn: 'Si, quiero cerrar mi sesión',
-      cancelBtn: 'No, mantener mi sesión iniciada',
-    });
-    setIsModalVisible(true);
-  };
-
-  const handleCancelAccount = () => {
-    setDesitionData({
-      title: '¿Quieres eliminar tu cuenta?',
-      info: 'Si eliminas tu cuenta ya no podras acceder más a Nizi y deberás crear una cuenta nueva.',
-      successColor: '#EA4343',
-      cancelColor: '#00BA87',
-      icon: require('../animations/sorry_icon.json'),
-      successBtn: 'Si, quiero eliminar mi cuenta',
-      cancelBtn: 'No, quiero mantener mi cuenta',
-    });
-    setIsModalVisible(true);
-  };
-
   const deleteAccount = () => {
     const documentLog = JSON.stringify({
       _id : userID._id,
@@ -123,15 +146,14 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
         if (text && text.length > 0) {
           const data = JSON.parse(text);
           if (data) {
-            console.log(data);
-            navigation.navigate('Login');
+            handleData();
           } else {
-            Alert.alert('No pudimos eliminar tu cuenta, intenta reiniciar la aplicación o intentarlo más tarde.')
+            handleServerError();
           }
       }})
     })
     .catch((error) => {
-      Alert.alert('No pudimos eliminar tu cuenta, intenta reiniciar la aplicación o intentarlo más tarde.')
+      handleServerError();
       console.log(error)
     })
   }
@@ -142,6 +164,16 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
       <ScrollView style={styles.scroll_container} showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
         <View style={styles.container}>
+
+                  <CustomModal
+                    title={functionData.title}
+                    info={functionData.info}
+                    color={functionData.color}
+                    icon={functionData.icon}
+                    isVisible={isModalVisible}
+                    onEvent={handleCloseModal}
+                    btn={functionData.btn}
+                    loop={inLoop}/>
 
           <View style={styles.head}>
             <View style={styles.menu_container}>
@@ -238,18 +270,33 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
 
           <Text style={styles.text_divider}>Mi cuenta</Text>
 
-          <TouchableOpacity onPress={handleDesition}>
-            <DesitionModal
-              title={desitionData.title}
-              info={desitionData.info}
-              successColor={desitionData.successColor}
-              cancelColor={desitionData.cancelColor}
-              icon={desitionData.icon}
-              successBtn={desitionData.successBtn}
-              cancelBtn={desitionData.cancelBtn}
-              isVisible={isModalVisible}
-              successEvent={handleLogin}
-              cancelEvent={handleCloseModal} />
+          <TouchableOpacity onPress={handleModalSignOutOpen}>
+            <Modal backdropOpacity={0.6} style={styles.modal_main_container} isVisible={signOut}
+                                            animationInTiming={250}
+                                            animationOutTiming={600}
+                                            backdropTransitionInTiming={250}
+                                            backdropTransitionOutTiming={600}>
+                                            <View style={styles.modal_container}>
+                                            <LottieView source={require('../animations/warning_icon.json')} style={styles.iconLottie}
+                                              autoPlay
+                                              loop={true}/>
+                                              <Text style={styles.title_text}>¿Quieres cerrar tu sesión?</Text>
+                                              <Text style={styles.subtitle_text}>Recuerda que deberás volver a iniciar sesión para acceder a tu cuenta.</Text>
+                                              <View style={styles.buttons_container}>
+                                                <View style={styles.button_left}>
+                                                  <TouchableOpacity style={styles.button_reject} onPressOut={handleModalSignOutCloseAndNavigate}>
+                                                    <Text style={styles.button_reject_text}>Si, quiero cerrar mi sesión</Text>
+                                                  </TouchableOpacity>
+                                                </View>
+                                                <View style={styles.button_right}>
+                                                  <TouchableOpacity style={styles.button_approve} onPress={handleModalSignOutClose}>
+                                                    <Text style={styles.button_approve_text}>No, mantener mi sesión iniciada</Text>
+                                                  </TouchableOpacity>
+                                                </View>
+                                              </View>
+                                              <View style={styles.divisor} />
+                                            </View>
+              </Modal>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/Door.png')} />
@@ -258,7 +305,7 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
                 <Text style={styles.text_button_sign_out}>Cerrar sesión</Text>
               </View>
               <View style={styles.go_button_container}>
-                <TouchableOpacity onPress={handleDesition}>
+                <TouchableOpacity onPress={handleModalOpen}>
                   <Image style={styles.go_button} source={require('../img/next_simple.png')} />
                 </TouchableOpacity>
               </View>
@@ -266,17 +313,32 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleCancelAccount}>
-            <DesitionModal
-              title={desitionData.title}
-              info={desitionData.info}
-              successColor={desitionData.successColor}
-              cancelColor={desitionData.cancelColor}
-              icon={desitionData.icon}
-              successBtn={desitionData.successBtn}
-              cancelBtn={desitionData.cancelBtn}
-              isVisible={isModalVisible}
-              successEvent={handleDeleteAccount}
-              cancelEvent={handleCloseModal} />
+            <Modal backdropOpacity={0.6} style={styles.modal_main_container} isVisible={cancelAccount}
+                                            animationInTiming={250}
+                                            animationOutTiming={600}
+                                            backdropTransitionInTiming={250}
+                                            backdropTransitionOutTiming={600}>
+                                            <View style={styles.modal_container}>
+                                            <LottieView source={require('../animations/warning_icon.json')} style={styles.iconLottie}
+                                              autoPlay
+                                              loop={true}/>
+                                              <Text style={styles.title_text}>¿Quieres eliminar tu cuenta?</Text>
+                                              <Text style={styles.subtitle_text}>Recuerda que todos los beneficios, pedidos, tarjeta y saldo ligados a tu cuenta serán eliminados.</Text>
+                                              <View style={styles.buttons_container}>
+                                                <View style={styles.button_left}>
+                                                  <TouchableOpacity style={styles.button_reject} onPressOut={deleteAccount}>
+                                                    <Text style={styles.button_reject_text}>Si, quiero eliminar mi cuenta</Text>
+                                                  </TouchableOpacity>
+                                                </View>
+                                                <View style={styles.button_right}>
+                                                  <TouchableOpacity style={styles.button_approve} onPress={handleCloseCancelAccount}>
+                                                    <Text style={styles.button_approve_text}>No, mantener mi cuenta</Text>
+                                                  </TouchableOpacity>
+                                                </View>
+                                              </View>
+                                              <View style={styles.divisor} />
+                                            </View>
+              </Modal>
             <View style={styles.button_container}>
               <View style={styles.icon_button_container}>
                 <Image style={styles.icon_button} source={require('../img/advertencia.png')} />
@@ -458,6 +520,103 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#D00000',
   },
+
+  modal_main_container:{
+    justifyContent: 'center',
+    alignItems:'center',
+  },
+
+  modal_container:{
+      width: '100%',
+      padding: 15,
+      justifyContent: 'center',
+      backgroundColor: '#FFF',
+      borderRadius: 12,
+  },
+
+  exit_icon:{
+    width: 20,
+    height: 20,
+    marginTop: 5,
+    alignSelf: 'flex-end',
+  },
+
+  title_text:{
+    fontFamily: 'DMSans-Medium',
+    color:'#000',
+    fontSize: 20,
+    marginTop: 15,
+    textAlign: 'center',
+  },
+
+  subtitle_text:{
+    fontFamily: 'DMSans-Regular',
+    color:'#424242',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 15,
+  },
+
+  button_reject:{
+    padding: 11,
+    width:'100%',
+    borderRadius: 10,
+    marginTop: 30,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#C71D1D',
+  },
+
+  button_approve:{
+    padding: 12,
+    width:'100%',
+    borderRadius: 10,
+    marginTop: 30,
+    marginBottom: 10,
+    backgroundColor: '#00C999',
+  },
+
+  button_reject_text:{
+    fontFamily: 'DMSans-Medium',
+    color: '#000',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  button_approve_text:{
+    fontFamily: 'DMSans-Medium',
+    color: '#FFF',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+
+  buttons_container:{
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  button_left:{
+      flex: 0.5,
+      alignItems: 'flex-start',
+      marginRight: 10,
+  },
+
+  button_right:{
+      flex: 0.5,
+      alignItems: 'flex-end',
+      marginLeft: 10,
+  },
+
+  divisor:{
+    width: '100%',
+    height: 15,
+  },
+
+  iconLottie:{
+    width: 75,
+    height: 75,
+    alignSelf: 'center',
+},
 
 })
 
