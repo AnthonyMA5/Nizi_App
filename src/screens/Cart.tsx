@@ -143,7 +143,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             _id : userID._id,
           });
-          fetch('http://192.168.0.3:3000/get_data',{
+          fetch('http://192.168.95.220:3000/get_data',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             idUsuario : userID._id,
           });
-          fetch('http://192.168.0.3:3000/get_cart',{
+          fetch('http://192.168.95.220:3000/get_cart',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
           newTotal: newTotal,
         });
         console.log('Datos enviados al servidor:', documentLog);
-        fetch('http://192.168.0.3:3000/update_quantity_cart', {
+        fetch('http://192.168.95.220:3000/update_quantity_cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -241,7 +241,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
             total: nuevoTotal,
         });
         console.log('Datos enviados al servidor:', documentLog);
-        fetch('http://192.168.0.3:3000/delete_product_cart', {
+        fetch('http://192.168.95.220:3000/delete_product_cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -264,7 +264,7 @@ const Cart: React.FC<Props> = ({navigation, route}) => {
           idUsuario: userID._id,
         });
         console.log('Datos enviados al servidor:', documentLog);
-        fetch('http://192.168.0.3:3000/pay_order', {
+        fetch('http://192.168.95.220:3000/pay_order', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

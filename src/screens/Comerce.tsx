@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
 
   commerce_left:{
     flex: 0.2,
+    alignItems: 'center',
   },
 
   commerce_right:{

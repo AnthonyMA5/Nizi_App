@@ -95,7 +95,7 @@ const AdminOrders: React.FC<Props> = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    fetch('http://192.168.0.3:3000/get_pedidos', {
+    fetch('http://192.168.95.220:3000/get_pedidos', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const AdminOrders: React.FC<Props> = ({navigation, route}) => {
       estadoPedido: selectedPedido.estado,
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_order_status', {
+    fetch('http://192.168.95.220:3000/update_order_status', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

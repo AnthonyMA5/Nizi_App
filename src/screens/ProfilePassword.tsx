@@ -129,7 +129,7 @@ const Profile_Password: React.FC<Props> = ({navigation, route}) => {
       newPassword: newPassword,
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_password', {
+    fetch('http://192.168.95.220:3000/update_password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

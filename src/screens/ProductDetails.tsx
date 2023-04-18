@@ -121,7 +121,7 @@ const ProductDetails: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             _id : userID._id,
           });
-          fetch('http://192.168.0.3:3000/get_data',{
+          fetch('http://192.168.95.220:3000/get_data',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const ProductDetails: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             idProducto : productID,
           });
-          fetch('http://192.168.0.3:3000/get_product_info',{
+          fetch('http://192.168.95.220:3000/get_product_info',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ const ProductDetails: React.FC<Props> = ({navigation, route}) => {
               ? productInfo.idEstablecimiento
               : '',
           });
-          fetch('http://192.168.0.3:3000/get_product_info_commerce', {
+          fetch('http://192.168.95.220:3000/get_product_info_commerce', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -222,7 +222,7 @@ const ProductDetails: React.FC<Props> = ({navigation, route}) => {
           cantidadSolicitada : quantity,
         });
         console.log('Datos enviados al servidor:', documentLog);
-        fetch('http://192.168.0.3:3000/add_to_cart', {
+        fetch('http://192.168.95.220:3000/add_to_cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

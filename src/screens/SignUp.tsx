@@ -256,7 +256,7 @@ const Sign_Up: React.FC<Props> = ({navigation}) => {
           numeroTelefono: telephoneCode,
         });
         console.log('Datos enviados al servidor:', documentLog);
-        fetch('http://192.168.0.3:3000/crear_usuario', {
+        fetch('http://192.168.95.220:3000/crear_usuario', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -103,7 +103,7 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
     const documentLog = JSON.stringify({
         _id : userID._id,
       });
-      fetch('http://192.168.0.3:3000/get_data',{
+      fetch('http://192.168.95.220:3000/get_data',{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const Profile: React.FC<Props> = ({navigation, route}) => {
     const documentLog = JSON.stringify({
       _id : userID._id,
     });
-    fetch('http://192.168.0.3:3000/delete_account',{
+    fetch('http://192.168.95.220:3000/delete_account',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

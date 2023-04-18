@@ -34,7 +34,7 @@ const Profile_Info: React.FC<Props> = ({navigation, route}) => {
     const documentLog = JSON.stringify({
         _id : userID._id,
       });
-      fetch('http://192.168.0.3:3000/get_data',{
+      fetch('http://192.168.95.220:3000/get_data',{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ const Profile_Info: React.FC<Props> = ({navigation, route}) => {
       username: username,
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_personal_info', {
+    fetch('http://192.168.95.220:3000/update_personal_info', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

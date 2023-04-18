@@ -131,7 +131,7 @@ const RecoverPassModal = (props: CustomModalProps) => {
           email: email,
           password: newPassword,
         });
-        fetch('http://192.168.0.3:3000/recoverPass',{
+        fetch('http://192.168.95.220:3000/recoverPass',{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

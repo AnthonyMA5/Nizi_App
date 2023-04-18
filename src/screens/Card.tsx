@@ -104,7 +104,7 @@ const Card: React.FC<Props> = ({navigation, route}) => {
       estadoTarjeta: userInfo ? userInfo.tarjeta[0].estadoTarjeta : '',
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_card_state', {
+    fetch('http://192.168.95.220:3000/update_card_state', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const Card: React.FC<Props> = ({navigation, route}) => {
       idUsuario: userInfo ? userInfo._id : '',
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/delete_card', {
+    fetch('http://192.168.95.220:3000/delete_card', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ const Card: React.FC<Props> = ({navigation, route}) => {
     const documentLog = JSON.stringify({
         _id : userID._id,
       });
-      fetch('http://192.168.0.3:3000/get_data',{
+      fetch('http://192.168.95.220:3000/get_data',{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -166,7 +166,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    fetch('http://192.168.0.3:3000/get_solicitudes', {
+    fetch('http://192.168.95.220:3000/get_solicitudes', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
       fechaVencimiento: fecha,
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_assign_card_request', {
+    fetch('http://192.168.95.220:3000/update_assign_card_request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
       fechaVencimiento: fecha,
     });
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/update_assign_card_request', {
+    fetch('http://192.168.95.220:3000/update_assign_card_request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -415,28 +415,28 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
                                               )}
                                               <Text style={styles.title_text}>Nombre del solicitante</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_paterno + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].apellido_materno : ''}
+                                                {selectedSolicitud?.solicitante?.[0]?.nombre + ' '}
+                                                {selectedSolicitud?.solicitante?.[0]?.apellido_paterno + ' '}
+                                                {selectedSolicitud?.solicitante?.[0]?.apellido_materno + ' '}
                                               </Text>
                                               <Text style={styles.title_text}>Domicilio</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].calle + ' #' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroExterior + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].numeroInterior + ' ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].colonia + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].municipio + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].codigoPostal + ', ' : ''}
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].direccion[0].estado + '.' : ''}
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].calle + ' # ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].numeroExterior + ' , ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].numeroInterior + ' , ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].colonia + ' , ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].municipio + ' , ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].codigoPostal + ' , ' }
+                                                {selectedSolicitud?.solicitante?.[0]?.direccion?.[0].estado + '' }
                                               </Text>
                                               <Text style={styles.title_text}>Número de teléfono</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].telefono : ''}
+                                              {selectedSolicitud?.solicitante?.[0]?.telefono + ' '}
                                               </Text>
 
                                               <Text style={styles.title_text}>Correo electrónico</Text>
                                               <Text style={styles.subtitle_text}>
-                                                {selectedSolicitud ? selectedSolicitud.solicitante[0].email : ''}
+                                              {selectedSolicitud?.solicitante?.[0]?.email + ' '}
                                               </Text>
 
                                               <Text style={styles.title_text}>Fecha de solicitud</Text>
@@ -483,7 +483,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                                                           <Text style={styles.title_text}>Información de la tarjeta</Text>
                                                           <Text style={styles.subtitle2_text}>Para completar la aprobación de la solicitud es necesario que llenes la información de la tarjeta que será asignada y enviada a{' '}
-                                                          {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre : ''}.</Text>
+                                                          {selectedSolicitud?.solicitante?.[0]?.nombre + ' '}.</Text>
 
                                                           <View style={styles.divisor}/>
 
@@ -679,7 +679,7 @@ const AdminRequests: React.FC<Props> = ({navigation, route}) => {
 
                                                       <Text style={styles.title_text}>Información de la tarjeta</Text>
                                                       <Text style={styles.subtitle2_text}>Para completar la aprobación de la solicitud es necesario que llenes la información de la tarjeta que será asignada y enviada a{' '}
-                                                      {selectedSolicitud ? selectedSolicitud.solicitante[0].nombre : ''}.</Text>
+                                                      {selectedSolicitud?.solicitante?.[0]?.nombre + ' '}.</Text>
 
                                                       <View style={styles.divisor}/>
 

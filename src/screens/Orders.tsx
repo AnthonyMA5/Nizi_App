@@ -38,7 +38,7 @@ const Orders: React.FC<Props> = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    fetch('http://192.168.0.3:3000/get_pedidos', {
+    fetch('http://192.168.95.220:3000/get_pedidos', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

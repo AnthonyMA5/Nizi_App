@@ -73,7 +73,7 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
     const documentLog = JSON.stringify({
         _id : userID._id,
       });
-      fetch('http://192.168.0.3:3000/get_data',{
+      fetch('http://192.168.95.220:3000/get_data',{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const Menu: React.FC<Props> = ({navigation, route}) => {
   }, [userID._id, refreshing])
 
   useEffect(() => {
-    fetch('http://192.168.0.3:3000/get_menu', {
+    fetch('http://192.168.95.220:3000/get_menu', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

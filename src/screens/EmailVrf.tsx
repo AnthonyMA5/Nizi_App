@@ -217,7 +217,7 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
     });
 
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/nuevo_codigo', {
+    fetch('http://192.168.95.220:3000/nuevo_codigo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -249,7 +249,7 @@ const Email_Vrf: React.FC<Props> = ({navigation, route}) => {
     });
 
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/verificar_codigo_email', {
+    fetch('http://192.168.95.220:3000/verificar_codigo_email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

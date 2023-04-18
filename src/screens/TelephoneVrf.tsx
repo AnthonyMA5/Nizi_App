@@ -213,7 +213,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
     });
 
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/nuevo_codigo_telefono', {
+    fetch('http://192.168.95.220:3000/nuevo_codigo_telefono', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -244,7 +244,7 @@ const Telephone_Vrf: React.FC<Props> = ({navigation, route}) => {
     });
 
     console.log('Datos enviados al servidor:', documentLog);
-    fetch('http://192.168.0.3:3000/verificar_codigo_telefono', {
+    fetch('http://192.168.95.220:3000/verificar_codigo_telefono', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

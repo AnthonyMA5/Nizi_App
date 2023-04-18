@@ -20,7 +20,7 @@ const AdminMenu: React.FC<Props> = ({navigation, route}) => {
     };
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/get_products', {
+        fetch('http://192.168.95.220:3000/get_products', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -87,7 +87,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
         const documentLog = JSON.stringify({
             _id : userID._id,
           });
-          fetch('http://192.168.0.3:3000/get_data',{
+          fetch('http://192.168.95.220:3000/get_data',{
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing])
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/get_solicitudes', {
+        fetch('http://192.168.95.220:3000/get_solicitudes', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing]);
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/count_solicitudes', {
+        fetch('http://192.168.95.220:3000/count_solicitudes', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing]);
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/get_pedidos', {
+        fetch('http://192.168.95.220:3000/get_pedidos', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing]);
     
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/count_pedidos', {
+        fetch('http://192.168.95.220:3000/count_pedidos', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing]);
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/count_revenue', {
+        fetch('http://192.168.95.220:3000/count_revenue', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ const AdminHome: React.FC<Props> = ({navigation, route}) => {
     }, [refreshing]);
 
     useEffect(() => {
-        fetch('http://192.168.0.3:3000/count_productos', {
+        fetch('http://192.168.95.220:3000/count_productos', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
